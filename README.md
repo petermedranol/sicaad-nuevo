@@ -2,20 +2,26 @@
 
 Proyecto con arquitectura separada:
 
-- **Backend:** Laravel 12
+- **Backend:** Laravel 12 (usando Sail/Docker)
 - **Frontend:** Angular 19 (stand alone components)
 
 ## Instalación
 
-### Backend (Laravel)
+### Backend (Laravel + Sail)
 
 ```sh
 cd backend
-composer install
 cp .env.example .env
-php artisan key:generate
-php artisan migrate
+./vendor/bin/sail up -d
+./vendor/bin/sail artisan key:generate
+./vendor/bin/sail artisan migrate
 ```
+
+> Si es la primera vez, instala las dependencias de Composer:
+> 
+> ```sh
+> composer install
+> ```
 
 ### Frontend (Angular)
 
@@ -27,8 +33,16 @@ ng serve
 
 ## Uso
 
-1. Inicia el backend (`php artisan serve`).
-2. Inicia el frontend (`ng serve`).
+1. Levanta el backend con Sail:  
+   ```sh
+   cd backend
+   ./vendor/bin/sail up -d
+   ```
+2. Inicia el frontend:  
+   ```sh
+   cd frontend
+   ng serve
+   ```
 3. Accede a la aplicación desde tu navegador.
 
 ## Estructura
