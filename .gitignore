@@ -1,0 +1,20 @@
+# Archivos y carpetas del sistema
+.DS_Store
+Thumbs.db
+
+# Archivos temporales de VS Code
+.vscode/
+
+# Archivos de logs generales
+*.log
+
+# Archivos de configuración globales
+.env
+.env.*
+
+# Carpeta de historial de VS Code
+.history/
+
+# Otros archivos temporales
+*.swp
+*.swo
