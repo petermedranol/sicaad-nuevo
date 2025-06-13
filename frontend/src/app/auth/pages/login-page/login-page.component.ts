@@ -35,8 +35,7 @@ export class LoginPageComponent implements OnInit {
   readonly clockIcon = Clock;
 
   ngOnInit() {
-    console.log('🔐 Login Page inicializada');
-    // El tema automático ya se configuró en el ThemeService al cargar la página
+
   }
 
   onLogin() {
@@ -61,7 +60,6 @@ export class LoginPageComponent implements OnInit {
    * Toggle simple entre modo claro/oscuro
    */
   toggleTheme() {
-    console.log('🔄 Cambiando tema');
     this.themeService.toggleTheme();
   }
 

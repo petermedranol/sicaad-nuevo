@@ -17,11 +17,11 @@ export class DashboardLayoutComponent implements OnInit {
   router = inject(Router);
   private authService = inject(AuthService);
   themeService = inject(ThemeService); // Público para template
-  
+
   // Signals para estado del sidebar
   isSidebarOpen = signal(false);
   isSidebarCollapsed = signal(false);
-  
+
   // Iconos disponibles
   readonly menuIcon = Menu;
   readonly xIcon = X;
@@ -39,7 +39,7 @@ export class DashboardLayoutComponent implements OnInit {
   readonly panelLeftCloseIcon = PanelLeftClose;
   readonly panelLeftIcon = PanelLeft;
   readonly clockIcon = Clock;
-  
+
   // Elementos del menú
   menuItems = [
     {
@@ -73,7 +73,7 @@ export class DashboardLayoutComponent implements OnInit {
       description: 'Configuración del sistema'
     }
   ];
-  
+
   // Usuario mock (después vendrá desde el servicio)
   currentUser = {
     name: 'Pedro Medrano',
@@ -83,31 +83,43 @@ export class DashboardLayoutComponent implements OnInit {
 
   // Toggle del sidebar
   toggleSidebar() {
-    this.isSidebarOpen.set(!this.isSidebarOpen());
+    const newValue = !this.isSidebarOpen();
+    this.isSidebarOpen.set(newValue);
+    localStorage.setItem('sidebarOpen', JSON.stringify(newValue));
   }
-  
+
   // Cerrar sidebar en móvil al hacer click en un enlace
   closeSidebar() {
     if (window.innerWidth < 1024) { // lg breakpoint
       this.isSidebarOpen.set(false);
     }
   }
-  
+
   // Toggle del sidebar en desktop (colapsar/expandir)
   toggleSidebarCollapse() {
-    this.isSidebarCollapsed.set(!this.isSidebarCollapsed());
+    const newValue = !this.isSidebarCollapsed();
+    this.isSidebarCollapsed.set(newValue);
+    localStorage.setItem('sidebarCollapsed', JSON.stringify(newValue));
   }
-  
+
   // Toggle del modo oscuro - SIMPLIFICADO con servicio
   toggleDarkMode() {
     this.themeService.toggleTheme();
   }
-  
+
   // Inicialización simple
   ngOnInit() {
+    const savedOpen = localStorage.getItem('sidebarOpen');
+    const savedCollapsed = localStorage.getItem('sidebarCollapsed');
+    if (savedOpen !== null) {
+      this.isSidebarOpen.set(JSON.parse(savedOpen));
+    }
+    if (savedCollapsed !== null) {
+      this.isSidebarCollapsed.set(JSON.parse(savedCollapsed));
+    }
     console.log('✅ Dashboard inicializado');
   }
-  
+
   // Navegar a una ruta
   navigateTo(route: string) {
     this.router.navigate([route]);
