@@ -1,8 +1,9 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../auth/services/auth.service';
 import { ThemeService } from '../../services/theme.service';
+import { SidebarService } from '../../services/sidebar.service';
 import { LogoComponent } from '../../components/logo/logo.component';
 import { LucideAngularModule, Menu, X, Home, Users, Settings, BarChart3, FileText, Bell, LogOut, User, Search, Sun, Moon, PanelLeftClose, PanelLeft, Clock } from 'lucide-angular';
 
@@ -16,11 +17,8 @@ import { LucideAngularModule, Menu, X, Home, Users, Settings, BarChart3, FileTex
 export class DashboardLayoutComponent implements OnInit {
   router = inject(Router);
   private authService = inject(AuthService);
-  themeService = inject(ThemeService); // Público para template
-
-  // Signals para estado del sidebar
-  isSidebarOpen = signal(false);
-  isSidebarCollapsed = signal(false);
+  themeService = inject(ThemeService);
+  sidebarService = inject(SidebarService);
 
   // Iconos disponibles
   readonly menuIcon = Menu;
@@ -83,23 +81,19 @@ export class DashboardLayoutComponent implements OnInit {
 
   // Toggle del sidebar
   toggleSidebar() {
-    const newValue = !this.isSidebarOpen();
-    this.isSidebarOpen.set(newValue);
-    localStorage.setItem('sidebarOpen', JSON.stringify(newValue));
+    this.sidebarService.toggleSidebar();
   }
 
   // Cerrar sidebar en móvil al hacer click en un enlace
   closeSidebar() {
     if (window.innerWidth < 1024) { // lg breakpoint
-      this.isSidebarOpen.set(false);
+      this.sidebarService.isSidebarOpen.set(false);
     }
   }
 
   // Toggle del sidebar en desktop (colapsar/expandir)
   toggleSidebarCollapse() {
-    const newValue = !this.isSidebarCollapsed();
-    this.isSidebarCollapsed.set(newValue);
-    localStorage.setItem('sidebarCollapsed', JSON.stringify(newValue));
+    this.sidebarService.toggleSidebarCollapse();
   }
 
   // Toggle del modo oscuro - SIMPLIFICADO con servicio
@@ -109,14 +103,6 @@ export class DashboardLayoutComponent implements OnInit {
 
   // Inicialización simple
   ngOnInit() {
-    const savedOpen = localStorage.getItem('sidebarOpen');
-    const savedCollapsed = localStorage.getItem('sidebarCollapsed');
-    if (savedOpen !== null) {
-      this.isSidebarOpen.set(JSON.parse(savedOpen));
-    }
-    if (savedCollapsed !== null) {
-      this.isSidebarCollapsed.set(JSON.parse(savedCollapsed));
-    }
     console.log('✅ Dashboard inicializado');
   }
 
