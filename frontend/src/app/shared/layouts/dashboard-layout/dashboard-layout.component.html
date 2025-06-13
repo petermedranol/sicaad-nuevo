@@ -1,15 +1,199 @@
-<div class="min-h-screen bg-gray-100">
-  <header class="bg-blue-600 text-white p-4 flex justify-between items-center">
-    <h1 class="text-xl font-bold">SICAAD</h1>
-    <button
-      (click)="logout()"
-      class="bg-red-500 px-4 py-1 rounded hover:bg-red-600 transition"
-    >
-      Cerrar sesión
-    </button>
-  </header>
+<div class="min-h-screen bg-base-200" style="border: none !important; box-shadow: none !important;">
+  <!-- Overlay para movil -->
+  @if (isSidebarOpen()) {
+    <div
+      class="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+      (click)="toggleSidebar()">
+    </div>
+  }
 
-  <main class="p-6">
-    <router-outlet></router-outlet>
-  </main>
+  <!-- Sidebar -->
+  <aside
+    class="fixed top-0 left-0 z-50 h-screen bg-base-100 transform sidebar-transition floating-shadow"
+    [class.w-80]="!isSidebarCollapsed()"
+    [class.w-16]="isSidebarCollapsed()"
+    [class.translate-x-0]="isSidebarOpen()"
+    [class.-translate-x-full]="!isSidebarOpen()"
+    [class.lg:translate-x-0]="true"
+    style="border: none !important; border-right: none !important; box-shadow: none !important;">
+
+    <!-- Header del sidebar -->
+    <div class="px-6 h-20 flex items-center sidebar-header-line">
+      @if (!isSidebarCollapsed()) {
+        <!-- Sidebar expandido -->
+        <div class="flex items-center justify-between w-full">
+          <div class="flex items-center space-x-3">
+            <app-logo size="normal"></app-logo>
+            <div class="flex-1">
+              <h2 class="text-xl font-bold text-base-content leading-tight">SICAAD</h2>
+              <p class="text-sm text-base-content opacity-60 leading-tight">Sistema de Control</p>
+            </div>
+          </div>
+
+          <!-- Boton cerrar en movil -->
+          <button
+            class="btn btn-ghost btn-sm btn-circle lg:hidden"
+            (click)="toggleSidebar()">
+            <lucide-icon [img]="xIcon" class="w-5 h-5"></lucide-icon>
+          </button>
+        </div>
+      } @else {
+        <!-- Sidebar colapsado -->
+        <div class="flex justify-center w-full">
+          <app-logo size="normal"></app-logo>
+        </div>
+      }
+    </div>
+
+    <!-- Input de búsqueda -->
+    @if (!isSidebarCollapsed()) {
+      <div class="px-6" style="padding-top: 25px; padding-bottom: 0px;">
+<div class="relative" #searchContainer>
+          <input 
+            type="text" 
+            placeholder="Buscar menú..." 
+            class="input input-sm w-full border-none focus:bg-opacity-20"
+            [style]="{
+              'background-color': themeService.isDarkMode() ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.3)',
+              'color': themeService.isDarkMode() ? '#f1f5f9' : '#1f2937',
+              'border': 'none'
+            }"
+          />
+<lucide-icon 
+            [img]="searchIcon" 
+            class="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 input-search-icon"
+            [style]="{
+              'color': themeService.isDarkMode() ? '#f1f5f9' : '#475569'
+            }"
+></lucide-icon>
+        </div>
+      </div>
+    }
+
+    <!-- Navegacion -->
+    <nav class="p-4">
+      <ul class="space-y-2">
+        @for (item of menuItems; track item.route) {
+          <li>
+            <a
+              (click)="navigateTo(item.route)"
+              class="flex items-center px-4 py-3 rounded-lg transition-colors cursor-pointer tooltip tooltip-right sidebar-menu-item"
+              [class.space-x-3]="!isSidebarCollapsed()"
+              [class.justify-center]="isSidebarCollapsed()"
+              [class.light-theme-hover]="!themeService.isDarkMode()"
+              [class.dark-theme-hover]="themeService.isDarkMode()"
+              [attr.data-tip]="isSidebarCollapsed() ? item.title : null">
+              <lucide-icon [img]="item.icon" class="w-5 h-5 text-base-content opacity-70"></lucide-icon>
+              @if (!isSidebarCollapsed()) {
+                <div class="flex-1">
+                  <p class="font-medium text-base-content">{{ item.title }}</p>
+                  <p class="text-xs text-base-content opacity-60" style="color: #cbd5e1 !important; opacity: 1 !important;">{{ item.description }}</p>
+                </div>
+              }
+            </a>
+          </li>
+        }
+      </ul>
+    </nav>
+
+    <!-- Footer del sidebar -->
+    <div class="absolute bottom-0 left-0 right-0 p-4">
+      <button
+        (click)="logout()"
+        class="flex items-center px-4 py-3 rounded-lg transition-colors w-full tooltip tooltip-right"
+        [class.space-x-3]="!isSidebarCollapsed()"
+        [class.text-left]="!isSidebarCollapsed()"
+        [class.justify-center]="isSidebarCollapsed()"
+        [class.light-theme-hover]="!themeService.isDarkMode()"
+        [class.dark-theme-hover]="themeService.isDarkMode()"
+        [attr.data-tip]="isSidebarCollapsed() ? 'Cerrar sesión' : null">
+        <lucide-icon [img]="logoutIcon" class="w-5 h-5 text-base-content opacity-70"></lucide-icon>
+        @if (!isSidebarCollapsed()) {
+          <div class="flex-1">
+            <p class="font-medium text-base-content">Cerrar sesión</p>
+            <p class="text-xs text-base-content opacity-60" style="color: #cbd5e1 !important; opacity: 1 !important; font-weight: normal !important;">Salir del sistema</p>
+          </div>
+        }
+      </button>
+    </div>
+  </aside>
+  <!-- Botón toggle en la línea divisoria vertical -->
+  <button 
+    class="fixed z-[60] hidden lg:flex btn btn-circle btn-sm toggle-btn shadow-lg transition-all duration-300"
+    [class.left-[304px]]="!isSidebarCollapsed()"
+    [class.left-[52px]]="isSidebarCollapsed()"
+    [style.top.px]="21"
+    (click)="toggleSidebarCollapse()"
+    [title]="isSidebarCollapsed() ? 'Expandir sidebar' : 'Contraer sidebar'">
+    <lucide-icon 
+      [img]="isSidebarCollapsed() ? panelLeftIcon : panelLeftCloseIcon" 
+      class="w-4 h-4"
+    ></lucide-icon>
+  </button>
+
+  <!-- Contenido principal -->
+  <div
+    class="transition-all duration-300"
+    [class.lg:ml-80]="!isSidebarCollapsed()"
+    [class.lg:ml-16]="isSidebarCollapsed()"
+    style="border: none !important; box-shadow: none !important;">
+    <!-- Header superior -->
+    <header class="bg-base-100 h-20 flex items-center px-6 header-line" style="border-top: none !important; border-left: none !important; border-right: none !important; border-bottom: 3px solid rgba(255, 255, 255, 0.2) !important; box-shadow: none !important;">
+      <div class="flex items-center justify-between w-full" style="height: 100%; align-items: center;">
+        <!-- Boton menu para movil -->
+        <div class="flex items-center space-x-4">
+          <button
+            class="btn btn-ghost btn-sm btn-circle lg:hidden"
+            (click)="toggleSidebar()">
+            <lucide-icon [img]="menuIcon" class="w-5 h-5"></lucide-icon>
+          </button>
+
+          <!-- Titulo -->
+          <div>
+            <h1 class="text-2xl font-bold text-base-content">Dashboard</h1>
+            <p class="text-sm text-base-content opacity-60">Bienvenido de vuelta, {{ currentUser.name }}</p>
+          </div>
+        </div>
+
+        <!-- Acciones del header -->
+        <div class="flex items-center space-x-4">
+          <!-- Toggle modo oscuro -->
+          <div class="tooltip tooltip-bottom" [attr.data-tip]="themeService.isDarkMode() ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'">
+            <button
+              class="btn btn-ghost btn-circle"
+              (click)="toggleDarkMode()">
+              <lucide-icon
+                [img]="themeService.isDarkMode() ? sunIcon : moonIcon"
+                class="w-5 h-5">
+              </lucide-icon>
+            </button>
+          </div>
+
+          <!-- Notificaciones -->
+          <div class="dropdown dropdown-end">
+            <label tabindex="0" class="btn btn-ghost btn-circle">
+              <div class="indicator">
+                <lucide-icon [img]="bellIcon" class="w-5 h-5"></lucide-icon>
+                <span class="badge badge-xs badge-primary indicator-item">3</span>
+              </div>
+            </label>
+          </div>
+
+          <!-- Perfil dropdown -->
+          <div class="dropdown dropdown-end">
+            <label tabindex="0" class="btn btn-ghost btn-circle avatar">
+              <div class="w-8 h-8 rounded-full">
+                <img [src]="currentUser.avatar" [alt]="currentUser.name" />
+              </div>
+            </label>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Contenido de la pagina -->
+    <main class="p-6">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
 </div>

@@ -1,1 +1,146 @@
-<p>home-page works!</p>
+<div class="space-y-6">
+  <!-- Header con saludo -->
+  <div class="bg-gradient-to-r from-primary to-secondary p-6 rounded-lg text-white">
+    <h1 class="text-3xl font-bold mb-2">¡Bienvenido de vuelta!</h1>
+    <p class="text-white/80">Aquí tienes un resumen de la actividad de hoy</p>
+  </div>
+
+  <!-- Grid de estadísticas -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    @for (stat of stats; track stat.title) {
+      <div class="bg-base-100 p-6 rounded-lg shadow hover-card cursor-pointer">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-base-content/60 text-sm font-medium">{{ stat.title }}</p>
+          <p class="text-2xl font-bold text-base-content mt-1">{{ stat.value }}</p>
+        </div>
+        <div [class]="stat.color">
+          <lucide-icon [img]="stat.icon" class="w-8 h-8"></lucide-icon>
+        </div>
+      </div>
+      <div class="mt-4 flex items-center">
+        <lucide-icon [img]="trendingIcon" class="w-4 h-4 text-success mr-1"></lucide-icon>
+        <span class="text-success text-sm font-medium">{{ stat.change }}</span>
+        <span class="text-base-content/60 text-sm ml-1">vs último mes</span>
+      </div>
+      </div>
+    }
+  </div>
+
+  <!-- Grid de contenido principal -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Actividad reciente -->
+    <div class="bg-base-100 rounded-lg shadow">
+      <div class="p-6 border-b border-base-300">
+        <div class="flex items-center justify-between">
+          <h2 class="text-xl font-semibold text-base-content flex items-center gap-2">
+            <lucide-icon [img]="activityIcon" class="w-5 h-5 text-primary"></lucide-icon>
+            Actividad Reciente
+          </h2>
+          <button class="btn btn-ghost btn-sm">Ver todo</button>
+        </div>
+      </div>
+      <div class="p-6">
+        <div class="space-y-4">
+          @for (activity of recentActivities; track activity.user + activity.time) {
+            <div class="flex items-center space-x-4 p-3 rounded-lg hover:bg-base-200 transition-colors">
+              <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                <lucide-icon 
+                  [img]="getActivityIcon(activity.type)" 
+                  class="w-5 h-5 text-primary">
+                </lucide-icon>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-base-content font-medium truncate">{{ activity.action }}</p>
+                <p class="text-base-content/60 text-sm truncate">{{ activity.user }}</p>
+              </div>
+              <div class="text-base-content/60 text-sm">{{ activity.time }}</div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Tareas pendientes -->
+    <div class="bg-base-100 rounded-lg shadow">
+      <div class="p-6 border-b border-base-300">
+        <div class="flex items-center justify-between">
+          <h2 class="text-xl font-semibold text-base-content flex items-center gap-2">
+            <lucide-icon [img]="targetIcon" class="w-5 h-5 text-accent"></lucide-icon>
+            Tareas Pendientes
+          </h2>
+          <button class="btn btn-ghost btn-sm">Ver todas</button>
+        </div>
+      </div>
+      <div class="p-6">
+        <div class="space-y-4">
+          @for (task of pendingTasks; track task.title) {
+            <div 
+              class="flex items-center space-x-4 p-3 rounded-lg hover:bg-base-200 transition-colors"
+              [class.opacity-50]="task.completed">
+              <input 
+                type="checkbox" 
+                class="checkbox checkbox-primary" 
+                [checked]="task.completed"
+                [disabled]="task.completed" />
+              <div class="flex-1 min-w-0">
+                <p 
+                  class="text-base-content font-medium truncate"
+                  [class.line-through]="task.completed">
+                  {{ task.title }}
+                </p>
+                <div class="flex items-center gap-2 mt-1">
+                  <span 
+                    class="badge badge-sm"
+                    [class.badge-error]="task.priority === 'Alta'"
+                    [class.badge-warning]="task.priority === 'Media'"
+                    [class.badge-info]="task.priority === 'Baja'">
+                    {{ task.priority }}
+                  </span>
+                  <span class="text-base-content/60 text-sm flex items-center gap-1">
+                    <lucide-icon [img]="calendarIcon" class="w-3 h-3"></lucide-icon>
+                    {{ task.dueDate }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sección de acciones rápidas -->
+  <div class="bg-base-100 rounded-lg shadow p-6">
+    <h2 class="text-xl font-semibold text-base-content mb-6 flex items-center gap-2">
+      <lucide-icon [img]="chartIcon" class="w-5 h-5 text-secondary"></lucide-icon>
+      Acciones Rápidas
+    </h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
+      <button class="btn btn-outline flex-col h-auto py-4 space-y-2">
+        <lucide-icon [img]="usersIcon" class="w-6 h-6"></lucide-icon>
+        <span class="text-sm">Gestionar Usuarios</span>
+      </button>
+      <button class="btn btn-outline flex-col h-auto py-4 space-y-2">
+        <lucide-icon [img]="filesIcon" class="w-6 h-6"></lucide-icon>
+        <span class="text-sm">Nuevo Documento</span>
+      </button>
+      <button class="btn btn-outline flex-col h-auto py-4 space-y-2">
+        <lucide-icon [img]="chartIcon" class="w-6 h-6"></lucide-icon>
+        <span class="text-sm">Ver Reportes</span>
+      </button>
+      <button class="btn btn-outline flex-col h-auto py-4 space-y-2">
+        <lucide-icon [img]="targetIcon" class="w-6 h-6"></lucide-icon>
+        <span class="text-sm">Nueva Tarea</span>
+      </button>
+      <button class="btn btn-outline flex-col h-auto py-4 space-y-2">
+        <lucide-icon [img]="calendarIcon" class="w-6 h-6"></lucide-icon>
+        <span class="text-sm">Calendario</span>
+      </button>
+      <button class="btn btn-outline flex-col h-auto py-4 space-y-2">
+        <lucide-icon [img]="activityIcon" class="w-6 h-6"></lucide-icon>
+        <span class="text-sm">Actividad</span>
+      </button>
+    </div>
+  </div>
+</div>

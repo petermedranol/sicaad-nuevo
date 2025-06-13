@@ -1,0 +1,105 @@
+/* ===== TEMA DRACULA UNIFICADO ===== */
+
+/* Variables CSS para tema dracula - UN SOLO GRIS */
+:root[data-theme="dracula"] {
+  --dracula-bg: #282a36;
+  --dracula-hover: #44475a;
+  --dracula-text: #f8f8f2;
+  --dracula-border: #282a36;
+  --dracula-widgets: #21222c;
+  --cecytec-orange: #F15A22;
+}
+
+/* ===== DRACULA CORRECTAMENTE APLICADO ===== */
+
+/* Fondo principal dracula */
+[data-theme="dracula"] body,
+[data-theme="dracula"] .min-h-screen,
+[data-theme="dracula"] .bg-base-200 {
+  background-color: #282a36 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Sidebar dracula */
+[data-theme="dracula"] aside,
+[data-theme="dracula"] aside.bg-base-100 {
+  background-color: #282a36 !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Header dracula */
+[data-theme="dracula"] header,
+[data-theme="dracula"] header.bg-base-100 {
+  background-color: #282a36 !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Textos dracula - FORZAR VISIBLES */
+[data-theme="dracula"] aside *,
+[data-theme="dracula"] header * {
+  color: #f8f8f2 !important;
+  background-color: transparent !important;
+}
+
+/* Botones sidebar dracula */
+[data-theme="dracula"] aside a,
+[data-theme="dracula"] aside button {
+  background-color: transparent !important;
+  color: #f8f8f2 !important;
+  border: none !important;
+}
+
+[data-theme="dracula"] aside a:hover,
+[data-theme="dracula"] aside button:hover {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  color: #f8f8f2 !important;
+}
+
+/* Botón toggle dracula */
+[data-theme="dracula"] .fixed.btn-circle {
+  background-color: #282a36 !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: #f8f8f2 !important;
+}
+
+[data-theme="dracula"] .fixed.btn-circle:hover {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  color: #f8f8f2 !important;
+}
+
+/* ===== WIDGETS DRACULA ===== */
+/* Solo para elementos que NO son sidebar/header */
+[data-theme="dracula"] .bg-base-100:not(aside):not(header) {
+  background-color: var(--dracula-widgets) !important;
+}
+
+/* Cards dracula */
+[data-theme="dracula"] .card {
+  background-color: var(--dracula-widgets) !important;
+  border: 1px solid var(--dracula-hover) !important;
+  color: var(--dracula-text) !important;
+}
+
+/* Inputs dracula */
+[data-theme="dracula"] .input {
+  background-color: var(--dracula-widgets) !important;
+  border: 1px solid var(--dracula-hover) !important;
+  color: var(--dracula-text) !important;
+}
+
+[data-theme="dracula"] .input:focus {
+  border-color: var(--cecytec-orange) !important;
+}
+
+/* Botones dracula */
+[data-theme="dracula"] .btn-primary {
+  background-color: var(--cecytec-orange) !important;
+  border-color: var(--cecytec-orange) !important;
+  color: #ffffff !important;
+}
+
+[data-theme="dracula"] .text-primary {
+  color: var(--cecytec-orange) !important;
+}
+

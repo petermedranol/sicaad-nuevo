@@ -1,1 +1,552 @@
 @import "tailwindcss";
+@plugin "daisyui";
+
+@theme {
+  /* Configuración adicional de tema si es necesaria */
+}
+
+/* Importar temas personalizados CECYTEC */
+@import "./app/shared/styles/themes/light-theme.css";
+@import "./app/shared/styles/themes/dark-theme.css";
+
+/* Estilos adicionales para SICAAD */
+.gradient-bg {
+  background: linear-gradient(135deg, oklch(var(--b2)) 0%, oklch(var(--b3)) 100%);
+}
+
+/* Animación para el botón de login */
+.btn-primary:hover {
+  transform: translateY(-1px);
+  transition: all 0.2s ease;
+}
+
+/* Mejoras en los inputs */
+
+.input:focus {
+  transform: scale(1.02);
+  transition: all 0.2s ease;
+}
+
+/* Efecto de glassmorphism para la card */
+.card-glass {
+  backdrop-filter: blur(16px);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Estilos adicionales para el dashboard */
+.sidebar-menu-item:hover {
+  transform: translateX(2px);
+  transition: all 0.2s ease;
+}
+
+/* Animaciones suaves para el sidebar */
+.sidebar-transition {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Mejorar el aspecto de los avatares */
+.avatar img {
+  object-fit: cover;
+}
+
+/* Sombras adicionales para elementos flotantes */
+.floating-shadow {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Efecto de hover para las cards */
+.hover-card {
+  transition: all 0.3s ease;
+}
+
+.hover-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+/* ===== DISEÑO ARREGLADO - SIDEBAR GRIS, SIN LÍNEA BLANCA ===== */
+
+/* SIDEBAR GRIS CECYTEC */
+[data-theme="cupcake"] aside,
+[data-theme="cupcake"] aside.bg-base-100 {
+  background-color: #64748b !important; /* Gris CECYTEC */
+  border: none !important; /* Sin bordes */
+  border-radius: 0 !important;
+}
+
+/* TOPBAR GRIS CECYTEC - PERMITIR LÍNEA UNIFICADORA */
+[data-theme="cupcake"] header,
+[data-theme="cupcake"] header.bg-base-100,
+[data-theme="cupcake"] .bg-base-100 header,
+div header.bg-base-100 {
+  background-color: #64748b !important; /* Mismo gris */
+  border-top: none !important;
+  border-left: none !important;
+  border-right: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important; /* Por si acaso */
+  outline: none !important; /* Por si DaisyUI usa outline */
+}
+
+/* FORZAR específicamente en DaisyUI */
+[data-theme="cupcake"] .bg-base-100:has(h1) {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Textos en sidebar/header - blancos legibles */
+[data-theme="cupcake"] aside *,
+[data-theme="cupcake"] header * {
+  color: #ffffff !important;
+}
+
+/* SUBTEXTO VISIBLE en sidebar - COLOR CLARO */
+[data-theme="cupcake"] aside .opacity-60,
+[data-theme="cupcake"] aside .text-xs {
+  color: #cbd5e1 !important; /* Gris mucho más claro para que se vea */
+  opacity: 1 !important; /* Forzar visible */
+}
+
+/* Hover SIN BORDE - COLOR ESPECÍFICO */
+[data-theme="cupcake"] aside a:hover,
+[data-theme="cupcake"] aside button:hover,
+[data-theme="cupcake"] .light-theme-hover:hover {
+  background-color: #566076 !important; /* Color específico solicitado */
+  color: #ffffff !important;
+  border: none !important; /* Sin borde en hover */
+}
+
+/* BOTÓN TOGGLE COLOR ESPECÍFICO - MÁXIMA ESPECIFICIDAD */
+button.toggle-btn.btn.btn-circle.btn-sm,
+.toggle-btn.btn,
+.toggle-btn {
+  background-color: #687289 !important; /* Color específico solicitado */
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
+}
+
+button.toggle-btn.btn.btn-circle.btn-sm:hover,
+.toggle-btn.btn:hover,
+.toggle-btn:hover {
+  background-color: #566076 !important; /* Hover más oscuro */
+  color: #ffffff !important;
+}
+
+/* FORZAR estilo inline virtual */
+button[class*="toggle-btn"] {
+  background-color: #687289 !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* ===== SEPARADORES VISIBLES ===== */
+/* Separador entre secciones del sidebar */
+[data-theme="cupcake"] aside .border-base-300,
+[data-theme="cupcake"] .border-base-300 {
+  border-color: rgba(255, 255, 255, 0.2) !important; /* Separadores visibles */
+}
+
+/* Separadores específicos en el contenido */
+[data-theme="cupcake"] .card,
+[data-theme="cupcake"] .bg-base-100:not(aside):not(header) {
+  border: 1px solid #e5e7eb !important; /* Bordes visibles en cards */
+}
+
+/* ===== LÍNEA UNIFICADORA SIDEBAR-TOPBAR ===== */
+/* Borde inferior del header para unificar - MÁS VISIBLE */
+[data-theme="cupcake"] header {
+  border-bottom: 4px solid rgba(255, 255, 255, 0.4) !important;
+}
+
+/* LÍNEAS UNIFICADORAS PARA MODO OSCURO DRACULA */
+[data-theme="dracula"] header {
+  border-bottom: 3px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+/* LÍNEAS DIRECTAS EN HEADER - SIN SEPARACIONES */
+[data-theme="cupcake"] .header-line {
+  border-bottom: 3px solid rgba(255, 255, 255, 0.25) !important;
+}
+
+[data-theme="dracula"] .header-line {
+  border-bottom: 3px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+/* LÍNEAS UNIFICADORAS DEL SIDEBAR */
+[data-theme="cupcake"] .sidebar-header-line {
+  border-bottom: 3px solid rgba(255, 255, 255, 0.25) !important;
+}
+
+[data-theme="dracula"] .sidebar-header-line {
+  border-bottom: 3px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+/* ===== MODO OSCURO (dark) ===== */
+/* UN SOLO GRIS OSCURO UNIFICADO */
+
+/* Sidebar oscuro - un solo tono */
+[data-theme="dark"] aside.bg-base-100,
+[data-theme="dark"] aside {
+  background-color: #2d3748 !important; /* Un solo gris oscuro */
+  border-radius: 0 !important;
+  border-color: #2d3748 !important;
+}
+
+/* Topbar oscuro - mismo tono exacto */
+[data-theme="dark"] header.bg-base-100,
+[data-theme="dark"] header {
+  background-color: #2d3748 !important; /* Mismo gris oscuro */
+  border-color: #2d3748 !important;
+  border-radius: 0 !important;
+}
+
+/* Textos modo oscuro - visibles */
+[data-theme="dark"] aside .text-base-content,
+[data-theme="dark"] aside h2,
+[data-theme="dark"] aside p,
+[data-theme="dark"] aside span,
+[data-theme="dark"] aside .opacity-60,
+[data-theme="dark"] header .text-base-content,
+[data-theme="dark"] header h1,
+[data-theme="dark"] header p {
+  color: #e2e8f0 !important;
+  opacity: 1 !important;
+}
+
+/* Iconos modo oscuro - visibles */
+[data-theme="dark"] aside lucide-icon,
+[data-theme="dark"] aside svg,
+[data-theme="dark"] aside .lucide,
+[data-theme="dark"] header lucide-icon,
+[data-theme="dark"] header svg,
+[data-theme="dark"] header .lucide {
+  color: #e2e8f0 !important;
+  opacity: 1 !important;
+}
+
+/* Botones sidebar modo oscuro */
+[data-theme="dark"] aside a,
+[data-theme="dark"] aside button {
+  color: #e2e8f0 !important;
+  border-radius: 0.5rem !important;
+  opacity: 1 !important;
+}
+
+[data-theme="dark"] aside a:hover,
+[data-theme="dark"] aside button:hover {
+  background-color: #1a202c !important; /* Hover más oscuro */
+  color: #ffffff !important;
+}
+
+/* Botones header modo oscuro */
+[data-theme="dark"] header .btn,
+[data-theme="dark"] header button {
+  color: #e2e8f0 !important;
+  border-radius: 50% !important;
+}
+
+[data-theme="dark"] header .btn:hover,
+[data-theme="dark"] header button:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
+}
+
+/* ===== MODO DRACULA UNIFICADO ===== */
+/* UN SOLO GRIS DRACULA PARA TODO */
+
+/* Fondo principal dracula - MÁS CLARO */
+[data-theme="dracula"] .min-h-screen,
+[data-theme="dracula"] .bg-base-200 {
+  background-color: #383a59 !important; /* Gris más claro para distinguir */
+}
+
+/* Sidebar dracula - mismo gris */
+[data-theme="dracula"] aside.bg-base-100,
+[data-theme="dracula"] aside {
+  background-color: #282a36 !important; /* Mismo gris dracula */
+  border-radius: 0 !important;
+  border-color: #282a36 !important; /* Sin borde visible */
+}
+
+/* Topbar dracula - mismo gris exacto */
+[data-theme="dracula"] header.bg-base-100,
+[data-theme="dracula"] header {
+  background-color: #282a36 !important; /* Mismo gris dracula */
+  border-color: #282a36 !important; /* Sin borde visible */
+  border-radius: 0 !important;
+}
+
+/* FORZAR todos los elementos del sidebar y header */
+[data-theme="dracula"] aside *,
+[data-theme="dracula"] header * {
+  color: #f8f8f2 !important; /* Texto dracula blanco */
+  background-color: transparent !important; /* SIN fondos blancos */
+}
+
+/* Botones sidebar - SIN FONDO BLANCO */
+[data-theme="dracula"] aside a,
+[data-theme="dracula"] aside button,
+[data-theme="dracula"] aside .btn,
+[data-theme="dracula"] aside .hover\:bg-gray-100 {
+  color: #f8f8f2 !important;
+  background-color: transparent !important; /* FORZAR sin fondo */
+  border: none !important;
+  border-radius: 0.5rem !important;
+}
+
+[data-theme="dracula"] aside a:hover,
+[data-theme="dracula"] aside button:hover,
+[data-theme="dracula"] aside .btn:hover {
+  background-color: #44475a !important; /* Solo hover visible */
+  color: #f8f8f2 !important;
+}
+
+/* Botones header - redondos, con borde sutil */
+[data-theme="dracula"] header .btn,
+[data-theme="dracula"] header button,
+[data-theme="dracula"] .btn.btn-ghost.btn-circle,
+[data-theme="dracula"] button.btn-ghost.btn-circle {
+  color: #f8f8f2 !important;
+  background-color: transparent !important;
+  border: 1px solid #44475a !important;
+  border-radius: 50% !important;
+}
+
+[data-theme="dracula"] header .btn:hover,
+[data-theme="dracula"] header button:hover {
+  background-color: #44475a !important;
+  color: #f8f8f2 !important;
+}
+
+/* Botón toggle redondo - color del topbar */
+[data-theme="dracula"] .fixed.btn-circle {
+  background-color: #282a36 !important; /* Mismo color del topbar */
+  border: 1px solid #44475a !important;
+  color: #f8f8f2 !important;
+  border-radius: 50% !important; /* Completamente redondo */
+}
+
+[data-theme="dracula"] .fixed.btn-circle:hover {
+  background-color: #44475a !important;
+  border-color: #6272a4 !important;
+  color: #f8f8f2 !important;
+}
+
+/* ===== WIDGETS Y CONTENIDO ===== */
+/* Los widgets mantienen sus estilos normales de DaisyUI */
+
+/* Widgets con fondo apropiado */
+[data-theme="cupcake"] .bg-base-100:not(aside):not(header) {
+  background-color: #ffffff !important; /* Widgets blancos en modo claro */
+}
+
+[data-theme="dark"] .bg-base-100:not(aside):not(header) {
+  background-color: #1a202c !important; /* Widgets oscuros consistentes */
+}
+
+[data-theme="dracula"] .bg-base-100:not(aside):not(header) {
+  background-color: #21222c !important; /* Widgets dracula */
+}
+
+/* ===== ELIMINAR ESPACIOS BLANCOS DRACULA ===== */
+/* Eliminar cualquier espacio o gap en modo dracula */
+[data-theme="dracula"] body,
+[data-theme="dracula"] html {
+  margin: 0 !important;
+  padding: 0 !important;
+  background-color: #282a36 !important;
+}
+
+/* Eliminar gaps y espacios */
+[data-theme="dracula"] .min-h-screen {
+  margin: 0 !important;
+  padding: 0 !important;
+  gap: 0 !important;
+}
+
+/* Header sin espacios */
+[data-theme="dracula"] header {
+  margin: 0 !important;
+  padding-left: 1.5rem !important;
+  padding-right: 1.5rem !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+/* Sidebar sin espacios */
+[data-theme="dracula"] aside {
+  margin: 0 !important;
+  top: 0 !important;
+  left: 0 !important;
+}
+
+/* FORZAR que NO haya fondos blancos en botones - MÁXIMA ESPECIFICIDAD */
+[data-theme="dracula"] aside .hover\:bg-gray-100,
+[data-theme="dracula"] aside .hover\:bg-gray-100:hover,
+[data-theme="dracula"] aside .bg-white,
+[data-theme="dracula"] aside .btn-ghost,
+[data-theme="dracula"] aside a.hover\:bg-gray-100,
+[data-theme="dracula"] aside a.hover\:bg-gray-100:hover {
+  background-color: transparent !important;
+  color: #f8f8f2 !important;
+}
+
+/* ANULAR completamente hover:bg-gray-100 en Dracula */
+[data-theme="dracula"] .hover\:bg-gray-100:hover {
+  background-color: #44475a !important;
+  color: #f8f8f2 !important;
+}
+
+/* Color directo para el ícono de búsqueda */
+[data-theme="dracula"] .search-icon {
+  color: #f8f8f2 !important;
+}
+
+[data-theme="cupcake"] .search-icon {
+  color: #64748b !important;
+}
+
+/* FUERZA BRUTA - Anular CUALQUIER clase de Tailwind en sidebar Dracula */
+[data-theme="dracula"] aside a[class*="hover:bg"],
+[data-theme="dracula"] aside button[class*="hover:bg"],
+[data-theme="dracula"] aside a[class*="bg-"],
+[data-theme="dracula"] aside button[class*="bg-"] {
+  background-color: transparent !important;
+}
+
+[data-theme="dracula"] aside a[class*="hover:bg"]:hover,
+[data-theme="dracula"] aside button[class*="hover:bg"]:hover {
+  background-color: #44475a !important;
+  color: #f8f8f2 !important;
+}
+
+/* Fuerza ultra específica para el elemento exacto del sidebar */
+[data-theme="dracula"] aside nav a.flex.items-center.px-4.py-3.rounded-lg.hover\:bg-gray-100 {
+  background-color: transparent !important;
+  color: #f8f8f2 !important;
+}
+
+[data-theme="dracula"] aside nav a.flex.items-center.px-4.py-3.rounded-lg.hover\:bg-gray-100:hover {
+  background-color: #44475a !important;
+  color: #f8f8f2 !important;
+}
+
+/* ===== DISEÑO PROFESIONAL CON CONTRASTE WCAG ===== */
+
+/* ===== SEPARADORES GRISES TENUES PERO VISIBLES ===== */
+[data-theme="dracula"] .border-base-300 {
+  border-color: rgba(255, 255, 255, 0.08) !important; /* Gris muy tenue pero visible */
+}
+
+[data-theme="cupcake"] .border-base-300 {
+  border-color: rgba(255, 255, 255, 0.15) !important; /* Gris tenue en sidebar gris */
+}
+
+/* ===== HOVER ELEGANTE Y SUTIL ===== */
+
+/* Hover para tema claro - sutil y elegante */
+.light-theme-hover {
+  color: #f8f9fa !important; /* Texto claro en sidebar gris */
+}
+
+.light-theme-hover:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important; /* Hover muy sutil */
+  color: #ffffff !important; /* Texto blanco en hover */
+}
+
+/* Hover para tema oscuro - sutil y consistente */
+.dark-theme-hover {
+  color: #f8f8f2 !important; /* Texto Dracula */
+}
+
+.dark-theme-hover:hover {
+  background-color: rgba(255, 255, 255, 0.05) !important; /* Hover muy sutil */
+  color: #f8f8f2 !important; /* Mantener color consistente */
+}
+
+/* ===== BOTÓN CERRAR SESIÓN SUTIL ===== */
+.sidebar-logout-btn {
+  color: #f8f9fa !important; /* Mismo color que otros textos */
+}
+
+.sidebar-logout-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important; /* Hover sutil igual que otros */
+  color: #ffffff !important;
+}
+
+/* Botón logout en tema dracula - sutil */
+[data-theme="dracula"] .sidebar-logout-btn {
+  color: #f8f8f2 !important; /* Mismo color que otros textos */
+}
+
+[data-theme="dracula"] .sidebar-logout-btn:hover {
+  background-color: rgba(255, 255, 255, 0.05) !important; /* Hover muy sutil */
+  color: #f8f8f2 !important;
+}
+
+/* ===== ICONOS CON CONTRASTE PROFESIONAL ===== */
+[data-theme="dracula"] aside lucide-icon,
+[data-theme="dracula"] header lucide-icon {
+  color: #f8f8f2 !important; /* Blanco Dracula */
+}
+
+[data-theme="cupcake"] aside lucide-icon,
+[data-theme="cupcake"] header lucide-icon {
+  color: #ffffff !important; /* Blanco en sidebar gris */
+}
+
+/* ===== TEXTO CON CONTRASTE PROFESIONAL ===== */
+[data-theme="dracula"] aside .text-base-content,
+[data-theme="dracula"] header .text-base-content {
+  color: #f8f8f2 !important; /* Blanco Dracula */
+}
+
+[data-theme="cupcake"] aside .text-base-content,
+[data-theme="cupcake"] header .text-base-content {
+  color: #ffffff !important; /* Blanco en sidebar gris */
+}
+
+/* Textos secundarios con opacidad controlada */
+[data-theme="dracula"] .opacity-60 {
+  opacity: 0.8 !important; /* Menos transparencia para mejor legibilidad */
+}
+
+[data-theme="cupcake"] .opacity-60 {
+  opacity: 0.7 !important;
+}
+
+/* Tooltip específico para dracula */
+[data-theme="dracula"] .tooltip:before {
+  background-color: #44475a !important;
+  color: #f8f8f2 !important;
+  border: 1px solid #44475a !important;
+}
+
+[data-theme="dracula"] .tooltip:after {
+  border-color: #44475a transparent transparent transparent !important;
+}
+
+/* Estilos específicos para el icono de búsqueda */
+.input-search-icon {
+  color: #64748b !important; /* Color base para el ícono */
+}
+
+[data-theme="dracula"] .input-search-icon {
+  color: #f8f8f2 !important;
+}
+
+/* En tema claro, el ícono debe ser visible sobre el fondo blanco */
+[data-theme="cupcake"] .input-search-icon {
+  color: #64748b !important; /* Color gris oscuro para contraste */
+}
+
+/* Input placeholder personalizado */
+[data-theme="cupcake"] input::placeholder {
+  color: rgba(255, 255, 255, 0.9) !important;
+  opacity: 1 !important;
+}
+
+[data-theme="dracula"] input::placeholder {
+  color: #94a3b8 !important;
+  opacity: 1 !important;
+}

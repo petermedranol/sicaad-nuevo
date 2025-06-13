@@ -1,0 +1,333 @@
+/* ===== TEMA CLARO CECYTEC ===== */
+
+/* Variables CSS para tema claro */
+:root[data-theme="cupcake"] {
+  --cecytec-orange: #F15A22;
+  --cecytec-green-medium: #39B54A;
+  --cecytec-green-light: #8CC63F;
+  --cecytec-green-dark: #006838;
+  --cecytec-gray-light: #F7F7F7;
+  --cecytec-gray-border: #D9D9D9;
+  --cecytec-text-dark: #333333;
+  --cecytec-text-light: #B7B7B7;
+}
+
+/* Hovers suaves para modo claro */
+[data-theme="cupcake"] .hover\:bg-gray-100:hover {
+  background-color: #EEEEEE !important;
+  border-color: var(--cecytec-gray-border) !important;
+}
+
+[data-theme="cupcake"] .btn-ghost:hover {
+  background-color: #F0F0F0 !important;
+  color: var(--cecytec-text-dark) !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+[data-theme="cupcake"] aside a:hover {
+  background-color: #EEEEEE !important;
+  color: var(--cecytec-text-dark) !important;
+  border-color: var(--cecytec-gray-border) !important;
+}
+
+[data-theme="cupcake"] .btn:hover,
+[data-theme="cupcake"] .btn-circle:hover {
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Sidebar específico para modo claro */
+[data-theme="cupcake"] aside h1,
+[data-theme="cupcake"] aside h2,
+[data-theme="cupcake"] aside h3,
+[data-theme="cupcake"] aside p,
+[data-theme="cupcake"] aside span,
+[data-theme="cupcake"] aside div {
+  color: var(--cecytec-text-dark) !important;
+}
+
+[data-theme="cupcake"] aside lucide-icon,
+[data-theme="cupcake"] aside svg {
+  color: var(--cecytec-green-medium) !important;
+}
+
+/* Tooltips para modo claro */
+[data-theme="cupcake"] .tooltip:before {
+  background-color: var(--cecytec-text-dark) !important;
+  color: #FFFFFF !important;
+}
+
+[data-theme="cupcake"] .tooltip:after {
+  border-color: var(--cecytec-text-dark) transparent transparent transparent !important;
+}
+
+/* Logo CECYTEC */
+[data-theme="cupcake"] .logo-cecytec {
+  background-color: var(--cecytec-orange) !important;
+}
+
+/* Colores principales */
+[data-theme="cupcake"] .text-cecytec-primary {
+  color: var(--cecytec-orange) !important;
+}
+
+[data-theme="cupcake"] .text-cecytec-secondary {
+  color: var(--cecytec-green-medium) !important;
+}
+
+[data-theme="cupcake"] .bg-cecytec-primary {
+  background-color: var(--cecytec-orange) !important;
+}
+
+[data-theme="cupcake"] .bg-cecytec-secondary {
+  background-color: var(--cecytec-green-medium) !important;
+}
+
+/* ===== ESTILOS ESPECÍFICOS PARA LOGIN LIMPIO ===== */
+
+/* Fondo del login - simple */
+[data-theme="cupcake"] body:has(.card) .min-h-screen {
+  background-color: #f8fafc !important;
+}
+
+/* Card principal del login - limpia */
+[data-theme="cupcake"] body:has(.card) .card {
+  background-color: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Inputs del login - limpios */
+[data-theme="cupcake"] .input {
+  background-color: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #1e293b !important;
+}
+
+[data-theme="cupcake"] .input:focus {
+  background-color: #ffffff !important;
+  border-color: var(--cecytec-orange) !important;
+  box-shadow: 0 0 0 2px rgba(241, 90, 34, 0.1) !important;
+}
+
+[data-theme="cupcake"] .input::placeholder {
+  color: #64748b !important;
+}
+
+/* Labels del login */
+[data-theme="cupcake"] .label-text {
+  color: #1e293b !important;
+  font-weight: 500 !important;
+}
+
+/* Textos del login - limpios */
+[data-theme="cupcake"] .text-base-content {
+  color: #1e293b !important;
+}
+
+[data-theme="cupcake"] .text-base-content\/70 {
+  color: #475569 !important;
+}
+
+[data-theme="cupcake"] .text-base-content\/50 {
+  color: #64748b !important;
+}
+
+/* Botón principal del login */
+[data-theme="cupcake"] .btn-primary {
+  background-color: var(--cecytec-orange) !important;
+  border-color: var(--cecytec-orange) !important;
+  color: #ffffff !important;
+}
+
+[data-theme="cupcake"] .btn-primary:hover {
+  background-color: #e14d1f !important;
+  border-color: #e14d1f !important;
+}
+
+/* Asegurar que el texto del botón sea blanco */
+[data-theme="cupcake"] .btn-primary span,
+[data-theme="cupcake"] .btn-primary lucide-icon {
+  color: #ffffff !important;
+}
+
+/* Título del login */
+[data-theme="cupcake"] .text-primary {
+  color: var(--cecytec-orange) !important;
+}
+
+/* Botones ghost del login - limpios */
+[data-theme="cupcake"] .btn-ghost {
+  background-color: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  color: var(--cecytec-green-medium) !important;
+}
+
+[data-theme="cupcake"] .btn-ghost:hover {
+  background-color: #f8fafc !important;
+  border-color: var(--cecytec-green-medium) !important;
+  color: var(--cecytec-green-medium) !important;
+}
+
+/* ===== DASHBOARD LIMPIO Y PROFESIONAL ===== */
+
+/* Fondo principal - simple */
+[data-theme="cupcake"] .min-h-screen,
+[data-theme="cupcake"] .bg-base-200 {
+  background-color: #f8fafc !important;
+}
+
+/* Sidebar - FORZAR gris suave */
+[data-theme="cupcake"] aside,
+[data-theme="cupcake"] aside.bg-base-100,
+[data-theme="cupcake"] .bg-base-100 aside {
+  background-color: #f1f5f9 !important;
+  border-right: 1px solid #e2e8f0 !important;
+}
+
+/* Header - FORZAR gris oscuro */
+[data-theme="cupcake"] header,
+[data-theme="cupcake"] header.bg-base-100 {
+  background-color: #64748b !important;
+  border-bottom: 1px solid #475569 !important;
+}
+
+/* Títulos en header gris oscuro - FORZAR */
+[data-theme="cupcake"] header h1,
+[data-theme="cupcake"] header .text-base-content {
+  color: #ffffff !important;
+  font-weight: 600 !important;
+}
+
+[data-theme="cupcake"] header p,
+[data-theme="cupcake"] header .text-base-content\/60,
+[data-theme="cupcake"] header .opacity-60 {
+  color: #e2e8f0 !important;
+  font-weight: 400 !important;
+}
+
+/* Logo SICAAD */
+[data-theme="cupcake"] aside h2 {
+  color: var(--cecytec-orange) !important;
+  font-weight: 700 !important;
+}
+
+[data-theme="cupcake"] aside p {
+  color: var(--cecytec-green-medium) !important;
+  font-weight: 500 !important;
+}
+
+/* Navegación simple */
+[data-theme="cupcake"] aside nav a {
+  border-radius: 8px !important;
+  transition: background-color 0.2s ease !important;
+}
+
+[data-theme="cupcake"] aside nav a:hover {
+  background-color: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+/* Iconos sin efectos */
+[data-theme="cupcake"] aside nav lucide-icon {
+  color: var(--cecytec-green-medium) !important;
+}
+
+[data-theme="cupcake"] aside nav p {
+  color: #475569 !important;
+  font-weight: 500 !important;
+}
+
+[data-theme="cupcake"] aside nav .text-xs {
+  color: #64748b !important;
+  font-weight: 400 !important;
+}
+
+/* Cards simples - FORZAR BLANCO */
+[data-theme="cupcake"] .card,
+[data-theme="cupcake"] [class*="bg-"],
+[data-theme="cupcake"] .bg-base-100 {
+  background-color: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1) !important;
+  color: #1e293b !important;
+}
+
+[data-theme="cupcake"] .card:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Forzar texto oscuro en widgets */
+[data-theme="cupcake"] .card h1,
+[data-theme="cupcake"] .card h2,
+[data-theme="cupcake"] .card h3,
+[data-theme="cupcake"] .card p,
+[data-theme="cupcake"] .card span,
+[data-theme="cupcake"] .card div {
+  color: #1e293b !important;
+}
+
+/* Botones simples */
+[data-theme="cupcake"] .btn-ghost:hover {
+  background-color: #f1f5f9 !important;
+}
+
+/* Iconos header en gris oscuro */
+[data-theme="cupcake"] header lucide-icon {
+  color: #ffffff !important;
+}
+
+[data-theme="cupcake"] header .btn-circle:hover lucide-icon {
+  color: var(--cecytec-orange) !important;
+}
+
+/* Botones header en gris oscuro */
+[data-theme="cupcake"] header .btn-circle {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+[data-theme="cupcake"] header .btn-circle:hover {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+/* Sección navegación */
+[data-theme="cupcake"] aside .text-xs {
+  color: #64748b !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.5px !important;
+  text-transform: uppercase !important;
+}
+
+/* Textos limpios */
+[data-theme="cupcake"] h1 {
+  color: var(--cecytec-orange) !important;
+  font-weight: 600 !important;
+}
+
+[data-theme="cupcake"] h2,
+[data-theme="cupcake"] h3 {
+  color: #1e293b !important;
+  font-weight: 500 !important;
+}
+
+[data-theme="cupcake"] p,
+[data-theme="cupcake"] span {
+  color: #475569 !important;
+}
+
+/* Botón toggle simple */
+[data-theme="cupcake"] .fixed.btn-circle {
+  background-color: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+[data-theme="cupcake"] .fixed.btn-circle:hover {
+  background-color: #f8fafc !important;
+  border-color: var(--cecytec-green-medium) !important;
+}
+

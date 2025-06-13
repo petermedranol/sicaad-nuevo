@@ -1,59 +1,110 @@
-# Frontend
+# SICAAD Frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.5.
+Frontend de la aplicación SICAAD desarrollado con Angular 19 y componentes standalone.
 
-## Development server
+## 🚀 Tecnologías
 
-To start a local development server, run:
+- **Angular 19** - Framework principal
+- **TypeScript 5.7.2** - Lenguaje de programación
+- **TailwindCSS 4.1.10** - Framework de CSS
+- **DaisyUI 5.0.43** - Componentes UI
+- **Lucide Angular** - Librería de iconos
+- **Standalone Components** - Arquitectura moderna sin NgModules
 
+## 🎨 Temas disponibles
+
+La aplicación usa DaisyUI con soporte para múltiples temas. Para cambiar el tema, modifica el atributo `data-theme` en `src/index.html`:
+
+```html
+<html data-theme="corporate">
+```
+
+Temas recomendados:
+- `corporate` (por defecto) - Tema corporativo limpio
+- `business` - Tema oscuro profesional
+- `emerald` - Tema verde moderno
+- `cupcake` - Tema claro y amigable
+
+## 🛠 Desarrollo
+
+### Servidor de desarrollo
 ```bash
+npm start
+# o
 ng serve
 ```
+Navega a `http://localhost:4200/`
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
+### Build
 ```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
+npm run build
+# o
 ng build
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
+### Testing
 ```bash
+npm test
+# o
 ng test
 ```
 
-## Running end-to-end tests
+## 📁 Estructura del proyecto
 
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
+```
+src/
+├── app/
+│   ├── auth/                 # Módulo de autenticación
+│   │   ├── guards/          # Guards de protección
+│   │   ├── pages/           # Páginas de auth
+│   │   └── services/        # Servicios de auth
+│   ├── dashboard/           # Módulo dashboard
+│   ├── shared/              # Componentes compartidos
+│   │   └── layouts/         # Layouts de la app
+│   ├── interceptors/        # Interceptors HTTP
+│   └── app.routes.ts        # Configuración de rutas
+├── styles.css               # Estilos globales + DaisyUI
+└── index.html               # HTML principal
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## 🔐 Autenticación
 
-## Additional Resources
+La aplicación usa autenticación basada en sesiones de Laravel con:
+- **CSRF Protection** - Interceptor automático
+- **Cookies de sesión** - Manejo automático
+- **Guards de ruta** - Protección de rutas privadas
+- **Estado de loading** - UX mejorada
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+## 🎯 Características del Login
+
+- ✅ Diseño moderno con DaisyUI
+- ✅ Iconos con Lucide Angular
+- ✅ Mostrar/ocultar contraseña
+- ✅ Estados de loading
+- ✅ Validación en tiempo real
+- ✅ Manejo de errores
+- ✅ Diseño responsive
+- ✅ Gradientes y animaciones
+
+## 📝 Comandos útiles
+
+```bash
+# Generar componente standalone
+ng generate component nombre --standalone
+
+# Generar servicio
+ng generate service services/nombre
+
+# Generar guard funcional
+ng generate guard guards/nombre --functional
+
+# Servir con hot reload
+ng serve --hmr
+```
+
+## 🔗 Integración con Backend
+
+- **Base URL**: `http://localhost` (Laravel Sail)
+- **API Endpoints**: `/api/*`
+- **CORS**: Configurado para `localhost:4200`
+- **Credentials**: `withCredentials: true` en todas las peticiones
