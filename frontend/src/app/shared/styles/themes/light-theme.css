@@ -331,3 +331,11 @@
   border-color: var(--cecytec-green-medium) !important;
 }
 
+/* Icono de búsqueda en el sidebar */
+[data-theme="cupcake"] aside .input-search-icon,
+[data-theme="cupcake"] aside .input-search-icon lucide-icon,
+[data-theme="cupcake"] aside .input-search-icon svg {
+  color: #64748b !important;
+  stroke: #64748b !important;
+}
+

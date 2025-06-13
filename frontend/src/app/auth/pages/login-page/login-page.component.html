@@ -3,19 +3,19 @@
     <!-- Efecto glassmorphism sutil -->
     <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-sm"></div>
     <!-- Control de tema simple -->
-    <div class="absolute top-6 right-6 z-10">
+    <div class="absolute top-6 right-6 z-30">
       <div class="tooltip tooltip-left" data-tip="Cambiar tema">
-        <button 
-          class="btn btn-ghost btn-sm btn-circle hover:scale-110 transition-all duration-200" 
+        <button
+          class="btn btn-ghost btn-sm btn-circle hover:scale-110 transition-all duration-200"
           (click)="toggleTheme()">
-          <lucide-icon 
-            [img]="themeService.isDarkMode() ? sunIcon : moonIcon" 
+          <lucide-icon
+            [img]="themeService.isDarkMode() ? sunIcon : moonIcon"
             class="w-5 h-5">
           </lucide-icon>
         </button>
       </div>
     </div>
-    
+
     <div class="card-body relative z-10 p-8">
       <!-- Logo o título -->
       <div class="text-center mb-10">
@@ -69,8 +69,8 @@
               class="absolute right-4 top-1/2 transform -translate-y-1/2 btn btn-ghost btn-sm btn-circle hover:bg-primary/10 transition-all duration-200"
               [disabled]="isLoading"
             >
-              <lucide-icon 
-                [img]="showPassword ? eyeOffIcon : eyeIcon" 
+              <lucide-icon
+                [img]="showPassword ? eyeOffIcon : eyeIcon"
                 class="w-5 h-5"
               ></lucide-icon>
             </button>

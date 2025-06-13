@@ -18,12 +18,12 @@ export class LoginPageComponent implements OnInit {
   error = '';
   isLoading = false;
   showPassword = false;
-  
+
   // Servicios
   private authService = inject(AuthService);
   private router = inject(Router);
   themeService = inject(ThemeService); // Público para template
-  
+
   // Iconos disponibles en el template
   readonly mailIcon = Mail;
   readonly lockIcon = Lock;
@@ -41,10 +41,10 @@ export class LoginPageComponent implements OnInit {
 
   onLogin() {
     if (this.isLoading) return;
-    
+
     this.error = '';
     this.isLoading = true;
-    
+
     this.authService.login(this.email, this.password).subscribe({
       next: () => {
         this.isLoading = false;
@@ -56,14 +56,15 @@ export class LoginPageComponent implements OnInit {
       }
     });
   }
-  
+
   /**
    * Toggle simple entre modo claro/oscuro
    */
   toggleTheme() {
+    console.log('🔄 Cambiando tema');
     this.themeService.toggleTheme();
   }
-  
+
   togglePasswordVisibility() {
     this.showPassword = !this.showPassword;
   }

@@ -49,9 +49,9 @@
     @if (!isSidebarCollapsed()) {
       <div class="px-6" style="padding-top: 25px; padding-bottom: 0px;">
 <div class="relative" #searchContainer>
-          <input 
-            type="text" 
-            placeholder="Buscar menú..." 
+          <input
+            type="text"
+            placeholder="Buscar menú..."
             class="input input-sm w-full border-none focus:bg-opacity-20"
             [style]="{
               'background-color': themeService.isDarkMode() ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.3)',
@@ -59,12 +59,10 @@
               'border': 'none'
             }"
           />
-<lucide-icon 
-            [img]="searchIcon" 
+<lucide-icon
+            [img]="searchIcon"
             class="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 input-search-icon"
-            [style]="{
-              'color': themeService.isDarkMode() ? '#f1f5f9' : '#475569'
-            }"
+            [ngClass]="themeService.isDarkMode() ? 'text-white' : 'text-[#64748b]'"
 ></lucide-icon>
         </div>
       </div>
@@ -118,15 +116,15 @@
     </div>
   </aside>
   <!-- Botón toggle en la línea divisoria vertical -->
-  <button 
+  <button
     class="fixed z-[60] hidden lg:flex btn btn-circle btn-sm toggle-btn shadow-lg transition-all duration-300"
     [class.left-[304px]]="!isSidebarCollapsed()"
     [class.left-[52px]]="isSidebarCollapsed()"
     [style.top.px]="21"
     (click)="toggleSidebarCollapse()"
     [title]="isSidebarCollapsed() ? 'Expandir sidebar' : 'Contraer sidebar'">
-    <lucide-icon 
-      [img]="isSidebarCollapsed() ? panelLeftIcon : panelLeftCloseIcon" 
+    <lucide-icon
+      [img]="isSidebarCollapsed() ? panelLeftIcon : panelLeftCloseIcon"
       class="w-4 h-4"
     ></lucide-icon>
   </button>

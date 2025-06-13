@@ -528,16 +528,19 @@ button[class*="toggle-btn"] {
 
 /* Estilos específicos para el icono de búsqueda */
 .input-search-icon {
-  color: #64748b !important; /* Color base para el ícono */
+  color: #64748b !important;
 }
 
-[data-theme="dracula"] .input-search-icon {
+/* Input search icon color para modo claro */
+[data-theme="cupcake"] .input-search-icon,
+[data-theme="cupcake"] input + .input-search-icon {
+  color: #64748b !important;
+}
+
+/* Input search icon color para modo oscuro */
+[data-theme="dracula"] .input-search-icon,
+[data-theme="dracula"] input + .input-search-icon {
   color: #f8f8f2 !important;
-}
-
-/* En tema claro, el ícono debe ser visible sobre el fondo blanco */
-[data-theme="cupcake"] .input-search-icon {
-  color: #64748b !important; /* Color gris oscuro para contraste */
 }
 
 /* Input placeholder personalizado */

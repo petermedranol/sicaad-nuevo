@@ -7,12 +7,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <meta name="description" content="Sistema de Control Administrativo">
-  
+
   <!-- Script simple para tema inicial -->
   <script>
     console.log('📋 Iniciando con tema cupcake por defecto');
     document.documentElement.setAttribute('data-theme', 'cupcake');
-    document.body.style.backgroundColor = '#ffffff';
+    window.addEventListener('DOMContentLoaded', function() {
+      document.body.style.backgroundColor = '#ffffff';
+    });
   </script>
 </head>
 <body class="min-h-screen">
