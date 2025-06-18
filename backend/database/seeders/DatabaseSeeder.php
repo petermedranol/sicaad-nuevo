@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
         // Seeders en orden de dependencias
         $this->call([
             UserTypeSeeder::class,
+            MenuSeeder::class,
         ]);
 
         // User::factory(10)->create();
