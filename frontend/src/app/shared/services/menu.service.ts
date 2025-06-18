@@ -35,40 +35,19 @@ export class MenuService {
   private _userInfo = signal<any>(null);
   public userInfo = this._userInfo.asReadonly();
   
-  // Computed para verificar si hay menús cargados
-  public hasMenus = computed(() => this._menuItems().length > 0);
-  
-  constructor() {
-    console.log('🔧 MenuService iniciado con API backend');
-  }
-  
-  // Signal privado para los elementos del menú
-  private _menuItems = signal<MenuItem[]>([]);
-  
-  // Signal público de solo lectura
-  public menuItems = this._menuItems.asReadonly();
-  
-  // Signal para items expandidos
-  private _expandedItems = signal<Set<string>>(new Set<string>());
-  public expandedItems = this._expandedItems.asReadonly();
-  
-  // Signal para el item activo
-  private _activeItemId = signal<string>('dashboard');
-  public activeItemId = this._activeItemId.asReadonly();
-  
   // Signal para la búsqueda
   private _searchQuery = signal<string>('');
   public searchQuery = this._searchQuery.asReadonly();
   
-  // Getter público para el query actual (para usar en pipes)
-  get currentSearchQuery(): string {
+  // Getter para compatibilidad con componentes existentes
+  public get currentSearchQuery(): string {
     return this._searchQuery();
   }
   
   // Computed para verificar si hay menús cargados
   public hasMenus = computed(() => this._menuItems().length > 0);
   
-  // Computed para menús filtrados que mantiene el árbol completo
+  // Computed para menús filtrados
   public filteredMenuItems = computed(() => {
     const query = this._searchQuery().toLowerCase().trim();
     if (!query) {
@@ -79,352 +58,167 @@ export class MenuService {
   });
   
   constructor() {
-    console.log('🔧 MenuService iniciado');
-    this.loadDefaultMenuItems();
+    console.log('🔧 MenuService iniciado con API backend');
   }
-  
+
   /**
-   * Carga los elementos del menú por defecto (hardcodeados por ahora)
-   * En el futuro esto se reemplazará por una llamada al backend
+   * Carga los menús del usuario desde el backend
    */
-  private loadDefaultMenuItems(): void {
-    const defaultMenuItems: MenuItem[] = [
+  async loadUserMenus(): Promise<void> {
+    try {
+      this._loading.set(true);
+      this._error.set(null);
+      
+      console.log('🌐 Cargando menús del usuario desde backend...');
+      
+      const response = await firstValueFrom(
+        this.http.get<ApiMenuResponse>(`${this.apiUrl}/user/menus`, { 
+          withCredentials: true 
+        })
+      );
+
+      if (response.success) {
+        // Convertir los menús de la API al formato interno
+        const menuItems = this.convertApiMenusToMenuItems(response.data.menus);
+        
+        this._menuItems.set(menuItems);
+        this._userInfo.set(response.data.user_info);
+        
+        console.log('✅ Menús cargados exitosamente:', menuItems.length, 'elementos');
+        console.log('👤 Info usuario:', response.data.user_info);
+        
+      } else {
+        throw new Error(response.message || 'Error al cargar menús');
+      }
+      
+    } catch (error: any) {
+      console.error('❌ Error cargando menús:', error);
+      this._error.set(error.message || 'Error desconocido');
+      
+      // Fallback a menús por defecto si es necesario
+      this.loadFallbackMenus();
+      
+    } finally {
+      this._loading.set(false);
+    }
+  }
+
+  /**
+   * Carga menús de fallback en caso de error
+   */
+  private loadFallbackMenus(): void {
+    const fallbackMenus: MenuItem[] = [
       {
-        id: '1',
-        title: 'Configuraciones',
-        description: 'Configuración del sistema',
-        icon: 'Settings',
-        level: 0,
-        children: [
-          {
-            id: '2',
-            route: '/planteles',
-            title: 'Planteles',
-            description: 'Gestión de planteles',
-            icon: 'Building2',
-            level: 1
-          },
-          {
-            id: '3',
-            route: '/usuarios',
-            title: 'Usuarios',
-            description: 'Administrar usuarios',
-            icon: 'Users',
-            level: 1
-          },
-          {
-            id: '4',
-            route: '/accesos',
-            title: 'Accesos',
-            description: 'Control de accesos',
-            icon: 'Shield',
-            level: 1
-          }
-        ]
-      },
-      {
-        id: '10',
-        title: 'Académico',
-        description: 'Gestión académica',
-        icon: 'FileText',
-        level: 0,
-        children: [
-          {
-            id: '11',
-            title: 'Catálogos',
-            description: 'Catálogos académicos',
-            icon: 'Archive',
-            level: 1,
-            children: [
-              {
-                id: '12',
-                route: '/academico/catalogosV2/carreras',
-                title: 'Carreras',
-                description: 'Gestión de carreras',
-                icon: 'FileText',
-                level: 2
-              },
-              {
-                id: '13',
-                route: '/academico/catalogos/grados',
-                title: 'Grados (Nuevo ingreso)',
-                description: 'Grados de nuevo ingreso',
-                icon: 'FileText',
-                level: 2
-              },
-              {
-                id: '14',
-                route: '/academico/materiasV2',
-                title: 'Materias',
-                description: 'Gestión de materias',
-                icon: 'FileText',
-                level: 2
-              },
-              {
-                id: '15',
-                route: '/academico/catalogos/fechas',
-                title: 'Fechas',
-                description: 'Calendario académico',
-                icon: 'FileText',
-                level: 2
-              },
-              {
-                id: '16',
-                route: '/academico/catalogos/fechas_periodos',
-                title: 'Fechas Periodos',
-                description: 'Periodos académicos',
-                icon: 'FileText',
-                level: 2
-              }
-            ]
-          }
-        ]
-      },
-      {
-        id: '20',
-        title: 'Recursos Humanos',
-        description: 'Gestión de personal',
-        icon: 'Users',
-        level: 0,
-        children: [
-          {
-            id: '21',
-            route: '/recursoshumanos',
-            title: 'Kardex',
-            description: 'Expedientes de personal',
-            icon: 'FileText',
-            level: 1
-          },
-          {
-            id: '22',
-            route: '/recursoshumanosF/cambioadscripcion',
-            title: 'Cambio de Adscripción',
-            description: 'Cambios de adscripción',
-            icon: 'Users',
-            level: 1
-          }
-        ]
-      },
-      {
-        id: '30',
-        title: 'Informática',
-        description: 'Servicios informáticos',
-        icon: 'Settings',
-        level: 0,
-        badge: { text: 'IT', color: 'blue' },
-        children: [
-          {
-            id: '31',
-            route: '/informatica/catalogos/ordenesdeservicios',
-            title: 'Ordenes de servicio',
-            description: 'Gestión de órdenes',
-            icon: 'FileText',
-            level: 1
-          },
-          {
-            id: '32',
-            route: '/informatica/reportes',
-            title: 'Reportes',
-            description: 'Reportes del sistema',
-            icon: 'BarChart3',
-            level: 1
-          },
-          {
-            id: '33',
-            route: '/informatica/mail',
-            title: 'Correos',
-            description: 'Gestión de correos',
-            icon: 'FileText',
-            level: 1
-          }
-        ]
-      },
-      {
-        id: '40',
-        title: 'Administrativo',
-        description: 'Gestión administrativa',
-        icon: 'FileText',
-        level: 0,
-        children: [
-          {
-            id: '41',
-            title: 'Viáticos',
-            description: 'Gestión de viáticos',
-            icon: 'FileText',
-            level: 1,
-            children: [
-              {
-                id: '42',
-                route: '/administrativo/viaticos/index',
-                title: 'Solicitud de Viáticos',
-                description: 'Nueva solicitud',
-                icon: 'FileText',
-                level: 2
-              },
-              {
-                id: '43',
-                route: '/administrativo/viaticos/validar',
-                title: 'Validación de Viáticos',
-                description: 'Validar solicitudes',
-                icon: 'Shield',
-                level: 2,
-                badge: { text: 'Pendientes', color: 'orange' }
-              }
-            ]
-          }
-        ]
-      },
-      {
-        id: '50',
-        title: 'Vinculación',
-        description: 'Vinculación con el sector productivo',
-        icon: 'Users',
-        level: 0,
-        children: [
-          {
-            id: '51',
-            title: 'S. Social',
-            description: 'Servicio social',
-            icon: 'Users',
-            level: 1,
-            children: [
-              {
-                id: '52',
-                route: '/vinculacion/s_social/captura',
-                title: 'Captura',
-                description: 'Captura de datos',
-                icon: 'FileText',
-                level: 2
-              }
-            ]
-          }
-        ]
-      },
-      {
-        id: '60',
-        title: 'Biblioteca',
-        description: 'Gestión bibliotecaria',
-        icon: 'Archive',
-        level: 0,
-        children: [
-          {
-            id: '61',
-            route: '/biblioteca/principal/libros',
-            title: 'Libros',
-            description: 'Catálogo de libros',
-            icon: 'FileText',
-            level: 1
-          },
-          {
-            id: '62',
-            route: '/biblioteca/principal/movimientos',
-            title: 'Movimientos',
-            description: 'Préstamos y devoluciones',
-            icon: 'FileText',
-            level: 1
-          }
-        ]
-      },
-      {
-        id: '70',
-        title: 'Recepción',
-        description: 'Gestión de correspondencia',
-        icon: 'FileText',
-        level: 0,
-        children: [
-          {
-            id: '71',
-            title: 'Correspondencia',
-            description: 'Gestión de correspondencia',
-            icon: 'FileText',
-            level: 1,
-            children: [
-              {
-                id: '72',
-                route: '/recepcion/correspondencia/catalogos',
-                title: 'Asignaciones',
-                description: 'Asignar correspondencia',
-                icon: 'FileText',
-                level: 2
-              },
-              {
-                id: '73',
-                route: '/recepcion/correspondencia/reportes',
-                title: 'Reportes',
-                description: 'Reportes de correspondencia',
-                icon: 'BarChart3',
-                level: 2
-              }
-            ]
-          }
-        ]
-      },
-      {
-        id: '80',
-        title: 'Financieros',
-        description: 'Gestión financiera',
-        icon: 'BarChart3',
-        level: 0,
-        badge: { text: '$', color: 'green' },
-        children: [
-          {
-            id: '81',
-            route: '/financieros/pago_alumnos',
-            title: 'Pago de alumnos',
-            description: 'Gestión de pagos',
-            icon: 'BarChart3',
-            level: 1
-          },
-          {
-            id: '82',
-            route: '/financieros/fichas_admision',
-            title: 'Ficha de admisión',
-            description: 'Fichas de admisión',
-            icon: 'FileText',
-            level: 1
-          }
-        ]
-      },
-      {
-        id: '90',
-        title: 'Planeación',
-        description: 'Planeación institucional',
-        icon: 'BarChart3',
-        level: 0,
-        children: [
-          {
-            id: '91',
-            route: '/planeacion/proyectos/reporte',
-            title: 'Proyectos',
-            description: 'Gestión de proyectos',
-            icon: 'FileText',
-            level: 1
-          },
-          {
-            id: '92',
-            route: '/planeacion/reportes',
-            title: 'Estadísticas',
-            description: 'Estadísticas institucionales',
-            icon: 'BarChart3',
-            level: 1
-          }
-        ]
+        id: 'dashboard',
+        title: 'Inicio',
+        description: 'Página de inicio',
+        icon: 'Home',
+        route: '/dashboard',
+        level: 0
       }
     ];
     
-    this._menuItems.set(defaultMenuItems);
-    console.log('📋 MenuItems cargados:', defaultMenuItems.length, 'elementos');
+    this._menuItems.set(fallbackMenus);
+    console.log('⚠️ Menús de fallback cargados');
   }
-  
+
   /**
-   * Actualiza los elementos del menú
-   * En el futuro esto será llamado después de obtener datos del backend
+   * Convierte los menús de la API al formato interno MenuItem
    */
-  setMenuItems(items: MenuItem[]): void {
-    this._menuItems.set(items);
-    console.log('🔄 MenuItems actualizados:', items.length, 'elementos');
+  private convertApiMenusToMenuItems(apiMenus: ApiMenuItem[]): MenuItem[] {
+    return apiMenus.map(apiMenu => this.convertApiMenuToMenuItem(apiMenu));
   }
-  
+
+  /**
+   * Convierte un menú de la API al formato MenuItem
+   */
+  private convertApiMenuToMenuItem(apiMenu: ApiMenuItem): MenuItem {
+    return {
+      id: apiMenu.id.toString(),
+      title: apiMenu.name,
+      description: apiMenu.description || '',
+      icon: apiMenu.icon || 'FileText',
+      route: apiMenu.link || undefined,
+      level: 0, // Se calculará si es necesario
+      children: apiMenu.children.length > 0 
+        ? apiMenu.children.map(child => ({
+            ...this.convertApiMenuToMenuItem(child),
+            level: 1
+          }))
+        : undefined
+    };
+  }
+
+  /**
+   * Verifica el nivel de acceso del usuario a un menú específico
+   */
+  async checkMenuAccess(menuId: number): Promise<MenuAccessResponse | null> {
+    try {
+      const response = await firstValueFrom(
+        this.http.get<MenuAccessResponse>(`${this.apiUrl}/user/menu/${menuId}/access`, {
+          withCredentials: true
+        })
+      );
+
+      return response;
+      
+    } catch (error: any) {
+      console.error('❌ Error verificando acceso al menú:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Filtra los elementos del menú manteniendo la jerarquía de padres
+   */
+  private filterMenuItemsWithParents(items: MenuItem[], query: string): MenuItem[] {
+    const filteredItems: MenuItem[] = [];
+    
+    for (const item of items) {
+      // Verificar si el item actual coincide
+      const itemMatches = this.itemMatchesQuery(item, query);
+      
+      // Verificar hijos recursivamente
+      const filteredChildren = item.children 
+        ? this.filterMenuItemsWithParents(item.children, query)
+        : [];
+      
+      // Si el item coincide o tiene hijos que coinciden, incluirlo
+      if (itemMatches || filteredChildren.length > 0) {
+        filteredItems.push({
+          ...item,
+          children: filteredChildren.length > 0 ? filteredChildren : item.children
+        });
+      }
+    }
+    
+    return filteredItems;
+  }
+
+  /**
+   * Verifica si un item coincide con la query de búsqueda
+   */
+  private itemMatchesQuery(item: MenuItem, query: string): boolean {
+    return item.title.toLowerCase().includes(query) ||
+           (item.description?.toLowerCase().includes(query) || false);
+  }
+
+  /**
+   * Establece la query de búsqueda
+   */
+  setSearchQuery(query: string): void {
+    this._searchQuery.set(query);
+    console.log('🔍 Query de búsqueda:', query);
+  }
+
+  /**
+   * Limpia la búsqueda
+   */
+  clearSearch(): void {
+    this._searchQuery.set('');
+    console.log('🧹 Búsqueda limpiada');
+  }
+
   /**
    * Expande o contrae un elemento del menú 
    */
@@ -441,14 +235,14 @@ export class MenuService {
     
     this._expandedItems.set(currentExpanded);
   }
-  
+
   /**
    * Verifica si un elemento está expandido
    */
   isExpanded(itemId: string): boolean {
     return this._expandedItems().has(itemId);
   }
-  
+
   /**
    * Establece el elemento activo
    */
@@ -456,7 +250,7 @@ export class MenuService {
     this._activeItemId.set(itemId);
     console.log('🎯 Item activo establecido:', itemId);
   }
-  
+
   /**
    * Busca un elemento por su ruta
    */
@@ -476,27 +270,7 @@ export class MenuService {
     
     return findInItems(this._menuItems());
   }
-  
-  /**
-   * Busca un elemento por su ID
-   */
-  findItemById(id: string): MenuItem | null {
-    const findInItems = (items: MenuItem[]): MenuItem | null => {
-      for (const item of items) {
-        if (item.id === id) {
-          return item;
-        }
-        if (item.children) {
-          const found = findInItems(item.children);
-          if (found) return found;
-        }
-      }
-      return null;
-    };
-    
-    return findInItems(this._menuItems());
-  }
-  
+
   /**
    * Actualiza el elemento activo basado en la ruta actual
    */
@@ -506,7 +280,7 @@ export class MenuService {
       this.setActiveItem(item.id);
     }
   }
-  
+
   /**
    * Expande automáticamente los padres de un elemento dado
    */
@@ -534,142 +308,18 @@ export class MenuService {
     
     expandParents(this._menuItems(), itemId);
   }
-  
+
   /**
-   * Establece el query de búsqueda
+   * Limpia todos los datos (útil para logout)
    */
-  setSearchQuery(query: string): void {
-    this._searchQuery.set(query);
-    console.log('🔍 Búsqueda actualizada:', query);
-    
-    // Auto-expandir elementos que contienen coincidencias solo si hay query
-    if (query.trim()) {
-      this.expandItemsWithMatches(query);
-    } else {
-      // Si no hay query, cerrar todos los menús
-      this.collapseAllItems();
-    }
-  }
-  
-  /**
-   * Limpia la búsqueda
-   */
-  clearSearch(): void {
-    this._searchQuery.set('');
-    console.log('🧽 Búsqueda limpiada');
-    
-    // Cerrar todos los menús expandidos al limpiar la búsqueda
-    this.collapseAllItems();
-  }
-  
-  /**
-   * Cierra todos los elementos expandidos
-   */
-  collapseAllItems(): void {
+  clearMenus(): void {
+    this._menuItems.set([]);
+    this._userInfo.set(null);
     this._expandedItems.set(new Set<string>());
-    console.log('📁 Todos los menús cerrados');
-  }
-  
-  /**
-   * Filtra menús manteniendo el árbol completo de padres
-   */
-  private filterMenuItemsWithParents(items: MenuItem[], query: string): MenuItem[] {
-    const filteredItems: MenuItem[] = [];
-    
-    for (const item of items) {
-      // Verificar si este item coincide con la búsqueda
-      const itemMatches = this.itemMatchesQuery(item, query);
-      
-      // Verificar si algún hijo coincide
-      let filteredChildren: MenuItem[] = [];
-      if (item.children && item.children.length > 0) {
-        filteredChildren = this.filterMenuItemsWithParents(item.children, query);
-      }
-      
-      // Si este item coincide O tiene hijos que coinciden, incluirlo
-      if (itemMatches || filteredChildren.length > 0) {
-        const filteredItem: MenuItem = {
-          ...item,
-          children: filteredChildren.length > 0 ? filteredChildren : item.children
-        };
-        filteredItems.push(filteredItem);
-      }
-    }
-    
-    return filteredItems;
-  }
-  
-  /**
-   * Verifica si un item coincide con el query de búsqueda
-   */
-  private itemMatchesQuery(item: MenuItem, query: string): boolean {
-    const normalizedQuery = query.toLowerCase();
-    
-    // Buscar en el título
-    if (item.title && item.title.toLowerCase().includes(normalizedQuery)) {
-      return true;
-    }
-    
-    // Buscar en la descripción
-    if (item.description && item.description.toLowerCase().includes(normalizedQuery)) {
-      return true;
-    }
-    
-    // Buscar en la ruta
-    if (item.route && item.route.toLowerCase().includes(normalizedQuery)) {
-      return true;
-    }
-    
-    return false;
-  }
-  
-  /**
-   * Expande automáticamente los elementos que contienen coincidencias
-   */
-  private expandItemsWithMatches(query: string): void {
-    const expandedSet = new Set(this._expandedItems());
-    
-    const checkAndExpand = (items: MenuItem[], parentPath: string[] = []): void => {
-      for (const item of items) {
-        const currentPath = [...parentPath, item.id];
-        
-        // Si este item coincide, expandir todos sus padres
-        if (this.itemMatchesQuery(item, query)) {
-          parentPath.forEach(parentId => expandedSet.add(parentId));
-        }
-        
-        // Si tiene hijos, buscar recursivamente
-        if (item.children && item.children.length > 0) {
-          // Expandir este item para mostrar sus hijos
-          expandedSet.add(item.id);
-          checkAndExpand(item.children, currentPath);
-        }
-      }
-    };
-    
-    checkAndExpand(this._menuItems());
-    this._expandedItems.set(expandedSet);
-  }
-  
-  /**
-   * Método para cargar menús desde el backend (placeholder)
-   */
-  async loadMenusFromBackend(): Promise<void> {
-    try {
-      console.log('🌐 Cargando menús desde el backend...');
-      
-      // TODO: Implementar llamada real al backend
-      // const response = await this.http.get<MenuItem[]>('/api/menus').toPromise();
-      // this.setMenuItems(response);
-      
-      // Por ahora usamos los datos hardcodeados
-      console.log('⚠️ Usando datos hardcodeados por ahora');
-      
-    } catch (error) {
-      console.error('❌ Error cargando menús desde el backend:', error);
-      // Fallback a menús por defecto
-      this.loadDefaultMenuItems();
-    }
+    this._activeItemId.set('dashboard');
+    this._error.set(null);
+    this._searchQuery.set('');
+    console.log('🧹 Menús limpiados');
   }
 }
 
