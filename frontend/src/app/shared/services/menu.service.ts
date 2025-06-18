@@ -1,10 +1,46 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 import { MenuItem } from '../interfaces/menu-item.interface';
+import { ApiMenuResponse, ApiMenuItem, MenuAccessResponse } from '../interfaces/api-menu.interface';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MenuService {
+  private http = inject(HttpClient);
+  private readonly apiUrl = 'http://localhost/api';
+  
+  // Signal para los menús cargados desde el backend
+  private _menuItems = signal<MenuItem[]>([]);
+  public menuItems = this._menuItems.asReadonly();
+  
+  // Signal para items expandidos
+  private _expandedItems = signal<Set<string>>(new Set<string>());
+  public expandedItems = this._expandedItems.asReadonly();
+  
+  // Signal para el item activo
+  private _activeItemId = signal<string>('dashboard');
+  public activeItemId = this._activeItemId.asReadonly();
+  
+  // Signal para el loading
+  private _loading = signal<boolean>(false);
+  public loading = this._loading.asReadonly();
+  
+  // Signal para errores
+  private _error = signal<string | null>(null);
+  public error = this._error.asReadonly();
+  
+  // Signal para información del usuario
+  private _userInfo = signal<any>(null);
+  public userInfo = this._userInfo.asReadonly();
+  
+  // Computed para verificar si hay menús cargados
+  public hasMenus = computed(() => this._menuItems().length > 0);
+  
+  constructor() {
+    console.log('🔧 MenuService iniciado con API backend');
+  }
   
   // Signal privado para los elementos del menú
   private _menuItems = signal<MenuItem[]>([]);
