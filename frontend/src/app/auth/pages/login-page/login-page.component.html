@@ -94,6 +94,14 @@
           </div>
         </div>
 
+        <!-- reCAPTCHA -->
+        <div class="form-field">
+          <div id="recaptcha-container" class="recaptcha-container"></div>
+          <div *ngIf="recaptchaLoaded && !recaptchaResponse" class="recaptcha-message">
+            <span style="color: #f59e0b; font-size: 0.875rem;">✓ Por favor, completa la verificación reCAPTCHA para continuar</span>
+          </div>
+        </div>
+
         <!-- Botón de Login -->
         <div class="login-submit-container">
           <button

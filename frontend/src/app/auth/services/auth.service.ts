@@ -12,13 +12,17 @@ export class AuthService {
   /**
    * Realiza el login después de obtener la cookie CSRF de Sanctum
    */
-  login(email: string, password: string) {
-  return this.http.get(`${this.baseUrl}/sanctum/csrf-cookie`, { withCredentials: true }).pipe(
-    switchMap(() =>
-      this.http.post(`${this.apiUrl}/login`, { email, password }, { withCredentials: true })
-    )
-  );
-}
+  login(email: string, password: string, recaptchaResponse: string) {
+    return this.http.get(`${this.baseUrl}/sanctum/csrf-cookie`, { withCredentials: true }).pipe(
+      switchMap(() =>
+        this.http.post(`${this.apiUrl}/login`, { 
+          email, 
+          password, 
+          recaptcha_response: recaptchaResponse 
+        }, { withCredentials: true })
+      )
+    );
+  }
 
 
   logout() {
