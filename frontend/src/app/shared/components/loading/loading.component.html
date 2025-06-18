@@ -1,0 +1,45 @@
+@if (isVisible) {
+  <!-- Overlay de fondo -->
+  <div class="loading-overlay">
+    <!-- Contenedor principal del loading -->
+    <div class="loading-container">
+      <!-- Spinner animado -->
+      <div class="loading-spinner">
+        <div class="spinner-ring"></div>
+        <div class="spinner-ring"></div>
+        <div class="spinner-ring"></div>
+        <div class="spinner-ring"></div>
+      </div>
+
+      <!-- Logo CECYTEC opcional -->
+      <div class="loading-logo">
+        <div class="logo-icon">
+          <svg viewBox="0 0 100 100" class="logo-svg">
+            <circle cx="50" cy="50" r="40" class="logo-circle"/>
+            <text x="50" y="55" class="logo-text">C</text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Mensaje de loading -->
+      <div class="loading-message">
+        {{ message }}
+      </div>
+
+      <!-- Solo mostrar progreso como texto si es necesario -->
+      @if (showProgress && progress > 0) {
+        <div class="loading-progress-text">
+          {{ progress }}%
+        </div>
+      }
+
+      <!-- Indicador de puntos animados -->
+      <div class="loading-dots">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+    </div>
+  </div>
+}
+

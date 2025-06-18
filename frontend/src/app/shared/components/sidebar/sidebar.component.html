@@ -1,0 +1,90 @@
+<div [class]="getSidebarClasses()" [style.width]="isCollapsed ? '5rem' : '20rem'">
+  <!-- Header del sidebar -->
+  <div class="sidebar-header">
+    <div class="sidebar-logo-container">
+      <div class="sidebar-logo-content">
+        <!-- Logo SVG responsivo -->
+        <app-cecytec-logo 
+          [showText]="!isCollapsed" 
+          size="medium" 
+          [variant]="themeService.isDarkMode() ? 'dark' : 'light'">
+        </app-cecytec-logo>
+      </div>
+      
+      <!-- Botón cerrar en móvil -->
+      @if (!isCollapsed) {
+        <button 
+          class="sidebar-close-btn lg:hidden"
+          (click)="onCloseSidebar()">
+          <lucide-icon [img]="xIcon" class="w-4 h-4"></lucide-icon>
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- Navegación -->
+  <nav class="sidebar-nav">
+    <!-- Menú recursivo -->
+    <app-sidebar-menu
+      [menuItems]="menuService.filteredMenuItems()"
+      [isCollapsed]="isCollapsed"
+      [level]="0"
+      [expandedItems]="menuService.expandedItems()"
+      [activeItem]="menuService.activeItemId()"
+      (itemClick)="onMenuItemClick($event)"
+      (toggleExpanded)="onMenuToggleExpanded($event)"
+      (navigate)="onMenuNavigate($event)">
+    </app-sidebar-menu>
+  </nav>
+
+  <!-- Footer del sidebar -->
+  <div class="sidebar-footer">
+    <!-- Input de búsqueda -->
+    <div class="sidebar-search-wrapper">
+      @if (!isCollapsed) {
+        <div class="sidebar-search">
+          <div class="sidebar-search-container">
+            <lucide-icon [img]="searchIcon" class="sidebar-search-icon"></lucide-icon>
+            <input 
+              type="text" 
+              placeholder="Buscar menú..." 
+              class="sidebar-search-input"
+              #searchInput
+              (input)="onSearchInput($event)"
+              (keyup.escape)="clearSearch()">
+            @if (searchQuery) {
+              <button 
+                class="sidebar-search-clear"
+                (click)="clearSearch()"
+                title="Limpiar búsqueda">
+                <lucide-icon [img]="xIcon" class="w-3 h-3"></lucide-icon>
+              </button>
+            }
+          </div>
+        </div>
+      } @else {
+        <!-- Botón de búsqueda colapsado -->
+        <button 
+          class="sidebar-search-collapsed sidebar-tooltip"
+          [attr.data-tooltip]="'Buscar menú'"
+          (click)="focusSearch()">
+          <lucide-icon [img]="searchIcon" class="w-4 h-4"></lucide-icon>
+        </button>
+      }
+    </div>
+    
+    <!-- Botón de logout -->
+    <button 
+      (click)="onLogout()"
+      class="sidebar-logout sidebar-tooltip"
+      [attr.data-tooltip]="isCollapsed ? 'Cerrar sesión' : null">
+      <lucide-icon [img]="logoutIcon" class="sidebar-logout-icon"></lucide-icon>
+      @if (!isCollapsed) {
+        <div class="sidebar-logout-content">
+          <div class="sidebar-logout-title">Cerrar sesión</div>
+          <div class="sidebar-logout-subtitle">Salir del sistema</div>
+        </div>
+      }
+    </button>
+  </div>
+</div>

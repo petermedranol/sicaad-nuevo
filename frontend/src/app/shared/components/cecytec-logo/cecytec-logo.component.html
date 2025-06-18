@@ -1,0 +1,18 @@
+<div class="cecytec-logo" [ngClass]="'cecytec-logo--' + size">
+  <div class="logo-container">
+    <!-- Imagen del mapa -->
+    <img 
+      src="/mapa-logo.png" 
+      alt="Mapa de México" 
+      class="logo-map-image">
+    
+    <!-- Texto institucional (solo si showText es true) -->
+    @if (showText) {
+      <div class="logo-text" [class.logo-text--dark]="variant === 'dark'">
+        <div class="logo-title-small">CECYTEC</div>
+        <div class="logo-subtitle">Colegio de Estudios Científicos y Tecnológicos</div>
+        <div class="logo-subtitle">del Estado de Coahuila</div>
+      </div>
+    }
+  </div>
+</div>

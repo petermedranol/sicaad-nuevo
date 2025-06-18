@@ -1,34 +1,43 @@
-<div class="min-h-screen flex items-center justify-center p-4">
-  <div class="card w-full max-w-md shadow-2xl relative backdrop-blur-sm">
-    <!-- Efecto glassmorphism sutil -->
-    <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-sm"></div>
-    <!-- Control de tema simple -->
-    <div class="absolute top-6 right-6 z-30">
-      <div class="tooltip tooltip-left" data-tip="Cambiar tema">
-        <button
-          class="btn btn-ghost btn-sm btn-circle hover:scale-110 transition-all duration-200"
-          (click)="toggleTheme()">
-          <lucide-icon
-            [img]="themeService.isDarkMode() ? sunIcon : moonIcon"
-            class="w-5 h-5">
-          </lucide-icon>
-        </button>
-      </div>
+<div class="login-card">
+  <!-- Efecto glassmorphism sutil -->
+  <div class="login-card-glass"></div>
+  <!-- Control de tema simple -->
+  <div class="theme-toggle-container">
+    <div class="tooltip tooltip-left" data-tip="Cambiar tema">
+      <button
+        class="btn btn-ghost btn-sm btn-circle theme-toggle-btn"
+        style="background-color: #64748b !important; border: 1px solid #64748b !important; color: #ffffff !important;"
+        (click)="toggleTheme()">
+        <lucide-icon
+          [img]="themeService.isDarkMode() ? sunIcon : moonIcon"
+          class="w-5 h-5"
+          style="color: #ffffff !important; stroke: #ffffff !important;">
+        </lucide-icon>
+      </button>
     </div>
+  </div>
 
-    <div class="card-body relative z-10 p-8">
-      <!-- Logo o título -->
-      <div class="text-center mb-10">
-        <h1 class="text-4xl font-bold text-primary mb-3 tracking-tight">SICAAD</h1>
-        <p class="text-base-content/70 text-lg">Bienvenido de vuelta</p>
+  <div class="login-card-body">
+      <!-- Solo Logo -->
+      <div class="login-header">
+        <div class="login-logo-container">
+          <img 
+            src="/logo.png" 
+            alt="Logo CECYTEC" 
+            class="login-logo"
+            loading="eager"
+          />
+        </div>
       </div>
 
-      <form (ngSubmit)="onLogin()" class="space-y-8">
+      <form (ngSubmit)="onLogin()" class="login-form">
         <!-- Campo Email -->
-        <div class="form-control">
-          <label class="label pb-3">
-            <span class="label-text font-semibold flex items-center gap-3 text-base">
-              <lucide-icon [img]="mailIcon" class="w-5 h-5 text-primary"></lucide-icon>
+        <div class="form-field">
+          <label class="form-label">
+            <span class="form-label-text" 
+                  [style.color]="themeService.isDarkMode() ? '#f8f8f2 !important' : '#374151 !important'">
+              <lucide-icon [img]="mailIcon" class="form-label-icon" 
+                          style="color: #F15A22 !important;"></lucide-icon>
               Correo electrónico
             </span>
           </label>
@@ -38,76 +47,83 @@
             name="email"
             required
             placeholder="usuario@ejemplo.com"
-            class="input input-bordered w-full h-14 text-base rounded-xl transition-all duration-200 hover:shadow-md focus:scale-[1.02]"
-            [class.input-error]="error"
+            class="form-input"
+            style="color: #4b5563 !important;"
+            [class.error]="error"
             [disabled]="isLoading"
           />
         </div>
 
         <!-- Campo Password -->
-        <div class="form-control">
-          <label class="label pb-3">
-            <span class="label-text font-semibold flex items-center gap-3 text-base">
-              <lucide-icon [img]="lockIcon" class="w-5 h-5 text-primary"></lucide-icon>
+        <div class="form-field">
+          <label class="form-label">
+            <span class="form-label-text" 
+                  [style.color]="themeService.isDarkMode() ? '#f8f8f2 !important' : '#374151 !important'">
+              <lucide-icon [img]="lockIcon" class="form-label-icon" 
+                          style="color: #F15A22 !important;"></lucide-icon>
               Contraseña
             </span>
           </label>
-          <div class="relative">
+          <div class="password-field">
             <input
               [type]="showPassword ? 'text' : 'password'"
               [(ngModel)]="password"
               name="password"
               required
               placeholder="••••••••"
-              class="input input-bordered w-full h-14 text-base rounded-xl pr-14 transition-all duration-200 hover:shadow-md focus:scale-[1.02]"
-              [class.input-error]="error"
+              class="password-input"
+              style="color: #4b5563 !important;"
+              [class.error]="error"
               [disabled]="isLoading"
             />
             <button
               type="button"
               (click)="togglePasswordVisibility()"
-              class="absolute right-4 top-1/2 transform -translate-y-1/2 btn btn-ghost btn-sm btn-circle hover:bg-primary/10 transition-all duration-200"
+              class="btn btn-ghost btn-sm btn-circle password-toggle-btn"
               [disabled]="isLoading"
+              [style.background-color]="themeService.isDarkMode() ? '#10b981 !important' : '#10b981 !important'"
+              [style.border]="themeService.isDarkMode() ? '1px solid #10b981 !important' : '1px solid #10b981 !important'"
+              [style.color]="'#ffffff !important'"
             >
               <lucide-icon
                 [img]="showPassword ? eyeOffIcon : eyeIcon"
                 class="w-5 h-5"
+                style="color: #ffffff !important; stroke: #ffffff !important;"
               ></lucide-icon>
             </button>
           </div>
         </div>
 
         <!-- Botón de Login -->
-        <div class="form-control mt-10">
+        <div class="login-submit-container">
           <button
             type="submit"
-            class="btn btn-primary w-full h-14 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-[1.02]"
+            class="login-submit-btn"
             [disabled]="isLoading || !email || !password"
           >
-            <span *ngIf="!isLoading" class="flex items-center gap-3">
-              <lucide-icon [img]="loginIcon" class="w-5 h-5"></lucide-icon>
+            <span *ngIf="!isLoading" class="login-submit-content">
+              <lucide-icon [img]="loginIcon" class="login-submit-icon"></lucide-icon>
               Iniciar sesión
             </span>
-            <span *ngIf="isLoading" class="flex items-center gap-3">
-              <span class="loading loading-spinner loading-md"></span>
+            <span *ngIf="isLoading" class="login-submit-content">
+              <span class="login-loading-spinner"></span>
               Iniciando sesión...
             </span>
           </button>
         </div>
 
         <!-- Error message -->
-        <div *ngIf="error" class="alert alert-error mt-6 rounded-xl shadow-lg">
-          <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+        <div *ngIf="error" class="error-alert">
+          <svg xmlns="http://www.w3.org/2000/svg" class="error-icon" fill="none" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          <span class="font-medium">{{ error }}</span>
+          <span class="error-text">{{ error }}</span>
         </div>
       </form>
 
       <!-- Footer opcional -->
-      <div class="text-center mt-10 text-base-content/50">
-        <p class="text-sm font-medium">&copy; 2024 SICAAD. Todos los derechos reservados.</p>
+      <div class="login-footer">
+        <p class="footer-text">&copy; 2024 SICAAD. Todos los derechos reservados.</p>
       </div>
     </div>
-  </div>
 </div>

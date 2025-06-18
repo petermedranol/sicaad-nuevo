@@ -1,0 +1,857 @@
+/* ===== LOGIN PAGE COMPONENT STYLES ===== */
+
+/* Card principal - replicando exactamente: card w-full max-w-md shadow-2xl relative backdrop-blur-sm */
+.login-card {
+  position: relative;
+  width: 100%;
+  max-width: 28rem;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  border-radius: 1rem;
+  background-color: oklch(var(--b1));
+  color: oklch(var(--bc));
+  display: flex;
+  flex-direction: column;
+  border: 1px solid oklch(var(--b3));
+}
+
+.login-card-glass {
+  position: absolute;
+  inset: 0; /* inset-0 */
+  border-radius: 1rem; /* rounded-2xl */
+  background: rgba(255, 255, 255, 0.05); /* Fondo sólido sin degradado */
+  backdrop-filter: blur(8px); /* backdrop-blur-sm */
+}
+
+/* Control de tema */
+.theme-toggle-container {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  z-index: 30;
+}
+
+.theme-toggle-btn {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 2.5rem !important;
+  width: 2.5rem !important;
+  min-height: 2.5rem !important;
+  min-width: 2.5rem !important;
+  border-radius: 50% !important;
+  border: 1px solid transparent !important;
+  background-color: transparent !important;
+  color: inherit !important;
+  cursor: pointer !important;
+  transition: all 0.2s !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.theme-toggle-btn:hover {
+  transform: scale(1.1);
+}
+
+.theme-toggle-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+/* Cuerpo de la card */
+.login-card-body {
+  position: relative;
+  z-index: 10;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+/* Header del login */
+.login-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+/* Logo container - FULL WIDTH */
+.login-logo-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  /* Expandir full width eliminando el padding del padre */
+  margin-left: -2rem;
+  margin-right: -2rem;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.login-logo {
+  width: 100%; /* Full width del contenedor */
+  max-width: 200px; /* Máximo para que no se vea gigante */
+  height: auto; /* Altura automática para mantener proporción */
+  object-fit: contain;
+  background: transparent;
+  /* Sin efectos visuales */
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
+  transition: none;
+}
+
+.login-logo:hover {
+  /* Sin efectos hover */
+  transform: none;
+  box-shadow: none;
+}
+
+.login-title {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: #F15A22; /* Color CECYTEC naranja oficial */
+  margin-bottom: 0.75rem;
+  letter-spacing: -0.025em;
+}
+
+.login-subtitle {
+  color: #6b7280; /* Texto gris para tema claro */
+  font-size: 1.125rem;
+}
+
+/* Formulario */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Campos del formulario */
+.form-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-label {
+  display: flex;
+  align-items: center;
+  padding-bottom: 0.75rem;
+}
+
+.form-label-text {
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1rem;
+  color: #374151; /* Color gris oscuro para tema claro */
+}
+
+.form-label-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: #F15A22; /* Color CECYTEC naranja oficial */
+}
+
+.form-input {
+  width: 100%;
+  height: 3.5rem;
+  font-size: 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid #d1d5db; /* border gris claro */
+  background-color: #ffffff; /* fondo blanco */
+  color: #4b5563; /* texto gris más suave */
+  padding: 0.75rem 1rem;
+  transition: all 0.2s;
+  outline: none;
+}
+
+.form-input:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.form-input:focus {
+  transform: scale(1.02);
+  border-color: oklch(var(--p));
+}
+
+.form-input.error {
+  border-color: oklch(var(--er));
+}
+
+/* Campo de contraseña */
+.password-field {
+  position: relative;
+}
+
+.password-input {
+  width: 100%;
+  height: 3.5rem;
+  font-size: 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid #d1d5db; /* border gris claro */
+  background-color: #ffffff; /* fondo blanco */
+  color: #4b5563; /* texto gris más suave */
+  padding: 0.75rem 3.5rem 0.75rem 1rem;
+  transition: all 0.2s;
+  outline: none;
+}
+
+.password-toggle-btn {
+  position: absolute !important;
+  right: 1rem !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 2.25rem !important;
+  width: 2.25rem !important;
+  min-height: 2.25rem !important;
+  min-width: 2.25rem !important;
+  border-radius: 50% !important;
+  border: none !important;
+  background-color: transparent !important;
+  cursor: pointer !important;
+  transition: all 0.2s !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.password-toggle-btn:hover {
+  background-color: oklch(var(--p) / 0.1);
+}
+
+.password-toggle-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+/* Botón de login */
+.login-submit-container {
+  margin-top: 2.5rem;
+}
+
+.login-submit-btn {
+  width: 100% !important;
+  height: 3.5rem !important;
+  font-size: 1.125rem !important;
+  font-weight: 600 !important;
+  border-radius: 0.75rem !important;
+  background-color: #F15A22 !important; /* Color CECYTEC naranja oficial */
+  border-color: #F15A22 !important;
+  color: #ffffff !important;
+  border: none !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+  transition: all 0.2s !important;
+}
+
+/* Forzar color blanco para contenido del botón */
+.login-submit-btn span,
+.login-submit-btn lucide-icon,
+.login-submit-btn svg {
+  color: #ffffff !important;
+  fill: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+.login-submit-btn:hover {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  transform: scale(1.02);
+}
+
+.login-submit-content {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.login-submit-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.login-loading-spinner {
+  display: inline-block;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Mensaje de error */
+.error-alert {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  background-color: oklch(var(--er) / 0.1);
+  border: 1px solid oklch(var(--er));
+  color: oklch(var(--erc));
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.error-icon {
+  stroke: currentColor;
+  flex-shrink: 0;
+  height: 1.5rem;
+  width: 1.5rem;
+}
+
+.error-text {
+  font-weight: 500;
+}
+
+/* Footer */
+.login-footer {
+  text-align: center;
+  margin-top: 2.5rem;
+  color: oklch(var(--bc) / 0.5);
+}
+
+.footer-text {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* Logo en modo oscuro - SIN efectos */
+[data-theme="dark"] .login-logo,
+[data-theme="dracula"] .login-logo {
+  box-shadow: none !important;
+  border: none !important;
+}
+
+[data-theme="dark"] .login-logo:hover,
+[data-theme="dracula"] .login-logo:hover {
+  box-shadow: none !important;
+  border: none !important;
+  transform: none !important;
+}
+
+/* Adaptación responsive */
+@media (max-width: 640px) {
+  .login-card-body {
+    padding: 1.5rem;
+  }
+  
+  .login-logo-container {
+    /* Ajustar márgenes negativos para móvil (padding: 1.5rem) */
+    margin-left: -1.5rem;
+    margin-right: -1.5rem;
+  }
+  
+  .login-logo {
+    width: 100%; /* Fluido también en móvil */
+    max-width: 150px; /* Menor máximo en móvil */
+    height: auto; /* Altura automática para mantener proporción */
+  }
+  
+  .login-title {
+    font-size: 1.875rem;
+  }
+  
+  .login-subtitle {
+    font-size: 1rem;
+  }
+  
+  .form-input,
+  .password-input {
+    height: 3rem;
+    font-size: 0.875rem;
+  }
+  
+  .login-submit-btn {
+    height: 3rem;
+    font-size: 1rem;
+  }
+}
+
+/* Estados de carga */
+.login-submit-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ===== ESTILOS ESPECÍFICOS POR TEMA ===== */
+
+/* ===== TEMA CLARO (cupcake) ===== */
+[data-theme="cupcake"] .login-card {
+  background-color: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* FORZAR el color naranja exacto del botón en tema claro */
+[data-theme="cupcake"] .login-submit-btn {
+  background-color: #F15A22 !important;
+  border-color: #F15A22 !important;
+  color: #ffffff !important;
+}
+
+[data-theme="cupcake"] .login-submit-btn span,
+[data-theme="cupcake"] .login-submit-btn lucide-icon,
+[data-theme="cupcake"] .login-submit-btn svg {
+  color: #ffffff !important;
+  fill: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+/* FUERZA BRUTA - TEMA CLARO */
+/* Botón de tema - FONDO GRIS */
+button {
+  background-color: #64748b !important;
+  color: #ffffff !important;
+  border: 1px solid #64748b !important;
+}
+
+/* Solo para tema claro - botones específicos */
+[data-theme="cupcake"] button {
+  background-color: #64748b !important;
+  color: #ffffff !important;
+  border: 1px solid #64748b !important;
+}
+
+/* Iconos dentro de botones */
+[data-theme="cupcake"] button lucide-icon,
+[data-theme="cupcake"] button svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+  fill: #ffffff !important;
+}
+
+/* Botón de login - naranja */
+[data-theme="cupcake"] .login-submit-btn {
+  background-color: #F15A22 !important;
+  border-color: #F15A22 !important;
+  color: #ffffff !important;
+}
+
+/* COPIAR EXACTAMENTE LA ESTRATEGIA DEL BOTÓN DE PASSWORD - MÁXIMA ESPECIFICIDAD */
+[data-theme="cupcake"] .btn.btn-ghost.btn-sm.btn-circle.theme-toggle-btn {
+  background-color: #64748b !important;
+  color: #ffffff !important;
+  border: 1px solid #64748b !important;
+}
+
+[data-theme="cupcake"] .theme-toggle-btn {
+  background-color: #64748b !important;
+  color: #ffffff !important;
+  border: 1px solid #64748b !important;
+}
+
+/* Hover también */
+[data-theme="cupcake"] button[class*="theme-toggle"]:hover,
+[data-theme="cupcake"] .theme-toggle-btn:hover,
+[data-theme="cupcake"] .btn.theme-toggle-btn:hover,
+body[data-theme="cupcake"] button.theme-toggle-btn:hover {
+  background-color: #475569 !important;
+  background: #475569 !important;
+  border-color: #475569 !important;
+  color: #ffffff !important;
+}
+
+/* Forzar colores de iconos dentro de botones */
+[data-theme="cupcake"] .theme-toggle-btn lucide-icon,
+[data-theme="cupcake"] .theme-toggle-btn svg {
+  color: #ffffff !important; /* Blanco sobre fondo gris */
+  stroke: #ffffff !important;
+}
+
+[data-theme="cupcake"] .password-toggle-btn lucide-icon,
+[data-theme="cupcake"] .password-toggle-btn svg {
+  color: #64748b !important;
+  stroke: #64748b !important;
+}
+
+[data-theme="cupcake"] .form-input,
+[data-theme="cupcake"] .password-input,
+[data-theme="cupcake"] input[type="password"],
+input[type="password"].password-input,
+input.password-input[type="password"],
+.password-input[type="password"] {
+  background-color: rgba(255, 255, 255, 0.9) !important;
+  border-color: rgba(100, 116, 139, 0.2) !important;
+  color: #4b5563 !important; /* Gris más suave que no resalte tanto */
+}
+
+/* Placeholder visible en tema claro - MÁXIMA ESPECIFICIDAD */
+[data-theme="cupcake"] input.form-input::placeholder,
+[data-theme="cupcake"] input.password-input::placeholder,
+[data-theme="cupcake"] .form-input::placeholder,
+[data-theme="cupcake"] .password-input::placeholder,
+input[data-theme="cupcake"]::placeholder,
+input.form-input::placeholder,
+input.password-input::placeholder {
+  color: #9ca3af !important; /* Gris visible sobre fondo blanco */
+  opacity: 1 !important;
+}
+
+[data-theme="cupcake"] .form-input:focus,
+[data-theme="cupcake"] .password-input:focus {
+  border-color: rgba(100, 116, 139, 0.4);
+  box-shadow: 0 0 0 3px rgba(100, 116, 139, 0.1);
+}
+
+[data-theme="cupcake"] .password-toggle-btn:hover {
+  background-color: rgba(100, 116, 139, 0.1);
+}
+
+/* ===== TEMA OSCURO (dark) ===== */
+[data-theme="dark"] .login-card {
+  background-color: #374151 !important; /* Mismo color que el dashboard */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Botón de cambio de tema - MEJORADO */
+[data-theme="dark"] .theme-toggle-btn {
+  background-color: #374151 !important; /* Fondo gris para visibilidad */
+  color: #f9fafb !important;
+  border: 1px solid #4b5563 !important;
+}
+
+[data-theme="dark"] .theme-toggle-btn:hover {
+  background-color: #4b5563 !important;
+  border-color: #6b7280 !important;
+  color: #ffffff !important;
+}
+
+/* Iconos del botón de tema */
+[data-theme="dark"] .theme-toggle-btn lucide-icon,
+[data-theme="dark"] .theme-toggle-btn svg {
+  color: #f9fafb !important;
+  stroke: #f9fafb !important;
+}
+
+/* LABELS VISIBLES - MUY IMPORTANTE */
+[data-theme="dark"] .form-label-text {
+  color: #f9fafb !important; /* Blanco brillante para que se vea */
+  font-weight: 600 !important;
+}
+
+/* Iconos de labels en naranja */
+[data-theme="dark"] .form-label-icon {
+  color: #F15A22 !important; /* Mantener naranja CECYTEC */
+}
+
+/* Inputs mejorados */
+[data-theme="dark"] .form-input,
+[data-theme="dark"] .password-input {
+  background-color: #1f2937 !important; /* Fondo más oscuro */
+  border-color: #4b5563 !important; /* Borde más visible */
+  color: #f9fafb !important; /* Texto blanco brillante */
+}
+
+[data-theme="dark"] .form-input:focus,
+[data-theme="dark"] .password-input:focus {
+  border-color: #F15A22 !important; /* Borde naranja al enfocar */
+  box-shadow: 0 0 0 3px rgba(241, 90, 34, 0.2) !important;
+}
+
+[data-theme="dark"] .form-input:hover,
+[data-theme="dark"] .password-input:hover {
+  border-color: #6b7280 !important;
+}
+
+/* Placeholders visibles */
+[data-theme="dark"] .form-input::placeholder,
+[data-theme="dark"] .password-input::placeholder {
+  color: #9ca3af !important; /* Gris claro visible */
+  opacity: 0.8 !important;
+}
+
+/* Botón de ver password - VERDE como en modo claro */
+[data-theme="dark"] .password-toggle-btn {
+  background-color: #10b981 !important; /* Verde similar al modo claro */
+  color: #ffffff !important;
+  border: 1px solid #10b981 !important;
+}
+
+[data-theme="dark"] .password-toggle-btn:hover {
+  background-color: #059669 !important; /* Verde más oscuro en hover */
+  border-color: #059669 !important;
+}
+
+[data-theme="dark"] .password-toggle-btn lucide-icon,
+[data-theme="dark"] .password-toggle-btn svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+/* Títulos y textos */
+[data-theme="dark"] .login-title {
+  color: #F15A22 !important; /* Mantener naranja CECYTEC */
+}
+
+[data-theme="dark"] .login-subtitle {
+  color: #d1d5db !important; /* Gris claro para subtitulo */
+}
+
+/* Footer visible */
+[data-theme="dark"] .footer-text {
+  color: #9ca3af !important;
+}
+
+/* Sobreescribir autofill en modo oscuro */
+[data-theme="dark"] input:-webkit-autofill,
+[data-theme="dark"] input:-webkit-autofill:hover,
+[data-theme="dark"] input:-webkit-autofill:focus,
+[data-theme="dark"] input:-webkit-autofill:active {
+  -webkit-text-fill-color: #f9fafb !important;
+  background-color: #1f2937 !important;
+  border-color: #4b5563 !important;
+  box-shadow: 0 0 0px 1000px #1f2937 inset !important;
+}
+
+/* ===== TEMA DRACULA ===== */
+[data-theme="dracula"] .login-card {
+  background-color: #374151 !important; /* Mismo gris sólido que el dashboard en modo oscuro */
+  border: 1px solid rgba(248, 248, 242, 0.1);
+}
+
+/* Botón de cambio de tema */
+[data-theme="dracula"] .theme-toggle-btn {
+  background-color: #44475a !important; /* Fondo gris oscuro para visibilidad */
+  color: #f8f8f2 !important;
+  border: 1px solid #44475a !important;
+}
+
+[data-theme="dracula"] .theme-toggle-btn:hover {
+  background-color: #6272a4 !important;
+  border-color: #6272a4 !important;
+  color: #ffffff !important;
+}
+
+/* Iconos del botón de tema */
+[data-theme="dracula"] .theme-toggle-btn lucide-icon,
+[data-theme="dracula"] .theme-toggle-btn svg {
+  color: #f8f8f2 !important;
+  stroke: #f8f8f2 !important;
+}
+
+/* LABELS VISIBLES */
+[data-theme="dracula"] .form-label-text {
+  color: #f8f8f2 !important; /* Blanco brillante para que se vea */
+  font-weight: 600 !important;
+}
+
+/* Iconos de labels en naranja */
+[data-theme="dracula"] .form-label-icon {
+  color: #F15A22 !important; /* Mantener naranja CECYTEC */
+}
+
+/* Inputs mejorados */
+[data-theme="dracula"] .form-input,
+[data-theme="dracula"] .password-input {
+  background-color: #21222c !important; /* Fondo más oscuro */
+  border-color: #44475a !important; /* Borde más visible */
+  color: #f8f8f2 !important; /* Texto blanco brillante */
+}
+
+[data-theme="dracula"] .form-input:focus,
+[data-theme="dracula"] .password-input:focus {
+  border-color: #F15A22 !important; /* Borde naranja al enfocar */
+  box-shadow: 0 0 0 3px rgba(241, 90, 34, 0.2) !important;
+}
+
+[data-theme="dracula"] .form-input:hover,
+[data-theme="dracula"] .password-input:hover {
+  border-color: #6272a4 !important;
+}
+
+/* Placeholders visibles */
+[data-theme="dracula"] .form-input::placeholder,
+[data-theme="dracula"] .password-input::placeholder {
+  color: #bd93f9 !important; /* Púrpura claro típico de Dracula */
+  opacity: 0.8 !important;
+}
+
+/* BOTÓN DE VER PASSWORD - VERDE IGUAL QUE MODO CLARO */
+/* ULTRA ESPECÍFICO - Vencer la regla [data-theme=dracula] .btn.btn-ghost.btn-circle */
+[data-theme="dracula"] .btn.btn-ghost.btn-circle.password-toggle-btn,
+[data-theme="dracula"] .btn.btn-ghost.btn-sm.btn-circle.password-toggle-btn,
+[data-theme="dracula"] button.btn.btn-ghost.btn-circle.password-toggle-btn,
+[data-theme="dracula"] button.btn.btn-ghost.btn-sm.btn-circle.password-toggle-btn {
+  background-color: #10b981 !important; /* Verde exacto como modo claro */
+  background: #10b981 !important; /* Backup */
+  color: #ffffff !important;
+  border: 1px solid #10b981 !important;
+  border-color: #10b981 !important;
+}
+
+/* Máxima especificidad para vencer TODAS las reglas de DaisyUI incluyendo btn-sm */
+[data-theme="dracula"] button.password-toggle-btn.btn.btn-ghost.btn-sm.btn-circle,
+[data-theme="dracula"] button.password-toggle-btn.btn.btn-ghost.btn-sm,
+[data-theme="dracula"] button.password-toggle-btn.btn.btn-ghost.btn-circle,
+[data-theme="dracula"] button.password-toggle-btn.btn.btn-ghost,
+[data-theme="dracula"] button.password-toggle-btn.btn.btn-sm,
+[data-theme="dracula"] button.password-toggle-btn.btn,
+[data-theme="dracula"] button.password-toggle-btn,
+[data-theme="dracula"] .password-toggle-btn.btn.btn-ghost.btn-sm.btn-circle,
+[data-theme="dracula"] .password-toggle-btn.btn.btn-ghost.btn-sm,
+[data-theme="dracula"] .password-toggle-btn.btn.btn-ghost.btn-circle,
+[data-theme="dracula"] .password-toggle-btn.btn.btn-ghost,
+[data-theme="dracula"] .password-toggle-btn.btn.btn-sm,
+[data-theme="dracula"] .password-toggle-btn.btn,
+[data-theme="dracula"] .password-toggle-btn {
+  background-color: #10b981 !important; /* Verde exacto como modo claro */
+  background: #10b981 !important; /* Backup */
+  color: #ffffff !important;
+  border: 1px solid #10b981 !important;
+  border-color: #10b981 !important;
+}
+
+/* Hover con máxima especificidad incluyendo btn-sm */
+[data-theme="dracula"] button.password-toggle-btn.btn.btn-ghost.btn-sm.btn-circle:hover,
+[data-theme="dracula"] button.password-toggle-btn.btn.btn-ghost.btn-sm:hover,
+[data-theme="dracula"] button.password-toggle-btn.btn.btn-ghost.btn-circle:hover,
+[data-theme="dracula"] button.password-toggle-btn.btn.btn-ghost:hover,
+[data-theme="dracula"] button.password-toggle-btn.btn.btn-sm:hover,
+[data-theme="dracula"] button.password-toggle-btn.btn:hover,
+[data-theme="dracula"] button.password-toggle-btn:hover,
+[data-theme="dracula"] .password-toggle-btn.btn.btn-ghost.btn-sm.btn-circle:hover,
+[data-theme="dracula"] .password-toggle-btn.btn.btn-ghost.btn-sm:hover,
+[data-theme="dracula"] .password-toggle-btn.btn.btn-ghost.btn-circle:hover,
+[data-theme="dracula"] .password-toggle-btn.btn.btn-ghost:hover,
+[data-theme="dracula"] .password-toggle-btn.btn.btn-sm:hover,
+[data-theme="dracula"] .password-toggle-btn.btn:hover,
+[data-theme="dracula"] .password-toggle-btn:hover {
+  background-color: #059669 !important; /* Verde más oscuro en hover */
+  background: #059669 !important; /* Backup */
+  border-color: #059669 !important;
+  color: #ffffff !important;
+}
+
+/* Iconos con máxima especificidad */
+[data-theme="dracula"] button.password-toggle-btn lucide-icon,
+[data-theme="dracula"] button.password-toggle-btn svg,
+[data-theme="dracula"] .password-toggle-btn lucide-icon,
+[data-theme="dracula"] .password-toggle-btn svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+  fill: none !important;
+}
+
+/* Títulos y textos */
+[data-theme="dracula"] .login-title {
+  color: #F15A22 !important; /* Mantener naranja CECYTEC */
+}
+
+[data-theme="dracula"] .login-subtitle {
+  color: #f8f8f2 !important; /* Blanco para subtitulo */
+}
+
+/* Footer visible */
+[data-theme="dracula"] .footer-text {
+  color: #bd93f9 !important; /* Púrpura claro típico de Dracula */
+}
+
+/* Sobreescribir autofill en modo dracula */
+[data-theme="dracula"] input:-webkit-autofill,
+[data-theme="dracula"] input:-webkit-autofill:hover,
+[data-theme="dracula"] input:-webkit-autofill:focus,
+[data-theme="dracula"] input:-webkit-autofill:active {
+  -webkit-text-fill-color: #f8f8f2 !important;
+  background-color: #21222c !important;
+  border-color: #44475a !important;
+  box-shadow: 0 0 0px 1000px #21222c inset !important;
+}
+
+/* ===== ANIMACIONES Y EFECTOS ADICIONALES ===== */
+.login-card {
+  animation: slideInUp 0.6s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Efectos de hover mejorados */
+.form-input:hover,
+.password-input:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.login-submit-btn:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.login-submit-btn:active {
+  transform: translateY(0) scale(1);
+}
+
+/* Efectos de focus mejorados */
+.form-input:focus,
+.password-input:focus {
+  outline: none;
+  transform: scale(1.02);
+}
+
+/* Tooltip personalizado */
+.tooltip:before {
+  font-size: 0.875rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+}
+
+/* ===== SOBREESCRIBIR AUTOFILL DE CHROME ===== */
+/* Forzar color de texto en autofill */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active,
+input:-internal-autofill-selected {
+  -webkit-text-fill-color: #4b5563 !important;
+  color: #4b5563 !important;
+  background-color: #ffffff !important;
+  border: 1px solid #d1d5db !important;
+  box-shadow: 0 0 0px 1000px #ffffff inset !important;
+  transition: background-color 5000s ease-in-out 0s !important;
+}
+
+/* Específicamente para campos password */
+input[type="password"]:-webkit-autofill,
+input[type="password"]:-webkit-autofill:hover,
+input[type="password"]:-webkit-autofill:focus,
+input[type="password"]:-webkit-autofill:active,
+input[type="password"]:-internal-autofill-selected {
+  -webkit-text-fill-color: #4b5563 !important;
+  color: #4b5563 !important;
+  background-color: #ffffff !important;
+  border: 1px solid #d1d5db !important;
+  box-shadow: 0 0 0px 1000px #ffffff inset !important;
+}
+
+/* Específicamente para nuestras clases */
+.form-input:-webkit-autofill,
+.password-input:-webkit-autofill,
+.form-input:-internal-autofill-selected,
+.password-input:-internal-autofill-selected {
+  -webkit-text-fill-color: #4b5563 !important;
+  color: #4b5563 !important;
+  background-color: #ffffff !important;
+  box-shadow: 0 0 0px 1000px #ffffff inset !important;
+}
+

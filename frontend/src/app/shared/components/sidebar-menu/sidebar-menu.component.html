@@ -1,0 +1,124 @@
+<ul class="sidebar-menu-list" [class.sidebar-menu-list--collapsed]="isCollapsed">
+  @for (item of menuItems; track item.id) {
+    <li class="sidebar-menu-item-wrapper">
+      <!-- Item principal -->
+      <a 
+        (click)="onItemClick(item, $event)"
+        (mouseenter)="onMouseEnter(item, $event)"
+        (mouseleave)="onMouseLeave(item, $event)"
+        [class]="getItemClasses(item)"
+        [attr.data-menu-item-id]="item.id"
+        href="javascript:void(0)">
+        
+        <!-- Icono -->
+        <lucide-icon 
+          [img]="getIconByName(item.icon)" 
+          class="sidebar-menu-icon">
+        </lucide-icon>
+        
+        <!-- Contenido del item: Siempre mostrar en menú flotante -->
+        @if (isFloatingMenu) {
+          <div class="sidebar-menu-content">
+            <div class="sidebar-menu-title" [innerHTML]="item.title | highlight:searchQuery"></div>
+            @if (item.description) {
+              <div class="sidebar-menu-description" [innerHTML]="item.description | highlight:searchQuery"></div>
+            }
+          </div>
+          
+          <!-- Badge opcional -->
+          @if (item.badge) {
+            <span class="sidebar-menu-badge" [class]="'sidebar-menu-badge--' + item.badge.color">
+              {{ item.badge.text }}
+            </span>
+          }
+          
+          <!-- Flecha para expandir/contraer (solo si tiene hijos) -->
+          @if (hasChildren(item)) {
+            <lucide-icon 
+              [img]="isItemExpanded(item.id) ? chevronDown : chevronRight" 
+              class="sidebar-menu-chevron">
+            </lucide-icon>
+          }
+        }
+        
+        <!-- Contenido del item: Mostrar en menú normal solo si no está colapsado -->
+        @if (!isFloatingMenu && !isCollapsed) {
+          <div class="sidebar-menu-content">
+            <div class="sidebar-menu-title" [innerHTML]="item.title | highlight:searchQuery"></div>
+            @if (item.description) {
+              <div class="sidebar-menu-description" [innerHTML]="item.description | highlight:searchQuery"></div>
+            }
+          </div>
+          
+          <!-- Badge opcional -->
+          @if (item.badge) {
+            <span class="sidebar-menu-badge" [class]="'sidebar-menu-badge--' + item.badge.color">
+              {{ item.badge.text }}
+            </span>
+          }
+          
+          <!-- Flecha para expandir/contraer (solo si tiene hijos) -->
+          @if (hasChildren(item)) {
+            <lucide-icon 
+              [img]="isItemExpanded(item.id) ? chevronDown : chevronRight" 
+              class="sidebar-menu-chevron">
+            </lucide-icon>
+          }
+        }
+      </a>
+      
+      <!-- Submenú recursivo normal (expandido) -->
+      @if (hasChildren(item) && isItemExpanded(item.id) && (!isCollapsed || isFloatingMenu)) {
+        <div class="sidebar-submenu" [class]="'sidebar-submenu--level-' + (item.level || 0)">
+          <app-sidebar-menu
+            [menuItems]="item.children!"
+            [isCollapsed]="false"
+            [level]="(item.level || 0) + 1"
+            [expandedItems]="expandedItems"
+            [activeItem]="activeItem"
+            [isFloatingMenu]="isFloatingMenu"
+            (itemClick)="itemClick.emit($event)"
+            (toggleExpanded)="toggleExpanded.emit($event)"
+            (navigate)="navigate.emit($event)">
+          </app-sidebar-menu>
+        </div>
+      }
+      
+      <!-- Menú flotante para sidebar colapsada -->
+      @if (hasChildren(item) && isCollapsed) {
+        <div class="floating-submenu" 
+             [class.floating-submenu--visible]="isFloatingMenuVisible(item.id)"
+             (mouseenter)="onFloatingMenuMouseEnter()"
+             (mouseleave)="onFloatingMenuMouseLeave()">
+          <div class="floating-submenu-content">
+            <!-- Header del menú flotante -->
+            <div class="floating-submenu-header">
+              <div class="floating-submenu-header-content">
+                <div class="floating-submenu-header-title">{{ item.title }}</div>
+                @if (item.description) {
+                  <div class="floating-submenu-header-description">{{ item.description }}</div>
+                }
+              </div>
+            </div>
+            
+            <!-- Separador -->
+            <div class="floating-submenu-separator"></div>
+            
+            <!-- Contenido del menú -->
+            <app-sidebar-menu
+              [menuItems]="item.children!"
+              [isCollapsed]="false"
+              [level]="0"
+              [expandedItems]="expandedItems"
+              [activeItem]="activeItem"
+              [isFloatingMenu]="true"
+              (itemClick)="itemClick.emit($event)"
+              (toggleExpanded)="toggleExpanded.emit($event)"
+              (navigate)="navigate.emit($event)">
+            </app-sidebar-menu>
+          </div>
+        </div>
+      }
+    </li>
+  }
+</ul>

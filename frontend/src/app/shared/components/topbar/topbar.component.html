@@ -1,0 +1,61 @@
+<div class="topbar-container">
+  <!-- Sección izquierda -->
+  <div class="topbar-left">
+    <!-- Botón menú para móvil -->
+    <button 
+      class="topbar-menu-btn lg:hidden topbar-tooltip"
+      (click)="onToggleSidebar()"
+      data-tooltip="Abrir menú">
+      <lucide-icon [img]="menuIcon" class="topbar-menu-icon"></lucide-icon>
+    </button>
+
+    <!-- Título de la página -->
+    <div class="topbar-title-section">
+      <h1 class="topbar-title">{{ title }}</h1>
+      @if (subtitle) {
+        <p class="topbar-subtitle">{{ subtitle }}</p>
+      }
+    </div>
+  </div>
+
+  <!-- Sección derecha -->
+  <div class="topbar-right">
+    <!-- Botón toggle tema -->
+    <button 
+      class="topbar-action-btn theme-toggle topbar-tooltip"
+      (click)="onToggleTheme()"
+      [attr.data-tooltip]="themeTooltip">
+      <lucide-icon [img]="themeIcon" class="topbar-action-icon"></lucide-icon>
+    </button>
+
+    <!-- Botón notificaciones -->
+    <button 
+      class="topbar-action-btn topbar-tooltip"
+      (click)="onShowNotifications()"
+      data-tooltip="Notificaciones">
+      <lucide-icon [img]="bellIcon" class="topbar-action-icon"></lucide-icon>
+      @if (hasNotifications) {
+        <span class="topbar-notification-badge">{{ notificationCount }}</span>
+      }
+    </button>
+
+    <!-- Avatar del usuario -->
+    <div 
+      class="topbar-avatar topbar-tooltip"
+      (click)="onShowProfile()"
+      [attr.data-tooltip]="currentUser.name">
+      @if (currentUser.avatar) {
+        <img 
+          [src]="userAvatar" 
+          [alt]="currentUser.name" 
+          class="topbar-avatar-img"
+          (error)="onImageError($event)">
+      } @else {
+        <!-- Iniciales como fallback -->
+        <div class="topbar-avatar-fallback">
+          {{ userInitials }}
+        </div>
+      }
+    </div>
+  </div>
+</div>

@@ -8,20 +8,20 @@
   <!-- Grid de estadísticas -->
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
     @for (stat of stats; track stat.title) {
-      <div class="bg-base-100 p-6 rounded-lg shadow hover-card cursor-pointer">
-      <div class="flex items-center justify-between">
+      <div class="stat-card">
+      <div class="stat-content">
         <div>
-          <p class="text-base-content/60 text-sm font-medium">{{ stat.title }}</p>
-          <p class="text-2xl font-bold text-base-content mt-1">{{ stat.value }}</p>
+          <p class="stat-title">{{ stat.title }}</p>
+          <p class="stat-value">{{ stat.value }}</p>
         </div>
         <div [class]="stat.color">
-          <lucide-icon [img]="stat.icon" class="w-8 h-8"></lucide-icon>
+          <lucide-icon [img]="stat.icon" class="stat-icon"></lucide-icon>
         </div>
       </div>
-      <div class="mt-4 flex items-center">
-        <lucide-icon [img]="trendingIcon" class="w-4 h-4 text-success mr-1"></lucide-icon>
-        <span class="text-success text-sm font-medium">{{ stat.change }}</span>
-        <span class="text-base-content/60 text-sm ml-1">vs último mes</span>
+      <div class="stat-change">
+        <lucide-icon [img]="trendingIcon" class="change-indicator text-success"></lucide-icon>
+        <span class="change-value text-success">{{ stat.change }}</span>
+        <span class="change-label">vs último mes</span>
       </div>
       </div>
     }

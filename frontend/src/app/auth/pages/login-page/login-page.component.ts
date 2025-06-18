@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { ThemeService } from '../../../shared/services/theme.service';
+import { LoadingService } from '../../../shared/services/loading.service';
 import { Router } from '@angular/router';
 import { LucideAngularModule, Mail, Lock, LogIn, Eye, EyeOff, Sun, Moon, Clock } from 'lucide-angular';
 
@@ -10,7 +11,8 @@ import { LucideAngularModule, Mail, Lock, LogIn, Eye, EyeOff, Sun, Moon, Clock }
   selector: 'app-login-page',
   standalone: true,
   imports: [CommonModule, FormsModule, LucideAngularModule],
-  templateUrl: './login-page.component.html'
+  templateUrl: './login-page.component.html',
+  styleUrl: './login-page.component.css'
 })
 export class LoginPageComponent implements OnInit {
   email = '';
@@ -22,6 +24,7 @@ export class LoginPageComponent implements OnInit {
   // Servicios
   private authService = inject(AuthService);
   private router = inject(Router);
+  private loadingService = inject(LoadingService);
   themeService = inject(ThemeService); // Público para template
 
   // Iconos disponibles en el template
@@ -44,12 +47,28 @@ export class LoginPageComponent implements OnInit {
     this.error = '';
     this.isLoading = true;
 
+    // Paso 1: Validar credenciales
+    this.loadingService.showValidatingCredentials();
+
     this.authService.login(this.email, this.password).subscribe({
       next: () => {
-        this.isLoading = false;
-        this.router.navigateByUrl('/dashboard');
+        // Paso 2: Acceso concedido
+        this.loadingService.showLoginSuccess();
+        
+        setTimeout(() => {
+          // Paso 3: Cargando dashboard
+          this.loadingService.showLoadingDashboard();
+          
+          setTimeout(() => {
+            this.loadingService.hide();
+            this.isLoading = false;
+            this.router.navigateByUrl('/dashboard');
+          }, 800);
+        }, 600);
       },
       error: () => {
+        // Ocultar loading en caso de error
+        this.loadingService.hide();
         this.isLoading = false;
         this.error = 'Credenciales inválidas o error del servidor';
       }

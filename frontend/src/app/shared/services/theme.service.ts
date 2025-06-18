@@ -168,6 +168,13 @@ export class ThemeService {
   }
   
   /**
+   * Obtener el tema actual como string
+   */
+  currentTheme(): string {
+    return this.isDarkMode() ? 'dracula' : 'cupcake';
+  }
+  
+  /**
    * Obtener colores CECYTEC para uso en componentes
    */
   getCecytecColors() {

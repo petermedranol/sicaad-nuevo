@@ -1,0 +1,143 @@
+/* ===== LOGIN LAYOUT COMPONENT STYLES ===== */
+/* Estilos generales del layout de autenticación */
+
+/* SOLUCIÓN AL BUG DE SCROLL - Aplicar fondo consistente a html y body */
+:root {
+  height: 100%;
+  overflow: auto;
+  /* Evitar elastic scroll en Safari */
+  overscroll-behavior: none;
+}
+
+/* Container principal del layout */
+.auth-layout-container {
+  min-height: 100vh;
+  height: 100vh; /* Altura fija para evitar elastic scroll */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: linear-gradient(135deg, oklch(var(--b2)) 0%, oklch(var(--b3)) 100%); /* Restaurar gradiente original */
+  /* Evitar elastic scroll */
+  overscroll-behavior: none;
+  overflow: hidden; /* Evitar scroll en el container */
+}
+
+/* ===== TEMA CLARO (cupcake) ===== */
+[data-theme="cupcake"] .auth-layout-container {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%);
+  position: relative;
+}
+
+[data-theme="cupcake"] .auth-layout-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 20% 80%, rgba(100, 116, 139, 0.1) 0%, transparent 50%),
+              radial-gradient(circle at 80% 20%, rgba(100, 116, 139, 0.1) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+/* ===== TEMA OSCURO (dark) ===== */
+[data-theme="dark"] .auth-layout-container {
+  background: #374151 !important; /* Gris sólido como el dashboard */
+  position: relative;
+}
+
+[data-theme="dark"] .auth-layout-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: none !important; /* Sin efectos radiales */
+  pointer-events: none;
+}
+
+/* ===== TEMA DRACULA ===== */
+[data-theme="dracula"] .auth-layout-container {
+  background: #374151 !important; /* Mismo gris sólido que dashboard */
+  position: relative;
+}
+
+[data-theme="dracula"] .auth-layout-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: none !important; /* Sin efectos radiales */
+  pointer-events: none;
+}
+
+/* ===== EFECTOS ADICIONALES ===== */
+/* Efecto de partículas sutiles - SOLO EN TEMA CLARO */
+[data-theme="cupcake"] .auth-layout-container::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+    radial-gradient(circle at 90% 80%, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+    radial-gradient(circle at 40% 10%, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+    radial-gradient(circle at 60% 90%, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+  background-size: 100px 100px, 150px 150px, 200px 200px, 120px 120px;
+  animation: float 20s ease-in-out infinite;
+  pointer-events: none;
+  opacity: 0.3;
+}
+
+/* SIN partículas en modo oscuro para fondo completamente sólido */
+[data-theme="dark"] .auth-layout-container::after,
+[data-theme="dracula"] .auth-layout-container::after {
+  display: none !important;
+}
+
+/* ===== OVERRIDE SÚPER ESPECÍFICO - FUERZA BRUTA ===== */
+/* Para asegurar que TODOS los modos oscuros usen gris sólido */
+body[data-theme="dark"] .auth-layout-container,
+body[data-theme="dracula"] .auth-layout-container,
+html[data-theme="dark"] .auth-layout-container,
+html[data-theme="dracula"] .auth-layout-container,
+.auth-layout-container[data-theme="dark"],
+.auth-layout-container[data-theme="dracula"],
+[data-theme="dark"] .auth-layout-container[_ngcontent-ng-c423424520],
+[data-theme="dracula"] .auth-layout-container[_ngcontent-ng-c423424520] {
+  background: #374151 !important;
+  background-color: #374151 !important;
+  background-image: none !important;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  33% {
+    transform: translate(10px, -10px) rotate(120deg);
+  }
+  66% {
+    transform: translate(-5px, 5px) rotate(240deg);
+  }
+}
+
+/* Adaptación responsive */
+@media (max-width: 640px) {
+  .auth-layout-container {
+    padding: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-layout-container {
+    padding: 0.25rem;
+  }
+}
+

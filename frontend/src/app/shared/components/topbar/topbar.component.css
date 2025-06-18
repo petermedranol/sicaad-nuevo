@@ -1,0 +1,390 @@
+/* ===== TOPBAR COMPONENT - BRANDING CECYTEC ===== */
+
+:host {
+  display: block;
+  width: 100%;
+  height: 5rem;
+  position: relative;
+  z-index: 40;
+}
+
+/* ===== VARIABLES CECYTEC ===== */
+:root {
+  --cecytec-orange: #F15A22;
+  --cecytec-green: #10b981;
+  --cecytec-dark-bg: #2d3748;
+  --cecytec-light-bg: #64748b;
+}
+
+/* ===== CONTAINER PRINCIPAL FLOTANTE ===== */
+.topbar-container {
+  height: 5rem;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5rem;
+  position: relative;
+  z-index: 40;
+  width: 100%;
+}
+
+/* ===== SECCIÓN IZQUIERDA ===== */
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+}
+
+.topbar-menu-btn {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* Ocultar botón de menú en escritorio */
+@media (min-width: 1024px) {
+  .topbar-menu-btn {
+    display: none !important;
+  }
+}
+
+.topbar-menu-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.05);
+}
+
+.topbar-menu-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.topbar-title-section {
+  flex: 1;
+}
+
+.topbar-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.topbar-subtitle {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0;
+  font-weight: 500;
+}
+
+/* ===== SECCIÓN DERECHA ===== */
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.topbar-action-btn {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  padding: 0 !important; /* Sin padding para centrado perfecto */
+  margin: 0 !important;
+}
+
+.topbar-action-btn:hover {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+  color: #374151;
+}
+
+.topbar-action-btn.theme-toggle:hover {
+  background: rgba(241, 90, 34, 0.1);
+  border-color: var(--cecytec-orange);
+  color: var(--cecytec-orange);
+}
+
+/* FUERZA BRUTA PARA ICONOS CENTRADOS */
+.topbar-action-icon,
+button .topbar-action-icon,
+.topbar-action-btn .topbar-action-icon,
+.topbar-action-btn > lucide-icon,
+button > lucide-icon,
+lucide-icon {
+  width: 1.25rem !important;
+  height: 1.25rem !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  position: relative !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  transform: none !important;
+  vertical-align: middle !important;
+  line-height: 1 !important;
+}
+
+/* FUERZA BRUTA PARA SVG DENTRO DE ICONOS */
+.topbar-action-icon svg,
+button .topbar-action-icon svg,
+.topbar-action-btn .topbar-action-icon svg,
+.topbar-action-btn > lucide-icon svg,
+button > lucide-icon svg,
+lucide-icon svg {
+  display: block !important;
+  margin: 0 auto !important;
+  vertical-align: middle !important;
+  position: relative !important;
+  top: 0 !important;
+  left: 0 !important;
+  transform: none !important;
+}
+
+/* ===== NOTIFICACIONES ===== */
+.topbar-notification-badge {
+  position: absolute;
+  top: -0.25rem;
+  right: -0.25rem;
+  background: var(--cecytec-green);
+  color: #ffffff;
+  border-radius: 50%;
+  width: 1.25rem;
+  height: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);
+}
+
+/* ===== AVATAR ===== */
+.topbar-avatar {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  border: 2px solid #e5e7eb;
+  background: #f9fafb;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  overflow: hidden;
+}
+
+.topbar-avatar:hover {
+  border-color: var(--cecytec-orange);
+  box-shadow: 0 0 0 3px rgba(241, 90, 34, 0.1);
+}
+
+.topbar-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ===== TOOLTIP ===== */
+.topbar-tooltip {
+  position: relative;
+}
+
+.topbar-tooltip:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: -2.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.9);
+  color: #ffffff;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.topbar-tooltip:hover::before {
+  content: '';
+  position: absolute;
+  bottom: -1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 0.25rem solid transparent;
+  border-bottom-color: rgba(0, 0, 0, 0.9);
+  z-index: 1000;
+  pointer-events: none;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .topbar-container {
+    padding: 0 1rem;
+  }
+  
+  .topbar-title {
+    font-size: 1.5rem;
+  }
+  
+  .topbar-subtitle {
+    font-size: 0.75rem;
+  }
+  
+  .topbar-right {
+    gap: 0.5rem;
+  }
+  
+  .topbar-action-btn,
+  .topbar-avatar {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+  
+  .topbar-action-icon {
+    width: 1rem;
+    height: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .topbar-title {
+    font-size: 1.25rem;
+  }
+  
+  .topbar-subtitle {
+    display: none;
+  }
+}
+
+/* ===== MODO OSCURO - PALETA ARMÓNICA ===== */
+/* Topbar simple en modo oscuro */
+:host-context([data-theme="dark"]) .topbar-container,
+:host-context([data-theme="dracula"]) .topbar-container {
+  background: #1f2937 !important;
+  border: 1px solid #374151 !important;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3) !important;
+}
+
+:host-context([data-theme="dark"]) .topbar-title,
+:host-context([data-theme="dracula"]) .topbar-title {
+  color: #f9fafb !important;
+}
+
+:host-context([data-theme="dark"]) .topbar-subtitle,
+:host-context([data-theme="dracula"]) .topbar-subtitle {
+  color: #d1d5db !important;
+}
+
+:host-context([data-theme="dark"]) .topbar-action-btn,
+:host-context([data-theme="dark"]) .topbar-menu-btn,
+:host-context([data-theme="dracula"]) .topbar-action-btn,
+:host-context([data-theme="dracula"]) .topbar-menu-btn {
+  background: #374151 !important;
+  border-color: #4b5563 !important;
+  color: #d1d5db !important;
+}
+
+:host-context([data-theme="dark"]) .topbar-action-btn:hover,
+:host-context([data-theme="dracula"]) .topbar-action-btn:hover {
+  background: #4b5563 !important;
+  border-color: #6b7280 !important;
+  color: #f9fafb !important;
+}
+
+:host-context([data-theme="dark"]) .topbar-avatar,
+:host-context([data-theme="dracula"]) .topbar-avatar {
+  border-color: #4b5563 !important;
+  background: #374151 !important;
+}
+
+/* Botones con efectos verdes suaves */
+:host-context([data-theme="dark"]) .topbar-action-btn.theme-toggle:hover {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  border-color: #10b981 !important;
+  box-shadow: 0 2px 12px rgba(16, 185, 129, 0.4) !important;
+}
+
+:host-context([data-theme="dracula"]) .topbar-action-btn.theme-toggle:hover {
+  background: linear-gradient(135deg, #50fa7b 0%, #39d87a 100%) !important;
+  border-color: #50fa7b !important;
+  box-shadow: 0 2px 12px rgba(80, 250, 123, 0.4) !important;
+  color: #282a36 !important;
+}
+
+/* ===== ANIMACIONES ===== */
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.topbar-container {
+  animation: slideDown 0.3s ease-out;
+}
+
+.topbar-action-btn {
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ===== EFECTOS ESPECIALES ===== */
+.topbar-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.05) 50%, transparent 70%);
+  pointer-events: none;
+}
+
+.topbar-container::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--cecytec-green) 0%, #059669 50%, var(--cecytec-green) 100%);
+  opacity: 0.8;
+}
+

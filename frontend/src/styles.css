@@ -5,6 +5,98 @@
   /* Configuración adicional de tema si es necesaria */
 }
 
+/* ===== SOLUCIÓN BUG ELASTIC SCROLL ===== */
+/* Evitar fondo negro en elastic scroll - aplicar fondo consistente */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  /* Evitar elastic scroll en Safari */
+  overscroll-behavior: none;
+  /* Aplicar fondo base por tema */
+  background-color: oklch(var(--b2));
+}
+
+/* Fondos específicos por tema para evitar el negro */
+[data-theme="cupcake"] html,
+[data-theme="cupcake"] body {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%) !important;
+}
+
+[data-theme="dark"] html,
+[data-theme="dark"] body {
+  background: linear-gradient(135deg, #1a202c 0%, #2d3748 50%, #4a5568 100%) !important;
+}
+
+/* Contenido principal en modo oscuro - FORZAR MISMO GRIS QUE INPUTS */
+html[data-theme="dark"] body main,
+html[data-theme="dark"] body .dashboard-layout main,
+html[data-theme="dark"] body app-dashboard-layout main,
+html[data-theme="dark"] body main.p-6,
+html[data-theme="dark"] body .p-6,
+html[data-theme="dark"] body .dashboard-layout .p-6,
+html[data-theme="dark"] body router-outlet,
+html[data-theme="dark"] body app-dashboard-layout router-outlet,
+html[data-theme="dark"] body .main-content,
+[data-theme="dark"] main,
+[data-theme="dark"] .dashboard-layout main,
+[data-theme="dark"] app-dashboard-layout main,
+[data-theme="dark"] main.p-6,
+[data-theme="dark"] .p-6,
+[data-theme="dark"] .dashboard-layout .p-6,
+[data-theme="dark"] router-outlet,
+[data-theme="dark"] app-dashboard-layout router-outlet,
+[data-theme="dark"] .main-content {
+  background: #374151 !important;
+  background-color: #374151 !important;
+  background-image: none !important;
+  color: #e2e8f0 !important;
+}
+
+/* ULTRA ESPECÍFICO - FORZAR SIN DEGRADADOS */
+html[data-theme="dark"] body div.dashboard-layout div main.p-6,
+html[data-theme="dark"] div.dashboard-layout div main.p-6,
+[data-theme="dark"] div.dashboard-layout div main.p-6,
+[data-theme="dark"] main.p-6.pt-2 {
+  background: #374151 !important;
+  background-color: #374151 !important;
+  background-image: none !important;
+  background-attachment: unset !important;
+  background-size: unset !important;
+}
+
+/* También para dracula - FONDO SÓLIDO */
+[data-theme="dracula"] main,
+[data-theme="dracula"] .dashboard-layout main,
+[data-theme="dracula"] app-dashboard-layout main,
+[data-theme="dracula"] main.p-6,
+[data-theme="dracula"] .p-6,
+[data-theme="dracula"] .dashboard-layout .p-6,
+[data-theme="dracula"] router-outlet,
+[data-theme="dracula"] app-dashboard-layout router-outlet,
+[data-theme="dracula"] .main-content {
+  background: #44475a !important;
+  background-color: #44475a !important;
+  color: #f8f8f2 !important;
+}
+
+[data-theme="dracula"] html,
+[data-theme="dracula"] body {
+  background: linear-gradient(135deg, #282a36 0%, #44475a 50%, #6272a4 100%) !important;
+}
+
+/* Fondo específico para el container de autenticación Dracula */
+[data-theme="dracula"] .auth-layout-container {
+  background: linear-gradient(135deg, #282a36 0%, #44475a 50%, #6272a4 100%) !important;
+}
+
+/* Evitar scroll en viewport */
+.viewport-container {
+  height: 100vh;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
 /* Importar temas personalizados CECYTEC */
 @import "./app/shared/styles/themes/light-theme.css";
 @import "./app/shared/styles/themes/dark-theme.css";
@@ -34,35 +126,9 @@
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-/* Estilos adicionales para el dashboard */
-.sidebar-menu-item:hover {
-  transform: translateX(2px);
-  transition: all 0.2s ease;
-}
-
-/* Animaciones suaves para el sidebar */
-.sidebar-transition {
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
 /* Mejorar el aspecto de los avatares */
 .avatar img {
   object-fit: cover;
-}
-
-/* Sombras adicionales para elementos flotantes */
-.floating-shadow {
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-}
-
-/* Efecto de hover para las cards */
-.hover-card {
-  transition: all 0.3s ease;
-}
-
-.hover-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 }
 
 /* ===== DISEÑO ARREGLADO - SIDEBAR GRIS, SIN LÍNEA BLANCA ===== */
@@ -117,13 +183,15 @@ div header.bg-base-100 {
   border: none !important; /* Sin borde en hover */
 }
 
-/* BOTÓN TOGGLE COLOR ESPECÍFICO - MÁXIMA ESPECIFICIDAD */
+/* BOTÓN TOGGLE COLOR ESPECÍFICO - MÁXIMA ESPECIFICIDAD Y Z-INDEX */
 button.toggle-btn.btn.btn-circle.btn-sm,
 .toggle-btn.btn,
 .toggle-btn {
   background-color: #687289 !important; /* Color específico solicitado */
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
   color: #ffffff !important;
+  z-index: 10000 !important;
+  position: fixed !important;
 }
 
 button.toggle-btn.btn.btn-circle.btn-sm:hover,
@@ -131,12 +199,15 @@ button.toggle-btn.btn.btn-circle.btn-sm:hover,
 .toggle-btn:hover {
   background-color: #566076 !important; /* Hover más oscuro */
   color: #ffffff !important;
+  z-index: 10000 !important;
 }
 
 /* FORZAR estilo inline virtual */
 button[class*="toggle-btn"] {
   background-color: #687289 !important;
   border-color: rgba(255, 255, 255, 0.1) !important;
+  z-index: 10000 !important;
+  position: fixed !important;
 }
 
 /* ===== SEPARADORES VISIBLES ===== */
@@ -182,22 +253,30 @@ button[class*="toggle-btn"] {
 }
 
 /* ===== MODO OSCURO (dark) ===== */
-/* UN SOLO GRIS OSCURO UNIFICADO */
+/* ARMONIZADO CON LOGIN - FONDO DEGRADADO */
 
-/* Sidebar oscuro - un solo tono */
-[data-theme="dark"] aside.bg-base-100,
-[data-theme="dark"] aside {
-  background-color: #2d3748 !important; /* Un solo gris oscuro */
-  border-radius: 0 !important;
-  border-color: #2d3748 !important;
+/* Fondo principal con gradiente igual que login */
+[data-theme="dark"] .min-h-screen,
+[data-theme="dark"] .bg-base-200 {
+  background: linear-gradient(135deg, #1a202c 0%, #2d3748 50%, #4a5568 100%) !important;
 }
 
-/* Topbar oscuro - mismo tono exacto */
+/* Sidebar oscuro - TONO AÚN MÁS CLARO para verdadero contraste */
+[data-theme="dark"] aside.bg-base-100,
+[data-theme="dark"] aside {
+  background-color: #64748b !important; /* Mucho más claro - color gris medio */
+  border-radius: 0 !important;
+  border-color: #64748b !important;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Topbar oscuro - mismo tono claro que sidebar */
 [data-theme="dark"] header.bg-base-100,
 [data-theme="dark"] header {
-  background-color: #2d3748 !important; /* Mismo gris oscuro */
-  border-color: #2d3748 !important;
+  background-color: #64748b !important; /* Mismo tono claro que sidebar */
+  border-color: #64748b !important;
   border-radius: 0 !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2) !important;
 }
 
 /* Textos modo oscuro - visibles */
@@ -254,10 +333,10 @@ button[class*="toggle-btn"] {
 /* ===== MODO DRACULA UNIFICADO ===== */
 /* UN SOLO GRIS DRACULA PARA TODO */
 
-/* Fondo principal dracula - MÁS CLARO */
+/* Fondo principal dracula - ARMONIZADO CON LOGIN */
 [data-theme="dracula"] .min-h-screen,
 [data-theme="dracula"] .bg-base-200 {
-  background-color: #383a59 !important; /* Gris más claro para distinguir */
+  background: linear-gradient(135deg, #282a36 0%, #44475a 50%, #6272a4 100%) !important; /* Exactamente igual que login */
 }
 
 /* Sidebar dracula - mismo gris */
