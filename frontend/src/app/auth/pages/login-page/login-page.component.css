@@ -71,7 +71,7 @@
 /* Header del login */
 .login-header {
   text-align: center;
-  margin-bottom: 2.5rem;
+  margin-bottom: 1.5rem; /* Reducido de 2.5rem */
 }
 
 /* Logo container - FULL WIDTH */
@@ -79,7 +79,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.5rem; /* Reducido de 1.5rem */
   /* Expandir full width eliminando el padding del padre */
   margin-left: -2rem;
   margin-right: -2rem;
@@ -89,7 +89,7 @@
 
 .login-logo {
   width: 100%; /* Full width del contenedor */
-  max-width: 200px; /* Máximo para que no se vea gigante */
+  max-width: 280px; /* Aumentado de 200px a 280px */
   height: auto; /* Altura automática para mantener proporción */
   object-fit: contain;
   background: transparent;
@@ -229,7 +229,7 @@
 
 /* Botón de login */
 .login-submit-container {
-  margin-top: 2.5rem;
+  margin-top: 0.75rem; /* Aún más reducido para espaciado compacto */
 }
 
 .login-submit-btn {
@@ -426,26 +426,52 @@ button {
 }
 
 /* ===== ESTILOS RECAPTCHA ===== */
-/* reCAPTCHA Styles */
+/* reCAPTCHA Styles - Full Width Responsive */
 .recaptcha-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 1rem 0;
-  min-height: 78px; /* Altura mínima para evitar saltos de layout */
+  margin: 0.5rem 0 0.25rem 0; /* Más compacto */
+  min-height: 78px;
+  width: 100%;
+  overflow: hidden; /* Para manejar el scale en móvil */
+}
+
+/* Mensaje de reCAPTCHA - más compacto */
+.recaptcha-message {
+  text-align: center;
+  margin-top: 0.15rem; /* Aún más reducido */
+  margin-bottom: 0.25rem; /* Aún más reducido */
+  font-size: 0.8rem; /* Más pequeño */
 }
 
 /* Personalización del reCAPTCHA */
 .recaptcha-container iframe {
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  max-width: 100%;
 }
 
-/* Responsive para reCAPTCHA */
+/* Responsive para reCAPTCHA - Full Width */
 @media (max-width: 640px) {
   .recaptcha-container {
-    transform: scale(0.85);
+    transform: scale(0.9); /* Menos agresivo */
     transform-origin: center;
+    margin: 0.25rem 0 0.1rem 0; /* Más compacto */
+    padding: 0;
+  }
+  
+  .recaptcha-message {
+    margin-top: 0.15rem;
+    margin-bottom: 0.25rem;
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .recaptcha-container {
+    transform: scale(0.8); /* Aún más pequeño en pantallas muy pequeñas */
+    margin: 0.2rem 0 0.1rem 0;
   }
 }
 
