@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { ThemeService } from '../../../shared/services/theme.service';
 import { LoadingService } from '../../../shared/services/loading.service';
+import { MenuService } from '../../../shared/services/menu.service';
 import { Router } from '@angular/router';
 import { LucideAngularModule, Mail, Lock, LogIn, Eye, EyeOff, Sun, Moon, Clock } from 'lucide-angular';
 import { environment } from '../../../../environments/environment';
@@ -35,6 +36,7 @@ export class LoginPageComponent implements OnInit, OnDestroy {
   private loadingService = inject(LoadingService);
   private renderer = inject(Renderer2);
   private document = inject(DOCUMENT);
+  private menuService = inject(MenuService);
   themeService = inject(ThemeService);
 
   // Iconos disponibles en el template
@@ -136,13 +138,22 @@ export class LoginPageComponent implements OnInit, OnDestroy {
     this.loadingService.showValidatingCredentials();
 
     this.authService.login(this.email, this.password, this.recaptchaResponse).subscribe({
-      next: () => {
+      next: async () => {
         // Paso 2: Acceso concedido
         this.loadingService.showLoginSuccess();
         
-        setTimeout(() => {
-          // Paso 3: Cargando dashboard
+        setTimeout(async () => {
+          // Paso 3: Cargando dashboard y menús
           this.loadingService.showLoadingDashboard();
+          
+          // Cargar menús del usuario desde el backend
+          try {
+            console.log('🔄 Cargando menús del usuario...');
+            await this.menuService.loadUserMenus();
+            console.log('✅ Menús cargados exitosamente');
+          } catch (error) {
+            console.warn('⚠️ Error cargando menús, usando fallback:', error);
+          }
           
           setTimeout(() => {
             this.loadingService.hide();
