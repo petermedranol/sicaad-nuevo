@@ -11,6 +11,19 @@ export class MenuService {
   private http = inject(HttpClient);
   private readonly apiUrl = 'http://localhost/api';
   
+  // Claves para localStorage
+  private readonly STORAGE_KEYS = {
+    MENU_ITEMS: 'sicaad_menu_items',
+    USER_INFO: 'sicaad_user_info',
+    EXPANDED_ITEMS: 'sicaad_expanded_items',
+    ACTIVE_ITEM: 'sicaad_active_item',
+    SEARCH_QUERY: 'sicaad_search_query',
+    LAST_SYNC: 'sicaad_menu_last_sync'
+  };
+  
+  // Tiempo de caché en milisegundos (30 minutos)
+  private readonly CACHE_DURATION = 30 * 60 * 1000;
+  
   // Signal para los menús cargados desde el backend
   private _menuItems = signal<MenuItem[]>([]);
   public menuItems = this._menuItems.asReadonly();
@@ -59,6 +72,9 @@ export class MenuService {
   
   constructor() {
     console.log('🔧 MenuService iniciado con API backend');
+    console.log('🔍 Verificando localStorage disponible:', typeof localStorage !== 'undefined');
+    // Cargar datos persistidos al inicializar
+    this.loadFromStorage();
   }
 
   /**
@@ -66,6 +82,7 @@ export class MenuService {
    */
   async loadUserMenus(): Promise<void> {
     try {
+      console.log('🚨 INICIO loadUserMenus() - MÉTODO LLAMADO');
       this._loading.set(true);
       this._error.set(null);
       
@@ -84,8 +101,12 @@ export class MenuService {
         this._menuItems.set(menuItems);
         this._userInfo.set(response.data.user_info);
         
+        // Persistir automáticamente en localStorage
+        this.saveToStorage();
+        
         console.log('✅ Menús cargados exitosamente:', menuItems.length, 'elementos');
         console.log('👤 Info usuario:', response.data.user_info);
+        console.log('💾 Datos persistidos en localStorage');
         
       } else {
         throw new Error(response.message || 'Error al cargar menús');
@@ -208,6 +229,7 @@ export class MenuService {
    */
   setSearchQuery(query: string): void {
     this._searchQuery.set(query);
+    this.saveToStorage();
     console.log('🔍 Query de búsqueda:', query);
   }
 
@@ -216,6 +238,7 @@ export class MenuService {
    */
   clearSearch(): void {
     this._searchQuery.set('');
+    this.saveToStorage();
     console.log('🧹 Búsqueda limpiada');
   }
 
@@ -234,6 +257,7 @@ export class MenuService {
     }
     
     this._expandedItems.set(currentExpanded);
+    this.saveToStorage();
   }
 
   /**
@@ -248,6 +272,7 @@ export class MenuService {
    */
   setActiveItem(itemId: string): void {
     this._activeItemId.set(itemId);
+    this.saveToStorage();
     console.log('🎯 Item activo establecido:', itemId);
   }
 
@@ -319,7 +344,261 @@ export class MenuService {
     this._activeItemId.set('dashboard');
     this._error.set(null);
     this._searchQuery.set('');
+    this.clearStorage();
     console.log('🧹 Menús limpiados');
+  }
+
+  // ========== MÉTODOS DE PERSISTENCIA ==========
+
+  /**
+   * Guarda todos los datos del menú en localStorage
+   */
+  private saveToStorage(): void {
+    try {
+      console.log('🚀 saveToStorage() llamado');
+      
+      if (typeof localStorage === 'undefined') {
+        console.log('❌ localStorage no disponible');
+        return;
+      }
+
+      console.log('✅ localStorage disponible');
+      console.log('📄 Datos a guardar:', {
+        menuItems: this._menuItems().length,
+        userInfo: !!this._userInfo(),
+        expandedItems: this._expandedItems().size,
+        activeItem: this._activeItemId()
+      });
+
+      // Guardar menús
+      const menuItemsJson = JSON.stringify(this._menuItems());
+      localStorage.setItem(this.STORAGE_KEYS.MENU_ITEMS, menuItemsJson);
+      console.log('✅ Menús guardados:', this.STORAGE_KEYS.MENU_ITEMS);
+      
+      // Guardar información de usuario
+      if (this._userInfo()) {
+        const userInfoJson = JSON.stringify(this._userInfo());
+        localStorage.setItem(this.STORAGE_KEYS.USER_INFO, userInfoJson);
+        console.log('✅ Info usuario guardada:', this.STORAGE_KEYS.USER_INFO);
+      }
+      
+      // Guardar items expandidos (convertir Set a Array)
+      const expandedArray = Array.from(this._expandedItems());
+      localStorage.setItem(this.STORAGE_KEYS.EXPANDED_ITEMS, JSON.stringify(expandedArray));
+      console.log('✅ Items expandidos guardados:', this.STORAGE_KEYS.EXPANDED_ITEMS, expandedArray);
+      
+      // Guardar item activo
+      localStorage.setItem(this.STORAGE_KEYS.ACTIVE_ITEM, this._activeItemId());
+      console.log('✅ Item activo guardado:', this.STORAGE_KEYS.ACTIVE_ITEM, this._activeItemId());
+      
+      // Guardar query de búsqueda
+      localStorage.setItem(this.STORAGE_KEYS.SEARCH_QUERY, this._searchQuery());
+      console.log('✅ Query de búsqueda guardada:', this.STORAGE_KEYS.SEARCH_QUERY, this._searchQuery());
+      
+      // Guardar timestamp de última sincronización
+      const timestamp = Date.now().toString();
+      localStorage.setItem(this.STORAGE_KEYS.LAST_SYNC, timestamp);
+      console.log('✅ Timestamp guardado:', this.STORAGE_KEYS.LAST_SYNC, timestamp);
+      
+      console.log('💾 Todos los datos del menú guardados en localStorage exitosamente');
+      
+      // Verificar que realmente se guardaron
+      console.log('🔍 Verificando localStorage después del guardado:');
+      Object.values(this.STORAGE_KEYS).forEach(key => {
+        const value = localStorage.getItem(key);
+        console.log(`  ${key}: ${value ? 'EXISTS' : 'NOT FOUND'}`);
+      });
+      
+    } catch (error) {
+      console.error('❌ Error guardando en localStorage:', error);
+    }
+  }
+
+  /**
+   * Carga todos los datos del menú desde localStorage
+   */
+  private loadFromStorage(): void {
+    try {
+      if (typeof localStorage === 'undefined') return;
+
+      // Verificar si los datos en cache están vigentes
+      const lastSync = localStorage.getItem(this.STORAGE_KEYS.LAST_SYNC);
+      if (lastSync) {
+        const lastSyncTime = parseInt(lastSync);
+        const now = Date.now();
+        if (now - lastSyncTime > this.CACHE_DURATION) {
+          console.log('⏰ Cache expirado, se requerirá nueva carga desde el backend');
+          this.clearStorage();
+          return;
+        }
+      }
+
+      // Cargar menús
+      const menuItemsData = localStorage.getItem(this.STORAGE_KEYS.MENU_ITEMS);
+      if (menuItemsData) {
+        const menuItems = JSON.parse(menuItemsData) as MenuItem[];
+        this._menuItems.set(menuItems);
+        console.log('📖 Menús cargados desde localStorage:', menuItems.length, 'elementos');
+      }
+      
+      // Cargar información de usuario
+      const userInfoData = localStorage.getItem(this.STORAGE_KEYS.USER_INFO);
+      if (userInfoData) {
+        const userInfo = JSON.parse(userInfoData);
+        this._userInfo.set(userInfo);
+        console.log('👤 Info de usuario cargada desde localStorage');
+      }
+      
+      // Cargar items expandidos (convertir Array a Set)
+      const expandedItemsData = localStorage.getItem(this.STORAGE_KEYS.EXPANDED_ITEMS);
+      if (expandedItemsData) {
+        const expandedArray = JSON.parse(expandedItemsData) as string[];
+        this._expandedItems.set(new Set(expandedArray));
+        console.log('📂 Items expandidos cargados desde localStorage:', expandedArray.length);
+      }
+      
+      // Cargar item activo
+      const activeItem = localStorage.getItem(this.STORAGE_KEYS.ACTIVE_ITEM);
+      if (activeItem) {
+        this._activeItemId.set(activeItem);
+        console.log('🎯 Item activo cargado desde localStorage:', activeItem);
+      }
+      
+      // Cargar query de búsqueda
+      const searchQuery = localStorage.getItem(this.STORAGE_KEYS.SEARCH_QUERY);
+      if (searchQuery) {
+        this._searchQuery.set(searchQuery);
+        console.log('🔍 Query de búsqueda cargada desde localStorage:', searchQuery);
+      }
+      
+    } catch (error) {
+      console.warn('⚠️ Error cargando desde localStorage:', error);
+      this.clearStorage();
+    }
+  }
+
+  /**
+   * Limpia todos los datos del localStorage
+   */
+  private clearStorage(): void {
+    try {
+      if (typeof localStorage === 'undefined') return;
+
+      Object.values(this.STORAGE_KEYS).forEach(key => {
+        localStorage.removeItem(key);
+      });
+      
+      console.log('🗑️ localStorage limpiado');
+    } catch (error) {
+      console.warn('⚠️ Error limpiando localStorage:', error);
+    }
+  }
+
+  /**
+   * Verifica si hay datos válidos en cache
+   */
+  private hasCachedData(): boolean {
+    try {
+      if (typeof localStorage === 'undefined') return false;
+
+      const menuItems = localStorage.getItem(this.STORAGE_KEYS.MENU_ITEMS);
+      const lastSync = localStorage.getItem(this.STORAGE_KEYS.LAST_SYNC);
+      
+      if (!menuItems || !lastSync) return false;
+      
+      const lastSyncTime = parseInt(lastSync);
+      const now = Date.now();
+      
+      return (now - lastSyncTime) <= this.CACHE_DURATION;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  /**
+   * Sincroniza datos con localStorage (llamar después de cambios importantes)
+   */
+  public syncToStorage(): void {
+    this.saveToStorage();
+  }
+
+  /**
+   * Verifica el acceso a un menú con validación de backend
+   */
+  async validateMenuAccess(menuId: string): Promise<boolean> {
+    try {
+      // Primero verificar en localStorage/cache
+      const cachedMenus = this._menuItems();
+      const menuExists = this.findItemById(cachedMenus, menuId);
+      
+      if (!menuExists) {
+        console.log('🚫 Menú no encontrado en cache:', menuId);
+        return false;
+      }
+      
+      // Si tenemos datos recientes en cache, confiar en ellos
+      if (this.hasCachedData()) {
+        console.log('✅ Acceso validado desde cache para menú:', menuId);
+        return true;
+      }
+      
+      // Si el cache está expirado, validar con el backend
+      const numericMenuId = parseInt(menuId);
+      if (!isNaN(numericMenuId)) {
+        const accessResponse = await this.checkMenuAccess(numericMenuId);
+        return accessResponse?.success === true && accessResponse?.data?.has_access === true;
+      }
+      
+      return true; // Por defecto permitir acceso si no se puede validar
+    } catch (error) {
+      console.warn('⚠️ Error validando acceso al menú:', error);
+      return true; // En caso de error, permitir acceso
+    }
+  }
+
+  /**
+   * Busca un item por ID recursivamente
+   */
+  private findItemById(items: MenuItem[], id: string): MenuItem | null {
+    for (const item of items) {
+      if (item.id === id) {
+        return item;
+      }
+      if (item.children) {
+        const found = this.findItemById(item.children, id);
+        if (found) return found;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Recarga menús solo si es necesario (cache expirado o no existe)
+   */
+  async reloadMenusIfNeeded(): Promise<void> {
+    // Si no hay menús o el cache está expirado, recargar
+    if (!this.hasMenus() || !this.hasCachedData()) {
+      console.log('🔄 Recargando menús porque el cache está expirado o vacío');
+      await this.loadUserMenus();
+    } else {
+      console.log('📖 Menús válidos en cache, no es necesario recargar');
+    }
+  }
+
+  /**
+   * Método para uso desde el dashboard - verifica y recarga si es necesario
+   */
+  async ensureMenusLoaded(): Promise<void> {
+    await this.reloadMenusIfNeeded();
+  }
+
+  /**
+   * Método temporal para forzar recarga de menús (para desarrollo)
+   */
+  forceReloadMenus(): void {
+    this.clearStorage();
+    this.loadUserMenus();
+    console.log('🔄 Menús forzados a recargar desde servidor');
   }
 }
 

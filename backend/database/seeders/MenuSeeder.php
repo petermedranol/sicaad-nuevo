@@ -56,7 +56,7 @@ class MenuSeeder extends Seeder
                 'name' => 'Usuarios',
                 'icon' => 'Users', // Lucide icon
                 'date_created' => now(),
-                'link' => '/configuracion/usuarios',
+                'link' => '/configuration/users',
                 'description' => 'Gestión de usuarios del sistema',
                 'order' => 1,
                 'is_free' => false, // No libre - requiere acceso explícito

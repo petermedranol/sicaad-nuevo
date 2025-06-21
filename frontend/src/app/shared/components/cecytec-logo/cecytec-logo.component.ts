@@ -13,11 +13,11 @@ export class CecytecLogoComponent {
   @Input() variant: 'light' | 'dark' = 'light';
 
   get logoWidth() {
-    if (!this.showText) return this.size === 'small' ? '32' : this.size === 'large' ? '48' : '40';
-    return this.size === 'small' ? '120' : this.size === 'large' ? '180' : '150';
+    if (!this.showText) return this.size === 'small' ? '20' : this.size === 'large' ? '32' : '24';
+    return this.size === 'small' ? '100' : this.size === 'large' ? '160' : '130';
   }
 
   get logoHeight() {
-    return this.size === 'small' ? '32' : this.size === 'large' ? '48' : '40';
+    return this.size === 'small' ? '20' : this.size === 'large' ? '32' : '24';
   }
 }

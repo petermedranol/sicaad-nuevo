@@ -1,13 +1,20 @@
-import { CanActivateFn } from '@angular/router';
 import { inject } from '@angular/core';
+import { CanActivateFn, Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
-import { Router } from '@angular/router';
+import { map, tap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
-export const authGuard: CanActivateFn = async () => {
+export const authGuard: CanActivateFn = (): Observable<boolean> => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  const isAuth = await authService.checkAuth();
-  if (!isAuth) router.navigateByUrl('/');
-  return isAuth;
+  return authService.checkAuthentication().pipe(
+    tap(isAuthenticated => {
+      if (!isAuthenticated) {
+        console.log('🚫 Acceso denegado por AuthGuard, redirigiendo a login.');
+        router.navigateByUrl('/auth/login');
+      }
+    }),
+    map(isAuthenticated => isAuthenticated) // Asegura que el observable emita el booleano
+  );
 };

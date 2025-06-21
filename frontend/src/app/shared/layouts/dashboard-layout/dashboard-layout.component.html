@@ -1,73 +1,63 @@
-<div class="dashboard-layout" [attr.data-theme]="themeService.currentTheme()">
-  <!-- Overlay para móvil -->
-  @if (sidebarService.isSidebarOpen()) {
-    <div
-      class="dashboard-overlay"
-      (click)="toggleSidebar()">
-    </div>
-  }
+<div
+  class="min-h-screen bg-base-200">
 
-  <!-- Sidebar Component CECYTEC -->
-  <app-sidebar
-    [sidebarService]="sidebarService"
-    [themeService]="themeService"
-    (closeSidebar)="toggleSidebar()"
-    (navigate)="onNavigate($event)"
-    (logout)="logout()">
-  </app-sidebar>
+  <!-- Overlay para sidebar en móvil -->
+  <div
+    *ngIf="sidebarService.isSidebarOpen()"
+    (click)="sidebarService.closeSidebar()"
+    class="fixed inset-0 bg-black/50 z-30 lg:hidden">
+  </div>
 
-
-  <!-- Botón toggle en la línea divisoria vertical -->
-  <button
-    class="fixed z-[10000] hidden lg:flex btn btn-circle btn-sm toggle-btn shadow-lg transition-all duration-300"
-    [class.left-[304px]]="!sidebarService.isSidebarCollapsed()"
-    [class.left-[68px]]="sidebarService.isSidebarCollapsed()"
-    [style.top.px]="21"
-    (click)="toggleSidebarCollapse()"
-    [title]="sidebarService.isSidebarCollapsed() ? 'Expandir sidebar' : 'Contraer sidebar'">
-    <lucide-icon
-      [img]="sidebarService.isSidebarCollapsed() ? panelLeftIcon : panelLeftCloseIcon"
-      class="w-4 h-4"
-    ></lucide-icon>
-  </button>
+  <!-- Sidebar -->
+  <aside
+    class="fixed top-0 left-0 h-screen bg-base-100 text-base-content border-r border-base-300/10 z-40 transition-all duration-300 lg:translate-x-0"
+    [class.w-64]="!sidebarService.isSidebarCollapsed()"
+    [class.w-20]="sidebarService.isSidebarCollapsed()"
+    [class.translate-x-0]="sidebarService.isSidebarOpen()"
+    [class.-translate-x-full]="!sidebarService.isSidebarOpen()">
+    <app-sidebar
+      [sidebarService]="sidebarService"
+      [themeService]="themeService"
+      (closeSidebar)="closeSidebar()"
+      (navigate)="onNavigate($event)"
+      (logout)="logout()">
+    </app-sidebar>
+  </aside>
 
   <!-- Contenido principal -->
   <div
-    class="transition-all duration-300"
-    [class.lg:ml-80]="!sidebarService.isSidebarCollapsed()"
-    [class.lg:ml-20]="sidebarService.isSidebarCollapsed()"
-    style="border: none !important; box-shadow: none !important;">
-    <!-- Topbar Component CECYTEC -->
-    <app-topbar
-      [themeService]="themeService"
-      [title]="'Dashboard'"
-      [subtitle]="'Bienvenido de vuelta, ' + currentUser.name"
-      [currentUser]="currentUser"
-      [notificationCount]="notificationCount"
-      (toggleSidebar)="toggleSidebar()"
-      (toggleTheme)="toggleDarkMode()"
-      (showNotifications)="showNotifications()"
-      (showProfile)="showProfile()">
-    </app-topbar>
+    class="flex flex-col min-h-screen transition-all duration-300"
+    [class.lg:pl-64]="!sidebarService.isSidebarCollapsed()"
+    [class.lg:pl-20]="sidebarService.isSidebarCollapsed()">
 
-    <!-- Contenido de la pagina -->
-    <main 
-      class="p-6 pt-2"
-      [style.background-color]="themeService.currentTheme() === 'dracula' || themeService.currentTheme() === 'dark' ? '#374151' : ''"
-      [style.background]="themeService.currentTheme() === 'dracula' || themeService.currentTheme() === 'dark' ? '#374151 !important' : ''"
-      [style.background-image]="themeService.currentTheme() === 'dracula' || themeService.currentTheme() === 'dark' ? 'none' : ''">
+    <!-- Topbar Restaurado -->
+    <header class="sticky top-0 z-20">
+      <app-topbar
+        (toggleSidebar)="toggleSidebar()">
+      </app-topbar>
+    </header>
+
+    <!-- Botón para colapsar sidebar en Desktop -->
+    <button
+      class="fixed top-5 z-50 btn btn-xs btn-circle btn-ghost hidden lg:flex shadow-md bg-base-100"
+      [style.left]="(sidebarService.isSidebarCollapsed() ? 4.25 : 15.25) + 'rem'"
+      (click)="toggleSidebarCollapse()">
+      <ng-icon
+        [name]="sidebarService.isSidebarCollapsed() ? 'lucideChevronRight' : 'lucideChevronLeft'"
+        class="w-3.5 h-3.5 text-base-content">
+      </ng-icon>
+    </button>
+
+    <!-- Contenido de la página -->
+    <main class="flex-1 p-4 lg:p-6 bg-base-200">
       <router-outlet></router-outlet>
     </main>
-    
-    <!-- Footer flotante -->
-    <footer class="footer-floating">
-      <div class="footer-content">
-        <div class="footer-left">
-          <p class="footer-text">© 2025 - Todos los derechos reservados</p>
-        </div>
-        <div class="footer-right">
-          <p class="footer-version">SICAAD v4.0</p>
-        </div>
+
+    <!-- Footer -->
+    <footer class="bg-base-100 border-t border-base-300 py-3 px-4 lg:px-6">
+      <div class="flex justify-between items-center">
+        <p class="text-sm text-base-content/70">© 2025 - Todos los derechos reservados</p>
+        <p class="text-sm font-semibold text-base-content/70">SICAAD v4.0</p>
       </div>
     </footer>
   </div>

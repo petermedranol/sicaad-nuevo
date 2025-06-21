@@ -1,30 +1,31 @@
-<div [class]="getSidebarClasses()" [style.width]="isCollapsed ? '5rem' : '20rem'">
-  <!-- Header del sidebar -->
-  <div class="sidebar-header">
-    <div class="sidebar-logo-container">
-      <div class="sidebar-logo-content">
-        <!-- Logo SVG responsivo -->
-        <app-cecytec-logo 
-          [showText]="!isCollapsed" 
-          size="medium" 
-          [variant]="themeService.isDarkMode() ? 'dark' : 'light'">
+<div class="flex flex-col h-full min-h-0">
+  <!-- Header con logo y título -->
+  <div class="flex items-center justify-between h-16 px-4 border-b border-base-300/10">
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8">
+        <app-cecytec-logo
+          [showText]="false"
+          size="small"
+          [variant]="themeService.isDarkMode() ? 'dark' : 'light'"
+          class="w-full h-full">
         </app-cecytec-logo>
       </div>
-      
-      <!-- Botón cerrar en móvil -->
       @if (!isCollapsed) {
-        <button 
-          class="sidebar-close-btn lg:hidden"
-          (click)="onCloseSidebar()">
-          <lucide-icon [img]="xIcon" class="w-4 h-4"></lucide-icon>
-        </button>
+        <div class="flex flex-col">
+          <h2 class="text-base font-semibold text-base-content">CECYTEC</h2>
+          <p class="text-xs text-base-content/70">Colegio de Estudios Científicos y Tecnológicos</p>
+        </div>
       }
     </div>
+    @if (!isCollapsed) {
+      <button class="btn btn-ghost btn-circle btn-sm lg:hidden" (click)="onCloseSidebar()">
+        <ng-icon name="lucideX" class="w-4 h-4"></ng-icon>
+      </button>
+    }
   </div>
 
-  <!-- Navegación -->
-  <nav class="sidebar-nav">
-    <!-- Menú recursivo -->
+  <!-- Menú de navegación -->
+  <nav class="flex-1 min-h-0 p-2 space-y-1 overflow-y-auto">
     <app-sidebar-menu
       [menuItems]="menuService.filteredMenuItems()"
       [isCollapsed]="isCollapsed"
@@ -37,54 +38,53 @@
     </app-sidebar-menu>
   </nav>
 
-  <!-- Footer del sidebar -->
-  <div class="sidebar-footer">
-    <!-- Input de búsqueda -->
-    <div class="sidebar-search-wrapper">
+  <!-- Footer con buscador y logout -->
+  <div>
+    <!-- Búsqueda -->
+    <div class="p-2 border-t border-base-300/10">
       @if (!isCollapsed) {
-        <div class="sidebar-search">
-          <div class="sidebar-search-container">
-            <lucide-icon [img]="searchIcon" class="sidebar-search-icon"></lucide-icon>
-            <input 
-              type="text" 
-              placeholder="Buscar menú..." 
-              class="sidebar-search-input"
-              #searchInput
-              (input)="onSearchInput($event)"
-              (keyup.escape)="clearSearch()">
-            @if (searchQuery) {
-              <button 
-                class="sidebar-search-clear"
-                (click)="clearSearch()"
-                title="Limpiar búsqueda">
-                <lucide-icon [img]="xIcon" class="w-3 h-3"></lucide-icon>
-              </button>
-            }
-          </div>
+        <div class="relative">
+          <ng-icon
+            name="lucideSearch"
+            class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-base-content/50">
+          </ng-icon>
+          <input
+            #searchInput
+            type="text"
+            placeholder="Buscar menú..."
+            class="input input-sm w-full pl-9 pr-8 bg-base-200 text-base-content placeholder:text-base-content/50"
+            (input)="onSearchInput($event)"
+            (keyup.escape)="clearSearch()">
+          @if (searchQuery) {
+            <button
+              class="absolute right-2 top-1/2 -translate-y-1/2 btn btn-ghost btn-xs btn-circle"
+              (click)="clearSearch()">
+              <ng-icon name="lucideX" class="w-3 h-3"></ng-icon>
+            </button>
+          }
         </div>
       } @else {
-        <!-- Botón de búsqueda colapsado -->
-        <button 
-          class="sidebar-search-collapsed sidebar-tooltip"
-          [attr.data-tooltip]="'Buscar menú'"
+        <button
+          class="w-full btn btn-ghost"
           (click)="focusSearch()">
-          <lucide-icon [img]="searchIcon" class="w-4 h-4"></lucide-icon>
+          <ng-icon name="lucideSearch" class="w-4 h-4"></ng-icon>
         </button>
       }
     </div>
-    
-    <!-- Botón de logout -->
-    <button 
-      (click)="onLogout()"
-      class="sidebar-logout sidebar-tooltip"
-      [attr.data-tooltip]="isCollapsed ? 'Cerrar sesión' : null">
-      <lucide-icon [img]="logoutIcon" class="sidebar-logout-icon"></lucide-icon>
-      @if (!isCollapsed) {
-        <div class="sidebar-logout-content">
-          <div class="sidebar-logout-title">Cerrar sesión</div>
-          <div class="sidebar-logout-subtitle">Salir del sistema</div>
-        </div>
-      }
-    </button>
+
+    <!-- Logout -->
+    <div class="border-t border-base-300/10">
+      <button
+        (click)="onLogout()"
+        class="w-full flex items-center gap-3 p-4 hover:bg-base-200 transition-colors text-left">
+        <ng-icon name="lucideLogOut" class="w-5 h-5 text-base-content/70 shrink-0"></ng-icon>
+        @if (!isCollapsed) {
+          <div class="flex flex-col">
+            <span class="font-medium text-base-content">Cerrar sesión</span>
+            <span class="text-xs text-base-content/70">Salir del sistema</span>
+          </div>
+        }
+      </button>
+    </div>
   </div>
 </div>

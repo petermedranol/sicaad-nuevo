@@ -1,25 +1,53 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LucideAngularModule, Users, FileText, TrendingUp, Activity, Calendar, Target, PieChart, DollarSign } from 'lucide-angular';
+import { NgIconComponent, provideIcons } from '@ng-icons/core';
+import {
+  lucideUsers,
+  lucideFileText,
+  lucideTrendingUp,
+  lucideActivity,
+  lucideUserPlus,
+  lucideFilePlus,
+  lucideListChecks,
+  lucideDollarSign,
+  lucideCircleCheck
+} from '@ng-icons/lucide';
 
 @Component({
   selector: 'app-home-page',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule],
-  templateUrl: './home-page.component.html',
-  styleUrl: './home-page.component.css'
+  imports: [
+    CommonModule,
+    NgIconComponent
+  ],
+  providers: [
+    provideIcons({
+      lucideUsers,
+      lucideFileText,
+      lucideTrendingUp,
+      lucideActivity,
+      lucideUserPlus,
+      lucideFilePlus,
+      lucideListChecks,
+      lucideDollarSign,
+      lucideCircleCheck
+    })
+  ],
+  templateUrl: './home-page.component.html'
 })
-export class HomePageComponent {
+export class HomePageComponent implements OnInit {
+
   // Iconos
-  readonly usersIcon = Users;
-  readonly filesIcon = FileText;
-  readonly trendingIcon = TrendingUp;
-  readonly activityIcon = Activity;
-  readonly calendarIcon = Calendar;
-  readonly targetIcon = Target;
-  readonly chartIcon = PieChart;
-  readonly dollarIcon = DollarSign;
-  
+  readonly usersIcon = 'lucideUsers';
+  readonly filesIcon = 'lucideFileText';
+  readonly trendingIcon = 'lucideTrendingUp';
+  readonly activityIcon = 'lucideActivity';
+  readonly userPlusIcon = 'lucideUserPlus';
+  readonly filePlusIcon = 'lucideFilePlus';
+  readonly listChecksIcon = 'lucideListChecks';
+  readonly dollarIcon = 'lucideDollarSign';
+  readonly checkIcon = 'lucideCircleCheck';
+
   // Estadísticas mock
   stats = [
     {
@@ -43,7 +71,7 @@ export class HomePageComponent {
       value: '567',
       change: '+23%',
       trend: 'up',
-      icon: this.targetIcon,
+      icon: this.checkIcon,
       color: 'text-accent'
     },
     {
@@ -55,7 +83,7 @@ export class HomePageComponent {
       color: 'text-success'
     }
   ];
-  
+
   // Actividades recientes
   recentActivities = [
     {
@@ -83,7 +111,7 @@ export class HomePageComponent {
       type: 'report'
     }
   ];
-  
+
   // Tareas pendientes
   pendingTasks = [
     {
@@ -105,18 +133,20 @@ export class HomePageComponent {
       completed: true
     }
   ];
-  
+
+  ngOnInit() {
+    // Component initialization
+  }
+
   // Método auxiliar para iconos de actividad
   getActivityIcon(type: string) {
     switch (type) {
       case 'user':
-        return this.usersIcon;
+        return this.userPlusIcon;
       case 'document':
-        return this.filesIcon;
+        return this.filePlusIcon;
       case 'task':
-        return this.targetIcon;
-      case 'report':
-        return this.chartIcon;
+        return this.listChecksIcon;
       default:
         return this.activityIcon;
     }

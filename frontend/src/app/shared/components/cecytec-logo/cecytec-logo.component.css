@@ -4,7 +4,7 @@
   justify-content: flex-start;
   width: 100%;
   transition: all 0.3s ease;
-  margin-top: 0.5rem;
+  margin-top: 0;
 }
 
 .logo-container {
@@ -30,22 +30,28 @@
 .logo-map-image {
   transition: all 0.3s ease;
   object-fit: contain;
-  width: 3rem;
-  height: 3rem;
+  width: 1.25rem;
+  height: 1.25rem;
   flex-shrink: 0;
   padding: 0;
   margin: 0;
 }
 
 .cecytec-logo--small .logo-map-image {
+  width: 1rem;
+  height: 1rem;
   filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
 }
 
 .cecytec-logo--medium .logo-map-image {
+  width: 1.25rem;
+  height: 1.25rem;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
 .cecytec-logo--large .logo-map-image {
+  width: 1.5rem;
+  height: 1.5rem;
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15));
 }
 

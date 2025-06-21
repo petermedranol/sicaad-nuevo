@@ -146,13 +146,20 @@ export class LoginPageComponent implements OnInit, OnDestroy {
           // Paso 3: Cargando dashboard y menús
           this.loadingService.showLoadingDashboard();
           
-          // Cargar menús del usuario desde el backend
-          try {
-            console.log('🔄 Cargando menús del usuario...');
-            await this.menuService.loadUserMenus();
-            console.log('✅ Menús cargados exitosamente');
-          } catch (error) {
-            console.warn('⚠️ Error cargando menús, usando fallback:', error);
+          // Verificar si ya hay menús válidos en cache
+          const hasValidCache = this.menuService.hasMenus();
+          
+          if (!hasValidCache) {
+            // Solo cargar desde backend si no hay cache válido
+            try {
+              console.log('🔄 Cargando menús del usuario desde backend...');
+              await this.menuService.loadUserMenus();
+              console.log('✅ Menús cargados exitosamente desde backend');
+            } catch (error) {
+              console.warn('⚠️ Error cargando menús, usando fallback:', error);
+            }
+          } else {
+            console.log('📖 Usando menús desde cache localStorage');
           }
           
           setTimeout(() => {

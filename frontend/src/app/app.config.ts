@@ -1,12 +1,14 @@
-// src/app/app.config.ts
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { ApplicationConfig } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
-import { csrfInterceptor } from './interceptors/csrf.interceptor'; // ¡ojo el nombre!
+import { csrfInterceptor } from './interceptors/csrf.interceptor';
+import { provideClientHydration } from '@angular/platform-browser';
 
-export const appConfig = {
-  providers: [
+export const appConfig: ApplicationConfig = {
+providers: [
     provideRouter(routes),
-    provideHttpClient(withInterceptors([csrfInterceptor]))
+    provideHttpClient(withInterceptors([csrfInterceptor])),
+    provideClientHydration()
   ]
 };

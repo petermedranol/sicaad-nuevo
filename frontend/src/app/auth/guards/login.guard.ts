@@ -1,21 +1,22 @@
-import { CanActivateFn } from '@angular/router';
 import { inject } from '@angular/core';
+import { CanActivateFn, Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
-import { Router } from '@angular/router';
+import { map, tap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
-export const loginGuard: CanActivateFn = async () => {
+export const loginGuard: CanActivateFn = (): Observable<boolean> => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  const isAuth = await authService.checkAuth();
-  
-  // Si ya está autenticado, redirigir al dashboard
-  if (isAuth) {
-    router.navigateByUrl('/dashboard');
-    return false;
-  }
-  
-  // Si no está autenticado, permitir acceso al login
-  return true;
+  return authService.checkAuthentication().pipe(
+    tap(isAuthenticated => {
+      if (isAuthenticated) {
+        console.log('🔑 Usuario ya autenticado, redirigiendo a dashboard.');
+        router.navigateByUrl('/dashboard');
+      }
+    }),
+    // El guard debe devolver `true` para permitir el paso si NO está autenticado.
+    map(isAuthenticated => !isAuthenticated)
+  );
 };
 

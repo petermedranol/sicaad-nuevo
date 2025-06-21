@@ -1,61 +1,73 @@
-<div class="topbar-container">
-  <!-- Sección izquierda -->
-  <div class="topbar-left">
-    <!-- Botón menú para móvil -->
-    <button 
-      class="topbar-menu-btn lg:hidden topbar-tooltip"
-      (click)="onToggleSidebar()"
-      data-tooltip="Abrir menú">
-      <lucide-icon [img]="menuIcon" class="topbar-menu-icon"></lucide-icon>
-    </button>
-
-    <!-- Título de la página -->
-    <div class="topbar-title-section">
-      <h1 class="topbar-title">{{ title }}</h1>
-      @if (subtitle) {
-        <p class="topbar-subtitle">{{ subtitle }}</p>
-      }
+<nav class="w-full h-16 bg-base-100 border-b border-base-300/60">
+  <div class="flex justify-between items-center w-full h-full px-4 lg:px-6">
+    <!-- Izquierda: Botón de menú (móvil) y Título de página -->
+    <div class="flex items-center gap-2">
+      <button
+        class="btn btn-ghost btn-sm btn-circle lg:hidden"
+        (click)="onToggleSidebar()">
+        <lucide-icon [img]="menuIcon" class="w-5 h-5"></lucide-icon>
+      </button>
+      <div>
+        <h1 class="text-xl font-bold text-base-content">{{ topbarConfig().title }}</h1>
+        <p class="text-sm text-base-content/60" *ngIf="topbarConfig().description">{{ topbarConfig().description }}</p>
+      </div>
     </div>
-  </div>
 
-  <!-- Sección derecha -->
-  <div class="topbar-right">
-    <!-- Botón toggle tema -->
-    <button 
-      class="topbar-action-btn theme-toggle topbar-tooltip"
-      (click)="onToggleTheme()"
-      [attr.data-tooltip]="themeTooltip">
-      <lucide-icon [img]="themeIcon" class="topbar-action-icon"></lucide-icon>
-    </button>
-
-    <!-- Botón notificaciones -->
-    <button 
-      class="topbar-action-btn topbar-tooltip"
-      (click)="onShowNotifications()"
-      data-tooltip="Notificaciones">
-      <lucide-icon [img]="bellIcon" class="topbar-action-icon"></lucide-icon>
-      @if (hasNotifications) {
-        <span class="topbar-notification-badge">{{ notificationCount }}</span>
-      }
-    </button>
-
-    <!-- Avatar del usuario -->
-    <div 
-      class="topbar-avatar topbar-tooltip"
-      (click)="onShowProfile()"
-      [attr.data-tooltip]="currentUser.name">
-      @if (currentUser.avatar) {
-        <img 
-          [src]="userAvatar" 
-          [alt]="currentUser.name" 
-          class="topbar-avatar-img"
-          (error)="onImageError($event)">
-      } @else {
-        <!-- Iniciales como fallback -->
-        <div class="topbar-avatar-fallback">
-          {{ userInitials }}
+    <!-- Derecha: Acciones y perfil de usuario -->
+    <div class="flex items-center gap-1">
+      <ng-container *ngIf="topbarConfig().buttons?.length">
+        <div class="hidden sm:flex items-center gap-2">
+          <ng-container *ngFor="let btn of topbarConfig().buttons">
+            <button
+              [class]="'btn btn-sm gap-2 ' + (btn.variant ? 'btn-' + btn.variant : 'btn-secondary')"
+              (click)="btn.onClick()">
+              <lucide-icon *ngIf="btn.icon" [img]="btn.icon" class="w-4 h-4"></lucide-icon>
+              <span>{{ btn.label }}</span>
+            </button>
+          </ng-container>
         </div>
-      }
+      </ng-container>
+
+      <div class="tooltip tooltip-bottom" [attr.data-tip]="themeTooltip()">
+        <button
+          class="btn btn-ghost btn-sm btn-circle"
+          (click)="onToggleTheme()">
+          <lucide-icon [img]="themeIcon()" class="w-4 h-4 text-base-content/80"></lucide-icon>
+        </button>
+      </div>
+
+      <div class="tooltip tooltip-bottom" data-tip="Notificaciones">
+        <button class="btn btn-ghost btn-sm btn-circle indicator" (click)="onShowNotifications()">
+          <lucide-icon [img]="bellIcon" class="w-4 h-4"></lucide-icon>
+          <ng-container *ngIf="hasNotifications">
+            <span class="indicator-item badge badge-xs badge-primary">{{ notificationCount }}</span>
+          </ng-container>
+        </button>
+      </div>
+
+      <div class="dropdown dropdown-end">
+        <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
+          <ng-container *ngIf="currentUser()?.avatar; else initials">
+            <div class="w-9 rounded-full">
+              <img [src]="currentUser()?.avatar" [alt]="currentUser()?.name" (error)="onImageError($event)">
+            </div>
+          </ng-container>
+          <ng-template #initials>
+            <div class="avatar placeholder">
+              <div class="bg-base-300 text-base-content rounded-full w-9">
+                <span class="font-semibold">{{ userInitials() }}</span>
+              </div>
+            </div>
+          </ng-template>
+        </div>
+        <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
+          <li class="p-2 font-semibold">{{ currentUser()?.name }}</li>
+          <li><a (click)="onShowProfile()">Perfil</a></li>
+          <li><a>Configuración</a></li>
+          <li class="mt-1"><div class="divider my-0"></div></li>
+          <li><a (click)="onLogout()">Cerrar Sesión</a></li>
+        </ul>
+      </div>
     </div>
   </div>
-</div>
+</nav>

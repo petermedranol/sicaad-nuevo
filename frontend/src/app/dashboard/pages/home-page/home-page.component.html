@@ -1,146 +1,164 @@
 <div class="space-y-6">
-  <!-- Header con saludo -->
-  <div class="bg-gradient-to-r from-primary to-secondary p-6 rounded-lg text-white">
+  <!-- Header de bienvenida -->
+  <div class="bg-gradient-to-r from-success to-success/70 rounded-xl p-6 text-white shadow-lg">
     <h1 class="text-3xl font-bold mb-2">¡Bienvenido de vuelta!</h1>
-    <p class="text-white/80">Aquí tienes un resumen de la actividad de hoy</p>
+    <p class="text-white/90">Aquí tienes un resumen de la actividad de hoy</p>
   </div>
 
-  <!-- Grid de estadísticas -->
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-    @for (stat of stats; track stat.title) {
-      <div class="stat-card">
-      <div class="stat-content">
-        <div>
-          <p class="stat-title">{{ stat.title }}</p>
-          <p class="stat-value">{{ stat.value }}</p>
+  <!-- Grid de Estadísticas -->
+  <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+    <!-- Card de Estadística -->
+    <div class="card bg-base-100 shadow">
+      <div class="card-body">
+        <div class="flex items-start justify-between">
+          <div class="flex flex-col">
+            <span class="card-title text-base font-medium text-base-content/60">Usuarios Activos</span>
+            <span class="text-3xl font-bold">2,847</span>
+          </div>
+          <div class="text-base-content/30">
+            <ng-icon name="lucideUsers" class="w-6 h-6"></ng-icon>
+          </div>
         </div>
-        <div [class]="stat.color">
-          <lucide-icon [img]="stat.icon" class="stat-icon"></lucide-icon>
+        <div class="card-actions justify-start mt-2">
+           <div class="flex items-center gap-1 text-sm text-success">
+            <ng-icon name="lucideTrendingUp" class="w-4 h-4"></ng-icon>
+            <span>12% vs último mes</span>
+          </div>
         </div>
       </div>
-      <div class="stat-change">
-        <lucide-icon [img]="trendingIcon" class="change-indicator text-success"></lucide-icon>
-        <span class="change-value text-success">{{ stat.change }}</span>
-        <span class="change-label">vs último mes</span>
+    </div>
+    <!-- Card de Estadística -->
+    <div class="card bg-base-100 shadow">
+      <div class="card-body">
+        <div class="flex items-start justify-between">
+          <div class="flex flex-col">
+            <span class="card-title text-base font-medium text-base-content/60">Documentos</span>
+            <span class="text-3xl font-bold">1,234</span>
+          </div>
+          <div class="text-base-content/30">
+            <ng-icon name="lucideFileText" class="w-6 h-6"></ng-icon>
+          </div>
+        </div>
+        <div class="card-actions justify-start mt-2">
+           <div class="flex items-center gap-1 text-sm text-success">
+            <ng-icon name="lucideTrendingUp" class="w-4 h-4"></ng-icon>
+            <span>8% vs último mes</span>
+          </div>
+        </div>
       </div>
+    </div>
+    <!-- Card de Estadística -->
+    <div class="card bg-base-100 shadow">
+      <div class="card-body">
+        <div class="flex items-start justify-between">
+          <div class="flex flex-col">
+            <span class="card-title text-base font-medium text-base-content/60">Tareas Completadas</span>
+            <span class="text-3xl font-bold">567</span>
+          </div>
+          <div class="text-base-content/30">
+            <ng-icon name="lucideCircleCheck" class="w-6 h-6"></ng-icon>
+          </div>
+        </div>
+        <div class="card-actions justify-start mt-2">
+           <div class="flex items-center gap-1 text-sm text-success">
+            <ng-icon name="lucideTrendingUp" class="w-4 h-4"></ng-icon>
+            <span>23% vs último mes</span>
+          </div>
+        </div>
       </div>
-    }
+    </div>
+    <!-- Card de Estadística -->
+    <div class="card bg-base-100 shadow">
+      <div class="card-body">
+        <div class="flex items-start justify-between">
+          <div class="flex flex-col">
+            <span class="card-title text-base font-medium text-base-content/60">Ingresos</span>
+            <span class="text-3xl font-bold">$89,432</span>
+          </div>
+          <div class="text-base-content/30">
+            <ng-icon name="lucideDollarSign" class="w-6 h-6"></ng-icon>
+          </div>
+        </div>
+        <div class="card-actions justify-start mt-2">
+           <div class="flex items-center gap-1 text-sm text-success">
+            <ng-icon name="lucideTrendingUp" class="w-4 h-4"></ng-icon>
+            <span>15% vs último mes</span>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <!-- Grid de contenido principal -->
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-    <!-- Actividad reciente -->
-    <div class="bg-base-100 rounded-lg shadow">
-      <div class="p-6 border-b border-base-300">
+  <!-- Grid de Listas -->
+  <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+    <!-- Card de Actividad Reciente -->
+    <div class="card bg-base-100 shadow">
+      <div class="card-body">
         <div class="flex items-center justify-between">
-          <h2 class="text-xl font-semibold text-base-content flex items-center gap-2">
-            <lucide-icon [img]="activityIcon" class="w-5 h-5 text-primary"></lucide-icon>
+          <h2 class="card-title font-semibold">
+            <ng-icon name="lucideActivity" class="w-5 h-5 mr-1"></ng-icon>
             Actividad Reciente
           </h2>
-          <button class="btn btn-ghost btn-sm">Ver todo</button>
+          <a href="#" class="btn btn-sm btn-ghost">Ver todo</a>
         </div>
-      </div>
-      <div class="p-6">
-        <div class="space-y-4">
-          @for (activity of recentActivities; track activity.user + activity.time) {
-            <div class="flex items-center space-x-4 p-3 rounded-lg hover:bg-base-200 transition-colors">
-              <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
-                <lucide-icon 
-                  [img]="getActivityIcon(activity.type)" 
-                  class="w-5 h-5 text-primary">
-                </lucide-icon>
-              </div>
-              <div class="flex-1 min-w-0">
-                <p class="text-base-content font-medium truncate">{{ activity.action }}</p>
-                <p class="text-base-content/60 text-sm truncate">{{ activity.user }}</p>
-              </div>
-              <div class="text-base-content/60 text-sm">{{ activity.time }}</div>
+        <div class="divider mt-2 mb-4"></div>
+        <ul class="space-y-4">
+          <li class="flex items-start gap-4">
+            <div class="text-base-content/50 pt-1">
+              <ng-icon name="lucideUserPlus" class="w-5 h-5"></ng-icon>
             </div>
-          }
-        </div>
+            <div class="flex-grow">
+              <p class="font-medium">Nuevo usuario registrado</p>
+              <p class="text-sm text-base-content/60">María González</p>
+            </div>
+            <span class="text-sm text-base-content/60">Hace 5 minutos</span>
+          </li>
+          <li class="flex items-start gap-4">
+            <div class="text-base-content/50 pt-1">
+              <ng-icon name="lucideFilePlus" class="w-5 h-5"></ng-icon>
+            </div>
+            <div class="flex-grow">
+              <p class="font-medium">Documento subido</p>
+              <p class="text-sm text-base-content/60">Carlos López</p>
+            </div>
+            <span class="text-sm text-base-content/60">Hace 12 minutos</span>
+          </li>
+        </ul>
       </div>
     </div>
 
-    <!-- Tareas pendientes -->
-    <div class="bg-base-100 rounded-lg shadow">
-      <div class="p-6 border-b border-base-300">
+    <!-- Card de Tareas Pendientes -->
+    <div class="card bg-base-100 shadow">
+      <div class="card-body">
         <div class="flex items-center justify-between">
-          <h2 class="text-xl font-semibold text-base-content flex items-center gap-2">
-            <lucide-icon [img]="targetIcon" class="w-5 h-5 text-accent"></lucide-icon>
+          <h2 class="card-title font-semibold">
+            <ng-icon name="lucideListChecks" class="w-5 h-5 mr-1"></ng-icon>
             Tareas Pendientes
           </h2>
-          <button class="btn btn-ghost btn-sm">Ver todas</button>
+          <a href="#" class="btn btn-sm btn-ghost">Ver todas</a>
         </div>
-      </div>
-      <div class="p-6">
-        <div class="space-y-4">
-          @for (task of pendingTasks; track task.title) {
-            <div 
-              class="flex items-center space-x-4 p-3 rounded-lg hover:bg-base-200 transition-colors"
-              [class.opacity-50]="task.completed">
-              <input 
-                type="checkbox" 
-                class="checkbox checkbox-primary" 
-                [checked]="task.completed"
-                [disabled]="task.completed" />
-              <div class="flex-1 min-w-0">
-                <p 
-                  class="text-base-content font-medium truncate"
-                  [class.line-through]="task.completed">
-                  {{ task.title }}
-                </p>
-                <div class="flex items-center gap-2 mt-1">
-                  <span 
-                    class="badge badge-sm"
-                    [class.badge-error]="task.priority === 'Alta'"
-                    [class.badge-warning]="task.priority === 'Media'"
-                    [class.badge-info]="task.priority === 'Baja'">
-                    {{ task.priority }}
-                  </span>
-                  <span class="text-base-content/60 text-sm flex items-center gap-1">
-                    <lucide-icon [img]="calendarIcon" class="w-3 h-3"></lucide-icon>
-                    {{ task.dueDate }}
-                  </span>
-                </div>
-              </div>
+        <div class="divider mt-2 mb-4"></div>
+        <ul class="space-y-4">
+          <li class="flex items-center gap-4">
+            <input type="checkbox" class="checkbox checkbox-sm" />
+            <div class="flex-grow">
+              <p class="font-medium">Revisar documentos pendientes</p>
+              <p class="text-sm text-base-content/60">
+                <span class="text-error font-medium">Alta</span> - Hoy
+              </p>
             </div>
-          }
-        </div>
+          </li>
+          <li class="flex items-center gap-4">
+            <input type="checkbox" class="checkbox checkbox-sm" />
+            <div class="flex-grow">
+              <p class="font-medium">Actualizar perfiles de usuario</p>
+              <p class="text-sm text-base-content/60">
+                <span class="text-warning font-medium">Media</span> - Mañana
+              </p>
+            </div>
+          </li>
+        </ul>
       </div>
-    </div>
-  </div>
-
-  <!-- Sección de acciones rápidas -->
-  <div class="bg-base-100 rounded-lg shadow p-6">
-    <h2 class="text-xl font-semibold text-base-content mb-6 flex items-center gap-2">
-      <lucide-icon [img]="chartIcon" class="w-5 h-5 text-secondary"></lucide-icon>
-      Acciones Rápidas
-    </h2>
-    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
-      <button class="btn btn-outline flex-col h-auto py-4 space-y-2">
-        <lucide-icon [img]="usersIcon" class="w-6 h-6"></lucide-icon>
-        <span class="text-sm">Gestionar Usuarios</span>
-      </button>
-      <button class="btn btn-outline flex-col h-auto py-4 space-y-2">
-        <lucide-icon [img]="filesIcon" class="w-6 h-6"></lucide-icon>
-        <span class="text-sm">Nuevo Documento</span>
-      </button>
-      <button class="btn btn-outline flex-col h-auto py-4 space-y-2">
-        <lucide-icon [img]="chartIcon" class="w-6 h-6"></lucide-icon>
-        <span class="text-sm">Ver Reportes</span>
-      </button>
-      <button class="btn btn-outline flex-col h-auto py-4 space-y-2">
-        <lucide-icon [img]="targetIcon" class="w-6 h-6"></lucide-icon>
-        <span class="text-sm">Nueva Tarea</span>
-      </button>
-      <button class="btn btn-outline flex-col h-auto py-4 space-y-2">
-        <lucide-icon [img]="calendarIcon" class="w-6 h-6"></lucide-icon>
-        <span class="text-sm">Calendario</span>
-      </button>
-      <button class="btn btn-outline flex-col h-auto py-4 space-y-2">
-        <lucide-icon [img]="activityIcon" class="w-6 h-6"></lucide-icon>
-        <span class="text-sm">Actividad</span>
-      </button>
     </div>
   </div>
 </div>

@@ -35,6 +35,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user/menus', [\App\Http\Controllers\MenuController::class, 'getUserMenus']);
     Route::get('/user/menu/{menuId}/access', [\App\Http\Controllers\MenuController::class, 'getMenuAccessLevel']);
     
+    // CRUD de usuarios
+    Route::apiResource('users', \App\Http\Controllers\Api\UserController::class);
+    
     // Otras rutas protegidas aquí...
 });
 
