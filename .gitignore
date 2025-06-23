@@ -11,6 +11,7 @@ Thumbs.db
 # Archivos de configuración globales
 .env
 .env.*
+!.env.example
 
 # Carpeta de historial de VS Code
 .history/
@@ -18,3 +19,6 @@ Thumbs.db
 # Otros archivos temporales
 *.swp
 *.swo
+
+/frontend/src/environments/environment*.ts
+!/frontend/src/environments/environment*.example.ts
