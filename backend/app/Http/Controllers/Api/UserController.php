@@ -15,6 +15,9 @@ class UserController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
+
+        
+
         try {
             // Validar parámetros de entrada
             $validated = $request->validate([
@@ -97,7 +100,7 @@ class UserController extends Controller
 
         } catch (\Exception $e) {
             \Log::error('Error en UserController@index: ' . $e->getMessage());
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Error interno del servidor',
@@ -121,7 +124,7 @@ class UserController extends Controller
             ], [
                 'name.required' => 'El nombre es requerido',
                 'name.min' => 'El nombre debe tener al menos 2 caracteres',
-                'email.required' => 'El email es requerido', 
+                'email.required' => 'El email es requerido',
                 'email.email' => 'El email debe tener un formato válido',
                 'email.unique' => 'Este email ya está registrado',
                 'password.required' => 'La contraseña es requerida',
@@ -165,7 +168,7 @@ class UserController extends Controller
 
         } catch (\Exception $e) {
             \Log::error('Error creando usuario: ' . $e->getMessage());
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Error interno del servidor al crear usuario',
@@ -217,7 +220,7 @@ class UserController extends Controller
             $validated = $request->validate($rules, [
                 'name.required' => 'El nombre es requerido',
                 'name.min' => 'El nombre debe tener al menos 2 caracteres',
-                'email.required' => 'El email es requerido', 
+                'email.required' => 'El email es requerido',
                 'email.email' => 'El email debe tener un formato válido',
                 'email.unique' => 'Este email ya está registrado por otro usuario',
                 'password.required' => 'La contraseña es requerida',
@@ -270,7 +273,7 @@ class UserController extends Controller
 
         } catch (\Exception $e) {
             \Log::error('Error actualizando usuario: ' . $e->getMessage());
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Error interno del servidor al actualizar usuario',

@@ -49,6 +49,7 @@ export class AuthService {
       )
       .subscribe(() => {
         this.currentUser.set(null); // Limpia el usuario
+        localStorage.clear(); // Limpia el localStorage
         this.router.navigate(['/auth/login']);
         console.log('🔒 Sesión cerrada');
       });

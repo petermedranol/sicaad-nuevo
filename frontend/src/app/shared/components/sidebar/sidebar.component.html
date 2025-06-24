@@ -1,21 +1,12 @@
-<div class="flex flex-col h-full min-h-0">
+<div class="flex flex-col h-full min-h-0 overflow-visible">
   <!-- Header con logo y título -->
   <div class="flex items-center justify-between h-16 px-4 border-b border-base-300/10">
-    <div class="flex items-center gap-3">
-      <div class="w-8 h-8">
-        <app-cecytec-logo
-          [showText]="false"
-          size="small"
-          [variant]="themeService.isDarkMode() ? 'dark' : 'light'"
-          class="w-full h-full">
-        </app-cecytec-logo>
-      </div>
-      @if (!isCollapsed) {
-        <div class="flex flex-col">
-          <h2 class="text-base font-semibold text-base-content">CECYTEC</h2>
-          <p class="text-xs text-base-content/70">Colegio de Estudios Científicos y Tecnológicos</p>
-        </div>
-      }
+    <div class="flex items-center gap-3 w-full">
+      <app-cecytec-logo
+        [showText]="!isCollapsed"
+        size="large"
+        [variant]="themeService.isDarkMode() ? 'dark' : 'light'">
+      </app-cecytec-logo>
     </div>
     @if (!isCollapsed) {
       <button class="btn btn-ghost btn-circle btn-sm lg:hidden" (click)="onCloseSidebar()">
@@ -25,7 +16,7 @@
   </div>
 
   <!-- Menú de navegación -->
-  <nav class="flex-1 min-h-0 p-2 space-y-1 overflow-y-auto">
+  <nav class="flex-1 min-h-0 p-2 space-y-1 overflow-visible">
     <app-sidebar-menu
       [menuItems]="menuService.filteredMenuItems()"
       [isCollapsed]="isCollapsed"

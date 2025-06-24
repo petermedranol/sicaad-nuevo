@@ -11,17 +11,12 @@ Proyecto con arquitectura separada:
 
 ```sh
 cd backend
+composer install
 cp .env.example .env
 ./vendor/bin/sail up -d
 ./vendor/bin/sail artisan key:generate
 ./vendor/bin/sail artisan migrate
 ```
-
-> Si es la primera vez, instala las dependencias de Composer:
-> 
-> ```sh
-> composer install
-> ```
 
 ### Frontend (Angular)
 

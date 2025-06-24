@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Http\Controllers\AuthController;
+use App\Http\Middleware\CheckModuleAccess as ModuleAccess;
 
 // Ruta para obtener el token CSRF (necesario para Angular)
 Route::get('/csrf-token', function () {
@@ -20,7 +21,7 @@ Route::post('/logout', function (Request $request) {
     Auth::logout();
     $request->session()->invalidate();
     $request->session()->regenerateToken();
-    
+
     return response()->json(['message' => 'Sesión cerrada exitosamente']);
 });
 
@@ -30,14 +31,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
-    
+
     // Menús del usuario
     Route::get('/user/menus', [\App\Http\Controllers\MenuController::class, 'getUserMenus']);
     Route::get('/user/menu/{menuId}/access', [\App\Http\Controllers\MenuController::class, 'getMenuAccessLevel']);
-    
-    // CRUD de usuarios
-    Route::apiResource('users', \App\Http\Controllers\Api\UserController::class);
-    
-    // Otras rutas protegidas aquí...
+
 });
 
+Route::middleware(['auth:sanctum', ModuleAccess::class . ':configuration/users'])->group(function () {
+    Route::apiResource('users', \App\Http\Controllers\Api\UserController::class);
+});

@@ -41,6 +41,32 @@ export class SidebarMenuComponent {
     'Archive': Archive
   };
 
+  hoveredItemId: string | null = null;
+
+  private hoverTimeout: any;
+
+  onMouseEnter(itemId: string, event: MouseEvent) {
+    if (this.hoverTimeout) {
+      clearTimeout(this.hoverTimeout);
+    }
+    
+    const target = event.currentTarget as HTMLElement;
+    const rect = target.getBoundingClientRect();
+    
+    // Actualizar la posición del menú
+    requestAnimationFrame(() => {
+      document.documentElement.style.setProperty('--menu-top', `${rect.top}px`);
+    });
+    
+    this.hoveredItemId = itemId;
+  }
+
+  onMouseLeave() {
+    this.hoverTimeout = setTimeout(() => {
+      this.hoveredItemId = null;
+    }, 300); // Incrementamos el delay para dar más tiempo al usuario
+  }
+
   onItemClick(item: MenuItem, event: Event) {
     event.preventDefault();
     event.stopPropagation();
@@ -67,5 +93,12 @@ export class SidebarMenuComponent {
 
   getIconByName(iconName: string) {
     return this.iconMap[iconName] || Home;
+  }
+
+  // Variable para almacenar las posiciones de los menús
+  private menuPositions = new Map<string, number>();
+
+  getMenuTopPosition(itemId: string): number {
+    return this.menuPositions.get(itemId) || 0;
   }
 }

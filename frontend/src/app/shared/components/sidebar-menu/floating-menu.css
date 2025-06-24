@@ -1,0 +1,31 @@
+.floating-submenu {
+  position: absolute;
+  left: 100%;
+  top: -10px;
+  margin-left: 5px;
+  background: rgb(31 41 55 / 0.98);
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  min-width: 200px;
+  visibility: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  z-index: 50;
+}
+
+.floating-submenu--visible {
+  visibility: visible;
+}
+
+.floating-submenu a {
+  color: white !important;
+  padding: 0.5rem 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 0.25rem;
+  transition: all 0.15s;
+}
+
+.floating-submenu a:hover {
+  background: rgba(255, 255, 255, 0.1);
+}

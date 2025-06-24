@@ -1,22 +1,19 @@
-<div class="flex items-center gap-3" [class.w-full]="showText">
-  <!-- Imagen del mapa -->
-  <div [class]="{
-    'w-6 h-6': size === 'small',
-    'w-8 h-8': size === 'medium',
-    'w-10 h-10': size === 'large'
-  }">
-    <img 
-      src="/mapa-logo.png" 
-      alt="Mapa de México" 
-      class="w-full h-full object-contain">
+<div class="cecytec-logo"
+     [ngClass]="{
+       'cecytec-logo--small': size === 'small',
+       'cecytec-logo--medium': size === 'medium',
+       'cecytec-logo--large': size === 'large'
+     }">
+  <div class="logo-container">
+    <img
+      src="/mapa-logo.png"
+      alt="Mapa de México"
+      class="logo-map-image">
+    @if (showText) {
+      <div class="logo-text" [ngClass]="{'logo-text--dark': variant === 'dark'}">
+        <div class="logo-title">CECYTEC</div>
+        <div class="logo-subtitle">Colegio de Estudios Científicos y Tecnológicos del Estado de Coahuila</div>
+      </div>
+    }
   </div>
-  
-  <!-- Texto institucional (solo si showText es true) -->
-  @if (showText) {
-    <div class="flex flex-col text-base-content">
-      <div class="text-lg font-bold leading-tight">CECYTEC</div>
-      <div class="text-xs text-base-content/70 leading-tight">Colegio de Estudios Científicos y Tecnológicos</div>
-      <div class="text-xs text-base-content/70 leading-tight">del Estado de Coahuila</div>
-    </div>
-  }
 </div>
