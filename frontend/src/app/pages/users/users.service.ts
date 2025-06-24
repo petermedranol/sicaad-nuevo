@@ -35,7 +35,7 @@ export class UsersService {
     sortOrder: string;
   }): Promise<ApiResponse> {
     const queryString = new URLSearchParams(params).toString();
-    return firstValueFrom(
+    return lastValueFrom(
       this.http.get<ApiResponse>(
         `${this.apiUrl}/users?${queryString}`,
         { withCredentials: true }
@@ -44,7 +44,7 @@ export class UsersService {
   }
 
   async createUser(userData: UserCreateFormData): Promise<ApiResponse> {
-    return firstValueFrom(
+    return lastValueFrom(
       this.http.post<ApiResponse>(
         `${this.apiUrl}/users`,
         userData,
@@ -63,7 +63,7 @@ export class UsersService {
   }
 
   async deleteUser(userId: number): Promise<ApiResponse> {
-    return firstValueFrom(
+    return lastValueFrom(
       this.http.delete<ApiResponse>(
         `${this.apiUrl}/users/${userId}`,
         { withCredentials: true }
