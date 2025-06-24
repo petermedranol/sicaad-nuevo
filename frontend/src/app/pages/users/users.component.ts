@@ -1,9 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { TopbarService } from '../../services/topbar.service';
 import { CommonModule, DatePipe } from '@angular/common';
-import { ErrorHandlerService } from '../../shared/services/error-handler.service';
-import { NotificationService } from '../../shared/services/notification.service';
-import { UsersFormService } from './services/users-form.service';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule,
   Search,
@@ -20,10 +17,18 @@ import { LucideAngularModule,
 import Swal from 'sweetalert2';
 
 import { User } from '../../auth/interfaces/user.interface';
-import { UsersService } from './users.service';
-import { USER_TABLE_CONFIG } from './config/users-table.config';
-import { BaseTableComponent } from '../../shared/components/base-table/base-table.component';
-import { PageTitleService } from '../../shared/services/page-title.service';
+import {
+  ErrorHandlerService,
+  NotificationService,
+  PageTitleService,
+  BaseTableComponent
+} from '../../shared';
+
+import {
+  UsersFormService,
+  UsersService,
+  USER_TABLE_CONFIG
+} from './';
 
 /**
  * Componente para la gestión de usuarios del sistema.
@@ -90,7 +95,7 @@ export class UsersComponent extends BaseTableComponent<User> {
         }
       ]
     });
-    this.pageTitle.setTitle('Módulo de usuarios');
+    this.pageTitle.setTitle('Usuarios');
   }
 
   /**
