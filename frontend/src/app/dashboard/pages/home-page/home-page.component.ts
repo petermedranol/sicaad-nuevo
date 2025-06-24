@@ -12,6 +12,8 @@ import {
   lucideDollarSign,
   lucideCircleCheck
 } from '@ng-icons/lucide';
+import { PageTitleService } from '../../../shared/services/page-title.service';
+import { TopbarService } from '../../../services/topbar.service';
 
 @Component({
   selector: 'app-home-page',
@@ -47,6 +49,8 @@ export class HomePageComponent implements OnInit {
   readonly listChecksIcon = 'lucideListChecks';
   readonly dollarIcon = 'lucideDollarSign';
   readonly checkIcon = 'lucideCircleCheck';
+  private readonly pageTitle = inject(PageTitleService);
+  private readonly topbarService = inject(TopbarService);
 
   // Estadísticas mock
   stats = [
@@ -136,6 +140,12 @@ export class HomePageComponent implements OnInit {
 
   ngOnInit() {
     // Component initialization
+    this.pageTitle.setTitle('Inicio');
+    this.topbarService.updateTopbar({
+      title: 'Dashboard',
+      description: 'Bienvenido al panel de control',
+      
+    });
   }
 
   // Método auxiliar para iconos de actividad

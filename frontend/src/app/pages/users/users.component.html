@@ -6,14 +6,15 @@
     <div class="card-body space-y-6 p-4 sm:p-6">
 
       <!-- Fila de Búsqueda y Filtros -->
+      <!-- Permite buscar usuarios y limpiar la búsqueda -->
       <div class="flex flex-col md:flex-row items-center justify-between gap-4">
         <div class="w-full md:max-w-xs">
           <label class="input input-bordered flex items-center gap-2">
             <input
               type="text"
               class="grow"
-              [value]="searchQuery"
-              (input)="onSearchInput($event)"
+              [value]="state().search"
+              (input)="handleSearch($event)"
               placeholder="Buscar por nombre, email, ID..."
             />
             <lucide-icon [img]="searchIcon" class="w-4 h-4 opacity-70"></lucide-icon>
@@ -27,44 +28,47 @@
         </div>
       </div>
 
+      <!-- Selector de cantidad de registros por página -->
       <div class="flex items-center gap-2 text-sm text-base-content/70">
         <span>Mostrar</span>
         <select
-          [value]="itemsPerPage"
-          (change)="onItemsPerPageChange($event)"
+          [value]="state().itemsPerPage"
+          (change)="handleItemsPerPageChange($event)"
           class="select select-bordered select-sm w-20">
-          <option value="10">10</option>
-          <option value="25">25</option>
-          <option value="50">50</option>
+          <option *ngFor="let option of config.itemsPerPageOptions"
+                  [value]="option">{{ option }}</option>
         </select>
         <span>registros</span>
       </div>
 
       <!-- Tabla de Usuarios con contenedor de carga -->
+      <!-- Muestra la lista de usuarios, estado de carga y estado vacío -->
       <div class="overflow-x-auto relative rounded-lg border border-base-200">
         <table class="table w-full">
-          <!-- head -->
+          <!-- head: Encabezados de la tabla -->
           <thead>
             <tr class="bg-base-200">
-              <th class="w-12 text-center font-bold text-base-content">#</th>
-              <th class="cursor-pointer" (click)="sortBy('name')">
+              <th *ngFor="let column of config.columns"
+                  [class.cursor-pointer]="column.sortable"
+                  [class.hidden]="!column.visible"
+                  [class.md:table-cell]="column.field !== 'id'"
+                  [class.w-12]="column.field === 'id'"
+                  [class.text-center]="column.field === 'id'"
+                  (click)="column.sortable ? sortBy(column.field) : null">
                 <div class="flex items-center gap-2 font-bold text-base-content">
-                  Nombre
-                  <lucide-icon *ngIf="sortField === 'name'" [img]="sortOrder === 'ASC' ? sortAscIcon : sortDescIcon" class="w-3 h-3"></lucide-icon>
+                  {{ column.header }}
+                  <lucide-icon *ngIf="column.sortable && state().sortField === column.field"
+                              [img]="state().sortOrder === 'ASC' ? sortAscIcon : sortDescIcon"
+                              class="w-3 h-3">
+                  </lucide-icon>
                 </div>
-              </th>
-              <th class="cursor-pointer hidden md:table-cell" (click)="sortBy('email')">
-                <div class="flex items-center gap-2 font-bold text-base-content">Email</div>
-              </th>
-              <th class="cursor-pointer hidden md:table-cell" (click)="sortBy('created_at')">
-                <div class="flex items-center gap-2 font-bold text-base-content">Fecha Registro</div>
               </th>
               <th class="w-28 text-center font-bold text-base-content">Opciones</th>
             </tr>
           </thead>
-          <!-- body -->
+          <!-- body: Filas de usuarios -->
           <tbody>
-            <tr *ngFor="let user of users()" class="hover">
+            <tr *ngFor="let user of data()" class="hover">
               <td class="text-center font-mono text-xs">#{{ user.id }}</td>
               <td>
                 <div class="font-medium truncate" title="{{ user.name }}">{{ user.name }}</div>
@@ -73,7 +77,7 @@
                 <a href="mailto:{{ user.email }}" class="hover:underline text-primary">{{ user.email }}</a>
               </td>
               <td class="hidden md:table-cell">
-                <div class="font-medium">{{ user.formatted_date }}</div>
+                <div class="font-medium">{{ user.created_at | date:'longDate':'':'es-ES' }}</div>
                 <div class="text-xs text-base-content/60">{{ user.created_at | date:'HH:mm a' }}</div>
               </td>
               <td class="text-center">
@@ -89,26 +93,27 @@
             </tr>
           </tbody>
         </table>
-        <!-- Loading State -->
-        <div *ngIf="isLoading()" class="absolute inset-0 flex items-center justify-center bg-base-100/80 z-10">
+        <!-- Loading State: Spinner mientras carga -->
+        <div *ngIf="state().loading" class="absolute inset-0 flex items-center justify-center bg-base-100/80 z-10">
           <div class="loading loading-spinner loading-lg"></div>
         </div>
-        <!-- Empty State -->
-        <div *ngIf="!isLoading() && users().length === 0" class="p-16 text-center">
+        <!-- Empty State: Mensaje cuando no hay usuarios -->
+        <div *ngIf="!state().loading && data().length === 0" class="p-16 text-center">
           <h3 class="text-lg font-semibold">No se encontraron usuarios</h3>
           <p class="text-base-content/70">Intenta ajustar tu búsqueda o filtros.</p>
         </div>
       </div>
 
       <!-- Paginación -->
-      <div *ngIf="pagination().total_pages > 1" class="flex flex-col sm:flex-row justify-between items-center gap-4 pt-4">
+      <!-- Permite navegar entre páginas de resultados -->
+      <div *ngIf="state().totalPages > 1" class="flex flex-col sm:flex-row justify-between items-center gap-4 pt-4">
           <div class="text-sm text-base-content/70">
-              Mostrando {{ pagination().from }} a {{ pagination().to }} de {{ pagination().total_records }} registros
+Mostrando {{ from }} a {{ to }} de {{ state().totalRecords }} registros
           </div>
           <div class="join">
-              <button class="join-item btn btn-sm" (click)="goToPage(pagination().current_page - 1)" [disabled]="!pagination().has_previous_page">«</button>
-              <button class="join-item btn btn-sm pointer-events-none">Página {{ pagination().current_page }}</button>
-              <button class="join-item btn btn-sm" (click)="goToPage(pagination().current_page + 1)" [disabled]="!pagination().has_next_page">»</button>
+              <button class="join-item btn btn-sm" (click)="goToPage(state().currentPage - 1)" [disabled]="state().currentPage === 1">«</button>
+              <button class="join-item btn btn-sm pointer-events-none">Página {{ state().currentPage }}</button>
+              <button class="join-item btn btn-sm" (click)="goToPage(state().currentPage + 1)" [disabled]="state().currentPage === state().totalPages">»</button>
           </div>
       </div>
 

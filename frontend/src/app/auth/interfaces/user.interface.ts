@@ -7,4 +7,5 @@ export interface User {
   updated_at: string;
   user_type_id: number;
   avatar?: string;
+  formatted_date?: string;
 }
