@@ -25,7 +25,7 @@ export class UsersFormService {
       preConfirm: () => this.validateEditForm(user)
     });
 
-    return formValues;
+return formValues ?? false;
   }
 
   async showCreateForm(): Promise<UserCreateFormData | undefined> {
@@ -42,7 +42,7 @@ export class UsersFormService {
       preConfirm: () => this.validateCreateForm()
     });
 
-    return formValues;
+return formValues ?? false;
   }
 
   private getEditFormTemplate(user: User): string {

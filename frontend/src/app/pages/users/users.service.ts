@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 import { User } from '../../auth/interfaces/user.interface';
 import { UserCreateFormData, UserUpdateFormData } from './interfaces/user-form.interface';
 
@@ -32,34 +33,42 @@ export class UsersService {
     search: string;
     sortField: string;
     sortOrder: string;
-  }) {
+  }): Promise<ApiResponse> {
     const queryString = new URLSearchParams(params).toString();
-    return this.http.get<ApiResponse>(
-      `${this.apiUrl}/users?${queryString}`,
-      { withCredentials: true }
-    ).toPromise();
+    return firstValueFrom(
+      this.http.get<ApiResponse>(
+        `${this.apiUrl}/users?${queryString}`,
+        { withCredentials: true }
+      )
+    );
   }
 
-  async createUser(userData: UserCreateFormData) {
-    return this.http.post<ApiResponse>(
-      `${this.apiUrl}/users`,
-      userData,
-      { withCredentials: true }
-    ).toPromise();
+  async createUser(userData: UserCreateFormData): Promise<ApiResponse> {
+    return firstValueFrom(
+      this.http.post<ApiResponse>(
+        `${this.apiUrl}/users`,
+        userData,
+        { withCredentials: true }
+      )
+    );
   }
 
-  async updateUser(userId: number, userData: UserUpdateFormData) {
-    return this.http.put<ApiResponse>(
-      `${this.apiUrl}/users/${userId}`,
-      userData,
-      { withCredentials: true }
-    ).toPromise();
+  async updateUser(userId: number, userData: UserUpdateFormData): Promise<ApiResponse> {
+    return firstValueFrom(
+      this.http.put<ApiResponse>(
+        `${this.apiUrl}/users/${userId}`,
+        userData,
+        { withCredentials: true }
+      )
+    );
   }
 
-  async deleteUser(userId: number) {
-    return this.http.delete<ApiResponse>(
-      `${this.apiUrl}/users/${userId}`,
-      { withCredentials: true }
-    ).toPromise();
+  async deleteUser(userId: number): Promise<ApiResponse> {
+    return firstValueFrom(
+      this.http.delete<ApiResponse>(
+        `${this.apiUrl}/users/${userId}`,
+        { withCredentials: true }
+      )
+    );
   }
 }
