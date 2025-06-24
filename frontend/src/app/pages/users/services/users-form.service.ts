@@ -8,7 +8,7 @@ import { SWEET_ALERT_DEFAULTS } from '../../../shared/constants/sweet-alert.cons
   providedIn: 'root'
 })
 export class UsersFormService {
-  async showEditForm(user: User): Promise<UserUpdateFormData | undefined> {
+  async showEditForm(user: User): Promise<UserUpdateFormData | null> {
     const { value: formValues } = await Swal.fire({
       ...SWEET_ALERT_DEFAULTS,
       title: 'Editar Usuario',
@@ -25,10 +25,10 @@ export class UsersFormService {
       preConfirm: () => this.validateEditForm(user)
     });
 
-return formValues ?? false;
+    return formValues || null;
   }
 
-  async showCreateForm(): Promise<UserCreateFormData | undefined> {
+  async showCreateForm(): Promise<UserCreateFormData | null> {
     const { value: formValues } = await Swal.fire({
       ...SWEET_ALERT_DEFAULTS,
       title: 'Nuevo Usuario',
@@ -42,7 +42,7 @@ return formValues ?? false;
       preConfirm: () => this.validateCreateForm()
     });
 
-return formValues ?? false;
+    return formValues || null;
   }
 
   private getEditFormTemplate(user: User): string {
@@ -121,6 +121,7 @@ return formValues ?? false;
   }
 
   private validateEditForm(user: User): UserUpdateFormData | false {
+    console.log('⌛ Validando formulario de edición...');
     const name = (document.getElementById('swal-edit-name') as HTMLInputElement)?.value.trim();
     const email = (document.getElementById('swal-edit-email') as HTMLInputElement)?.value.trim();
     const password = (document.getElementById('swal-edit-password') as HTMLInputElement)?.value;
@@ -174,6 +175,7 @@ return formValues ?? false;
       formData.password_confirmation = passwordConfirm;
     }
 
+    console.log('✅ Formulario validado:', formData);
     return formData;
   }
 

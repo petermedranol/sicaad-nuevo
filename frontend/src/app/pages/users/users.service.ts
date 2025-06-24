@@ -54,6 +54,7 @@ export class UsersService {
   }
 
   async updateUser(userId: number, userData: UserUpdateFormData): Promise<ApiResponse> {
+    console.log('⌛ Enviando petición de actualización:', { userId, userData });
     return firstValueFrom(
       this.http.put<ApiResponse>(
         `${this.apiUrl}/users/${userId}`,

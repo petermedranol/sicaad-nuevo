@@ -23,6 +23,7 @@ export class NotificationService {
   }
 
   async showError(title: string, message: string): Promise<void> {
+    await Swal.close(); // Cerrar cualquier modal abierto antes de mostrar el error
     await Swal.fire({
       title,
       text: message,

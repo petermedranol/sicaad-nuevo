@@ -273,8 +273,10 @@ export class UsersComponent implements OnInit {
    * Edita un usuario
    */
   async editUser(user: User): Promise<void> {
+    console.log('⌛ Iniciando edición de usuario:', user);
     const formData = await this.usersFormService.showEditForm(user);
-    if (formData) {
+    console.log('📝 Datos del formulario:', formData);
+    if (formData !== null) {
       try {
         await this.notification.showLoading('Actualizando usuario...');
         const response = await this.usersService.updateUser(user.id, formData);
@@ -296,7 +298,7 @@ export class UsersComponent implements OnInit {
    */
   async createUser(): Promise<void> {
     const formData = await this.usersFormService.showCreateForm();
-    if (formData) {
+    if (formData !== null) {
       try {
         await this.notification.showLoading('Creando usuario...');
         const response = await this.usersService.createUser(formData);
