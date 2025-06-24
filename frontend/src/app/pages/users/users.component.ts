@@ -1,9 +1,18 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, signal, inject, LOCALE_ID } from '@angular/core';
 import { TopbarService } from '../../services/topbar.service';
 import { ThemeService } from '../../shared/services/theme.service';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
+import { registerLocaleData } from '@angular/common';
+import localeEs from '@angular/common/locales/es';
+
+import { ErrorHandlerService } from '../../shared/services/error-handler.service';
+import { NotificationService } from '../../shared/services/notification.service';
+import { PaginationService } from '../../shared/services/pagination.service';
+import { UsersFormService } from './services/users-form.service';
+import { UserFormData, UserState, UserFilters } from './interfaces/user-form.interface';
+
+registerLocaleData(localeEs);
 import { FormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
 import { LucideAngularModule,
   Search,
   Edit,
@@ -18,39 +27,10 @@ import { LucideAngularModule,
 } from 'lucide-angular';
 import Swal from 'sweetalert2';
 
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  created_at: string;
-  updated_at: string;
-  formatted_date: string;
-}
+import { User } from '../../auth/interfaces/user.interface';
+import { UserFormData } from './interfaces';
+import { UsersService, PaginationInfo } from './users.service';
 
-interface PaginationInfo {
-  current_page: number;
-  per_page: number;
-  total_records: number;
-  total_pages: number;
-  has_next_page: boolean;
-  has_previous_page: boolean;
-  from: number;
-  to: number;
-}
-
-interface ApiResponse {
-  success: boolean;
-  data: {
-    users: User[];
-    pagination: PaginationInfo;
-    filters: {
-      search: string;
-      sort_field: string;
-      sort_order: string;
-    };
-  };
-  message: string;
-}
 
 @Component({
   selector: 'app-users',
@@ -58,16 +38,46 @@ interface ApiResponse {
   imports: [
     CommonModule,
     FormsModule,
-    LucideAngularModule
+    LucideAngularModule,
+    DatePipe
+  ],
+  providers: [
+    { provide: LOCALE_ID, useValue: 'es-ES' }
   ],
   templateUrl: './users.component.html'
 })
 export class UsersComponent implements OnInit {
   // Servicios
-  private http = inject(HttpClient);
-  private topbarService = inject(TopbarService);
-  themeService = inject(ThemeService);
-  private readonly apiUrl = 'http://localhost/api';
+  private readonly usersService = inject(UsersService);
+  private readonly usersFormService = inject(UsersFormService);
+  private readonly topbarService = inject(TopbarService);
+  private readonly errorHandler = inject(ErrorHandlerService);
+  private readonly notification = inject(NotificationService);
+  private readonly paginationService = inject(PaginationService);
+  readonly themeService = inject(ThemeService);
+
+  // Estado
+  readonly state = signal<UserState>({
+    users: [],
+    pagination: {
+      current_page: 1,
+      per_page: 10,
+      total_records: 0,
+      total_pages: 0,
+      has_next_page: false,
+      has_previous_page: false,
+      from: 0,
+      to: 0
+    },
+    filters: {
+      page: '1',
+      limit: '10',
+      search: '',
+      sortField: 'name',
+      sortOrder: 'ASC'
+    },
+    isLoading: false
+  });
 
   // Iconos
   readonly searchIcon = Search;
@@ -127,24 +137,18 @@ export class UsersComponent implements OnInit {
     this.isLoading.set(true);
 
     try {
-      const params = {
+      const response = await this.usersService.getUsers({
         page: this.pagination().current_page.toString(),
         limit: this.itemsPerPage.toString(),
         search: this.searchQuery,
         sortField: this.sortField,
         sortOrder: this.sortOrder
-      };
-
-      const queryString = new URLSearchParams(params).toString();
-      const response = await this.http.get<ApiResponse>(
-        `${this.apiUrl}/users?${queryString}`,
-        { withCredentials: true }
-      ).toPromise();
+      });
 
       if (response?.success) {
         this.users.set(response.data.users);
         this.pagination.set(response.data.pagination);
-        
+
       } else {
         console.error('❌ Error en respuesta:', response?.message);
       }
@@ -237,267 +241,76 @@ export class UsersComponent implements OnInit {
   }
 
   /**
-   * Elimina un usuario (placeholder)
+   * Elimina un usuario
    */
-  async deleteUser(user: User) {
-    if (confirm(`¿Está seguro de eliminar al usuario ${user.name}?`)) {
-      // TODO: Implementar eliminación real
-      console.log('Eliminando usuario:', user.id);
-      // Recargar después de eliminar
-      // await this.loadUsers();
+  async deleteUser(user: User): Promise<void> {
+    const confirmed = await this.notification.showConfirmation({
+      title: '¿Eliminar usuario?',
+      message: `¿Está seguro de eliminar al usuario "${user.name}"?`,
+      confirmText: 'Sí, eliminar',
+      cancelText: 'Cancelar'
+    });
+
+    if (confirmed) {
+      try {
+        await this.notification.showLoading('Eliminando usuario...');
+        const response = await this.usersService.deleteUser(user.id);
+
+        if (response?.success) {
+          await this.notification.showSuccess('Usuario eliminado');
+          await this.loadUsers();
+        } else {
+          throw new Error(response?.message || 'Error desconocido');
+        }
+      } catch (error) {
+        await this.errorHandler.handleApiError(error, 'Error al eliminar usuario');
+      }
     }
   }
 
   /**
    * Edita un usuario
    */
-  async editUser(user: User) {
-    const { value: formValues } = await Swal.fire({
-      title: 'Editar Usuario',
-      html: `
-        <form id="swal-edit-form" class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
-          <!-- Nombre -->
-          <div class="form-control">
-            <label class="label" for="swal-edit-name">
-              <span class="label-text font-semibold">Nombre *</span>
-            </label>
-            <input id="swal-edit-name" class="input input-bordered w-full" value="${user.name}" placeholder="Nombre completo">
-          </div>
-          <!-- Email -->
-          <div class="form-control">
-            <label class="label" for="swal-edit-email">
-              <span class="label-text font-semibold">Email *</span>
-            </label>
-            <input id="swal-edit-email" type="email" class="input input-bordered w-full" value="${user.email}" placeholder="usuario@dominio.com">
-          </div>
-          <!-- Nueva Contraseña -->
-          <div class="form-control">
-            <label class="label" for="swal-edit-password">
-              <span class="label-text font-semibold">Nueva Contraseña</span>
-            </label>
-            <input id="swal-edit-password" type="password" class="input input-bordered w-full" placeholder="Dejar vacío para mantener actual">
-            <span class="label-text-alt text-xs text-base-content/60">Solo llene si desea cambiar la contraseña</span>
-          </div>
-          <!-- Confirmar Contraseña -->
-          <div class="form-control">
-            <label class="label" for="swal-edit-password-confirm">
-              <span class="label-text font-semibold">Confirmar Nueva Contraseña</span>
-            </label>
-            <input id="swal-edit-password-confirm" type="password" class="input input-bordered w-full" placeholder="Confirme la nueva contraseña">
-          </div>
-          <!-- Nota -->
-          <div class="col-span-1 md:col-span-2 text-xs text-base-content/60 mt-1 text-center">* Campos requeridos</div>
-        </form>
-      `,
-      focusConfirm: false,
-      showCancelButton: true,
-      confirmButtonText: 'Actualizar Usuario',
-      cancelButtonText: 'Cancelar',
-      confirmButtonColor: '#667eea',
-      cancelButtonColor: '#6b7280',
-      width: window.innerWidth <= 768 ? '100%' : '44rem',
-      padding: 0,
-      customClass: {
-        popup: 'user-edit-popup'
-      },
-      preConfirm: () => {
-        const name = (document.getElementById('swal-edit-name') as HTMLInputElement)?.value;
-        const email = (document.getElementById('swal-edit-email') as HTMLInputElement)?.value;
-        const password = (document.getElementById('swal-edit-password') as HTMLInputElement)?.value;
-        const passwordConfirm = (document.getElementById('swal-edit-password-confirm') as HTMLInputElement)?.value;
-
-        // Validaciones
-        if (!name || !email) {
-          Swal.showValidationMessage('Nombre y email son requeridos');
-          return false;
-        }
-
-        if (name.length < 2) {
-          Swal.showValidationMessage('El nombre debe tener al menos 2 caracteres');
-          return false;
-        }
-
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-          Swal.showValidationMessage('El email debe tener un formato válido');
-          return false;
-        }
-
-        // Validar contraseña solo si se proporcionó
-        if (password && password.length > 0) {
-          if (password.length < 8) {
-            Swal.showValidationMessage('La nueva contraseña debe tener al menos 8 caracteres');
-            return false;
-          }
-
-          if (password !== passwordConfirm) {
-            Swal.showValidationMessage('Las contraseñas no coinciden');
-            return false;
-          }
-        }
-
-        // Detectar cambios comparando con datos originales
-        const trimmedName = name.trim();
-        const trimmedEmail = email.trim();
-        const hasPasswordChange = password && password.length > 0;
-
-        // Verificar si hay cambios reales
-        const hasNameChange = trimmedName !== user.name;
-        const hasEmailChange = trimmedEmail !== user.email;
-        const hasAnyChange = hasNameChange || hasEmailChange || hasPasswordChange;
-
-        if (!hasAnyChange) {
-          Swal.showValidationMessage('No se han detectado cambios para actualizar');
-          return false;
-        }
-
-        const updateData: any = {
-          name: trimmedName,
-          email: trimmedEmail
-        };
-
-        // Solo incluir contraseña si se proporcionó
-        if (hasPasswordChange) {
-          updateData.password = password;
-          updateData.password_confirmation = passwordConfirm;
-        }
-
-        return updateData;
-      }
-    });
-
-    if (formValues) {
-      await this.submitEditUser(user.id, formValues);
-    }
-  }
-
-  /**
-   * Crea un nuevo usuario (formulario igual al de editar)
-   */
-  async createUser() {
-    const { value: formValues } = await Swal.fire({
-      title: 'Nuevo Usuario',
-      html: `
-        <form id="swal-new-form" class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
-          <!-- Nombre -->
-          <div class="form-control">
-            <label class="label" for="swal-new-name">
-              <span class="label-text font-semibold">Nombre *</span>
-            </label>
-            <input id="swal-new-name" type="text" class="input input-bordered w-full" placeholder="Nombre completo" required>
-          </div>
-          <!-- Email -->
-          <div class="form-control">
-            <label class="label" for="swal-new-email">
-              <span class="label-text font-semibold">Email *</span>
-            </label>
-            <input id="swal-new-email" type="email" class="input input-bordered w-full" placeholder="usuario@dominio.com" required>
-          </div>
-          <!-- Contraseña -->
-          <div class="form-control">
-            <label class="label" for="swal-new-password">
-              <span class="label-text font-semibold">Contraseña *</span>
-            </label>
-            <input id="swal-new-password" type="password" class="input input-bordered w-full" placeholder="Mínimo 8 caracteres" required>
-          </div>
-          <!-- Confirmar Contraseña -->
-          <div class="form-control">
-            <label class="label" for="swal-new-password-confirm">
-              <span class="label-text font-semibold">Confirmar Contraseña *</span>
-            </label>
-            <input id="swal-new-password-confirm" type="password" class="input input-bordered w-full" placeholder="Repite la contraseña" required>
-          </div>
-          <!-- Nota -->
-          <div class="col-span-1 md:col-span-2 text-xs text-base-content/60 mt-1 text-center">* Campos requeridos</div>
-        </form>
-      `,
-      focusConfirm: false,
-      showCancelButton: true,
-      confirmButtonText: 'Crear Usuario',
-      cancelButtonText: 'Cancelar',
-      confirmButtonColor: '#667eea',
-      cancelButtonColor: '#6b7280',
-      width: window.innerWidth <= 768 ? '100%' : '44rem',
-      padding: 0,
-      preConfirm: () => {
-        const name = (document.getElementById('swal-new-name') as HTMLInputElement)?.value.trim();
-        const email = (document.getElementById('swal-new-email') as HTMLInputElement)?.value.trim();
-        const password = (document.getElementById('swal-new-password') as HTMLInputElement)?.value;
-        const passwordConfirm = (document.getElementById('swal-new-password-confirm') as HTMLInputElement)?.value;
-
-        if (!name || !email || !password || !passwordConfirm) {
-          Swal.showValidationMessage('Todos los campos son requeridos');
-          return false;
-        }
-        if (name.length < 2) {
-          Swal.showValidationMessage('El nombre debe tener al menos 2 caracteres');
-          return false;
-        }
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-          Swal.showValidationMessage('El email debe tener un formato válido');
-          return false;
-        }
-        if (password.length < 8) {
-          Swal.showValidationMessage('La contraseña debe tener al menos 8 caracteres');
-          return false;
-        }
-        if (password !== passwordConfirm) {
-          Swal.showValidationMessage('Las contraseñas no coinciden');
-          return false;
-        }
-        return { name, email, password, password_confirmation: passwordConfirm };
-      }
-    });
-
-    if (formValues) {
+  async editUser(user: User): Promise<void> {
+    const formData = await this.usersFormService.showEditForm(user);
+    if (formData) {
       try {
-        Swal.fire({
-          title: 'Creando usuario...',
-          allowOutsideClick: false,
-          didOpen: () => Swal.showLoading()
-        });
-        const response: any = await this.http.post(
-          `${this.apiUrl}/users`,
-          formValues,
-          { withCredentials: true }
-        ).toPromise();
+        await this.notification.showLoading('Actualizando usuario...');
+        const response = await this.usersService.updateUser(user.id, formData);
+
         if (response?.success) {
-          await Swal.fire({
-            icon: 'success',
-            title: '¡Usuario creado!',
-            text: `Usuario ${formValues.name} creado exitosamente`,
-            confirmButtonColor: '#667eea'
-          });
-          this.loadUsers();
+          await this.notification.showSuccess('¡Usuario actualizado!');
+          await this.loadUsers();
         } else {
           throw new Error(response?.message || 'Error desconocido');
         }
-      } catch (error: any) {
-        let errorMessage = 'Error interno del servidor';
-        if (error.error?.errors) {
-          const errors = error.error.errors;
-          const errorMessages = Object.values(errors).flat();
-          errorMessage = errorMessages.join('\n');
-        } else if (error.error?.message) {
-          errorMessage = error.error.message;
-        } else if (error.message) {
-          errorMessage = error.message;
-        }
-        await Swal.fire({
-          icon: 'error',
-          title: 'Error al crear usuario',
-          text: errorMessage,
-          confirmButtonColor: '#667eea'
-        });
+      } catch (error) {
+        await this.errorHandler.handleApiError(error, 'Error al actualizar usuario');
       }
     }
   }
 
   /**
-   * Envía los datos de actualización del usuario al servidor
+   * Crea un nuevo usuario
    */
-  private async submitEditUser(userId: number, userData: any) {
+  async createUser(): Promise<void> {
+    const formData = await this.usersFormService.showCreateForm();
+    if (formData) {
+      try {
+        await this.notification.showLoading('Creando usuario...');
+        const response = await this.usersService.createUser(formData);
+
+        if (response?.success) {
+          await this.notification.showSuccess('¡Usuario creado!');
+          await this.loadUsers();
+        } else {
+          throw new Error(response?.message || 'Error desconocido');
+        }
+      } catch (error) {
+        await this.errorHandler.handleApiError(error, 'Error al crear usuario');
+      }
+    }
+  }
     try {
       // Mostrar loading
       Swal.fire({
@@ -510,19 +323,23 @@ export class UsersComponent implements OnInit {
       });
 
       // Enviar petición al servidor
-      const response = await this.http.put<any>(
-        `${this.apiUrl}/users/${userId}`,
-        userData,
-        { withCredentials: true }
-      ).toPromise();
+      const response = await this.usersService.updateUser(userId, userData);
 
       if (response?.success) {
         // Éxito
         await Swal.fire({
+          toast: true,
+          position: 'top',
           icon: 'success',
           title: '¡Usuario actualizado!',
-          text: `Usuario ${userData.name} actualizado exitosamente`,
-          confirmButtonColor: '#667eea'
+          showConfirmButton: false,
+          timer: 2500,
+          timerProgressBar: true,
+          background: '#22c55e', // Verde (Tailwind: green-500)
+          color: '#fff',         // Texto blanco
+          customClass: {
+            popup: 'swal2-toast'
+          }
         });
 
         // Recargar la tabla

@@ -73,7 +73,7 @@
                 <a href="mailto:{{ user.email }}" class="hover:underline text-primary">{{ user.email }}</a>
               </td>
               <td class="hidden md:table-cell">
-                <div class="font-medium">{{ user.formatted_date }}</div>
+                <div class="font-medium">{{ user.created_at | date:'longDate':'':'es-ES' }}</div>
                 <div class="text-xs text-base-content/60">{{ user.created_at | date:'HH:mm a' }}</div>
               </td>
               <td class="text-center">

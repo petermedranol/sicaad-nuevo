@@ -16,7 +16,7 @@ class UserController extends Controller
     public function index(Request $request): JsonResponse
     {
 
-        
+
 
         try {
             // Validar parámetros de entrada
@@ -287,10 +287,29 @@ class UserController extends Controller
      */
     public function destroy(User $user): JsonResponse
     {
-        // TODO: Implementar eliminación de usuario
-        return response()->json([
-            'success' => false,
-            'message' => 'Método no implementado aún'
-        ], 501);
+        try {
+            
+            if (auth()->id() === $user->id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No puedes eliminar tu propio usuario'
+                ], 403);
+            }
+
+            $user->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Usuario eliminado exitosamente'
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error eliminando usuario: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Error interno del servidor al eliminar usuario',
+                'error' => 'DELETE_ERROR'
+            ], 500);
+        }
     }
 }
