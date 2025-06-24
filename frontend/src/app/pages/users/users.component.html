@@ -9,10 +9,12 @@
       <!-- Permite buscar usuarios y limpiar la búsqueda -->
       <div class="flex flex-col md:flex-row items-center justify-between gap-4">
         <div class="w-full md:max-w-xs">
-          <label class="input input-bordered flex items-center gap-2">
+          <label class="input input-bordered flex items-center gap-2" for="search-users">
             <input
               type="text"
+              id="search-users"
               class="grow"
+              [attr.aria-label]="'Buscar usuarios'"
               [value]="state().search"
               (input)="handleSearch($event)"
               placeholder="Buscar por nombre, email, ID..."
@@ -34,7 +36,8 @@
         <select
           [value]="state().itemsPerPage"
           (change)="handleItemsPerPageChange($event)"
-          class="select select-bordered select-sm w-20">
+          class="select select-bordered select-sm w-20"
+          [attr.aria-label]="'Registros por página'">
           <option *ngFor="let option of config.itemsPerPageOptions"
                   [value]="option">{{ option }}</option>
         </select>
@@ -44,7 +47,7 @@
       <!-- Tabla de Usuarios con contenedor de carga -->
       <!-- Muestra la lista de usuarios, estado de carga y estado vacío -->
       <div class="overflow-x-auto relative rounded-lg border border-base-200">
-        <table class="table w-full">
+        <table class="table w-full" role="grid" [attr.aria-label]="'Lista de usuarios'">
           <!-- head: Encabezados de la tabla -->
           <thead>
 <tr class="bg-base-200">
@@ -104,10 +107,18 @@
                 </td>
                 <td class="text-center">
                   <div class="flex justify-center gap-1">
-                    <button class="btn btn-ghost btn-xs btn-square" (click)="editUser(user)" title="Editar">
+            <button 
+              class="btn btn-ghost btn-xs btn-square" 
+              (click)="editUser(user)" 
+              title="Editar"
+              [attr.aria-label]="'Editar usuario ' + user.name">
                       <lucide-icon [img]="editIcon" class="w-4 h-4"></lucide-icon>
                     </button>
-                    <button class="btn btn-ghost btn-xs btn-square text-error" (click)="deleteUser(user)" title="Eliminar">
+            <button 
+              class="btn btn-ghost btn-xs btn-square text-error" 
+              (click)="deleteUser(user)" 
+              title="Eliminar"
+              [attr.aria-label]="'Eliminar usuario ' + user.name">
                       <lucide-icon [img]="trashIcon" class="w-4 h-4"></lucide-icon>
                     </button>
                   </div>
@@ -139,9 +150,21 @@
             Mostrando {{ from }} a {{ to }} de {{ state().totalRecords }} registros
           </div>
           <div class="join">
-            <button class="join-item btn btn-sm" (click)="goToPage(state().currentPage - 1)" [disabled]="state().currentPage === 1">«</button>
+            <button 
+              class="join-item btn btn-sm" 
+              (click)="goToPage(state().currentPage - 1)" 
+              [disabled]="state().currentPage === 1"
+              [attr.aria-label]="'Página anterior'">
+              «
+            </button>
             <button class="join-item btn btn-sm pointer-events-none">Página {{ state().currentPage }}</button>
-            <button class="join-item btn btn-sm" (click)="goToPage(state().currentPage + 1)" [disabled]="state().currentPage === state().totalPages">»</button>
+            <button 
+              class="join-item btn btn-sm" 
+              (click)="goToPage(state().currentPage + 1)" 
+              [disabled]="state().currentPage === state().totalPages"
+              [attr.aria-label]="'Página siguiente'">
+              »
+            </button>
           </div>
         </div>
       }

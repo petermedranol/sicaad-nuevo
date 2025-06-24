@@ -7,12 +7,11 @@ import { LucideAngularModule,
   Edit,
   Trash2,
   RotateCcw,
-  ChevronLeft,
-  ChevronRight,
   Plus,
   ArrowUp,
   ArrowDown,
-  Users
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-angular';
 import Swal from 'sweetalert2';
 
@@ -23,6 +22,7 @@ import {
   PageTitleService,
   BaseTableComponent
 } from '../../shared';
+import { PaginationService } from '../../shared/services/pagination.service';
 
 import {
   UsersFormService,
@@ -52,6 +52,7 @@ export class UsersComponent extends BaseTableComponent<User> {
   private readonly errorHandler = inject(ErrorHandlerService);
   private readonly notification = inject(NotificationService);
   private readonly pageTitle = inject(PageTitleService);
+  private readonly paginationService = inject(PaginationService);
 
   // === Iconos ===
   readonly searchIcon = Search;
@@ -63,7 +64,6 @@ export class UsersComponent extends BaseTableComponent<User> {
   readonly plusIcon = Plus;
   readonly sortAscIcon = ArrowUp;
   readonly sortDescIcon = ArrowDown;
-  readonly usersIcon = Users;
 
   // === Configuración de tabla ===
   override config = USER_TABLE_CONFIG;
@@ -237,20 +237,26 @@ export class UsersComponent extends BaseTableComponent<User> {
   }
 
   /**
-   * Genera los números de página para la paginación.
-   */
-  /**
    * Retorna solo las columnas visibles de la tabla.
    */
   get visibleColumns() {
     return this.config.columns.filter(column => column.visible);
   }
 
+  /**
+   * Devuelve el rango de páginas para la paginación
+   */
   override get pageNumbers(): number[] {
-    return this.tableService.calculatePageRange(
-      this.state().currentPage,
-      this.state().totalPages
-    );
+    return this.paginationService.calculatePageRange({
+      current_page: this.state().currentPage,
+      total_pages: this.state().totalPages,
+      per_page: this.state().itemsPerPage,
+      total_records: this.state().totalRecords,
+      has_next_page: this.state().currentPage < this.state().totalPages,
+      has_previous_page: this.state().currentPage > 1,
+      from: (this.state().currentPage - 1) * this.state().itemsPerPage + 1,
+      to: Math.min(this.state().currentPage * this.state().itemsPerPage, this.state().totalRecords)
+    }).pages;
   }
 }
 
