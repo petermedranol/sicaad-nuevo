@@ -47,27 +47,46 @@
         <table class="table w-full">
           <!-- head: Encabezados de la tabla -->
           <thead>
-            <tr class="bg-base-200">
-              @for (column of config.columns; track column.field) {
-                <th
-                  [class.cursor-pointer]="column.sortable"
-                  [class.hidden]="!column.visible"
-                  [class.md:table-cell]="column.field !== 'id'"
-                  [class.w-12]="column.field === 'id'"
-                  [class.text-center]="column.field === 'id'"
-                  (click)="column.sortable ? sortBy(column.field) : null">
-                  <div class="flex items-center gap-2 font-bold text-base-content">
-                    {{ column.header }}
-                    <lucide-icon *ngIf="column.sortable && state().sortField === column.field"
+<tr class="bg-base-200">
+                <th class="w-12 text-center cursor-pointer font-bold text-base-content" (click)="sortBy('id')">
+                  <div class="flex items-center gap-2 justify-center">
+                    #
+                    <lucide-icon *ngIf="state().sortField === 'id'"
                                 [img]="state().sortOrder === 'ASC' ? sortAscIcon : sortDescIcon"
                                 class="w-3 h-3">
                     </lucide-icon>
                   </div>
                 </th>
-              }
-              <th class="w-28 text-center font-bold text-base-content">Opciones</th>
-            </tr>
-          </thead>
+                <th class="cursor-pointer font-bold text-base-content" (click)="sortBy('name')">
+                  <div class="flex items-center gap-2">
+                    Nombre
+                    <lucide-icon *ngIf="state().sortField === 'name'"
+                                [img]="state().sortOrder === 'ASC' ? sortAscIcon : sortDescIcon"
+                                class="w-3 h-3">
+                    </lucide-icon>
+                  </div>
+                </th>
+                <th class="hidden md:table-cell cursor-pointer font-bold text-base-content" (click)="sortBy('email')">
+                  <div class="flex items-center gap-2">
+                    Email
+                    <lucide-icon *ngIf="state().sortField === 'email'"
+                                [img]="state().sortOrder === 'ASC' ? sortAscIcon : sortDescIcon"
+                                class="w-3 h-3">
+                    </lucide-icon>
+                  </div>
+                </th>
+                <th class="hidden md:table-cell cursor-pointer font-bold text-base-content" (click)="sortBy('created_at')">
+                  <div class="flex items-center gap-2">
+                    Fecha Registro
+                    <lucide-icon *ngIf="state().sortField === 'created_at'"
+                                [img]="state().sortOrder === 'ASC' ? sortAscIcon : sortDescIcon"
+                                class="w-3 h-3">
+                    </lucide-icon>
+                  </div>
+                </th>
+                <th class="w-28 text-center font-bold text-base-content">Opciones</th>
+              </tr>
+            </thead>
           <!-- body: Filas de usuarios -->
           <tbody>
             @for (user of data(); track user.id) {

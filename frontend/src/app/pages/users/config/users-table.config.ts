@@ -19,13 +19,13 @@ export const USER_TABLE_CONFIG: TableConfig<User> = {
       field: 'email' as keyof User,
       header: 'Email',
       sortable: true,
-      visible: true
+      visible: false
     },
     {
       field: 'created_at' as keyof User,
       header: 'Fecha Registro',
       sortable: true,
-      visible: true,
+      visible: false,
       format: (value: string) => new Date(value).toLocaleDateString('es-ES', {
         year: 'numeric',
         month: 'long',

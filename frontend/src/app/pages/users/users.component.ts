@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { TopbarService } from '../../services/topbar.service';
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule,
   Search,
@@ -40,8 +40,7 @@ import {
   imports: [
     CommonModule,
     FormsModule,
-    LucideAngularModule,
-    DatePipe
+    LucideAngularModule
   ],
   templateUrl: './users.component.html'
 })
@@ -240,6 +239,13 @@ export class UsersComponent extends BaseTableComponent<User> {
   /**
    * Genera los números de página para la paginación.
    */
+  /**
+   * Retorna solo las columnas visibles de la tabla.
+   */
+  get visibleColumns() {
+    return this.config.columns.filter(column => column.visible);
+  }
+
   override get pageNumbers(): number[] {
     return this.tableService.calculatePageRange(
       this.state().currentPage,
