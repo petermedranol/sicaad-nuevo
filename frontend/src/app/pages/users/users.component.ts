@@ -9,7 +9,7 @@ import { ErrorHandlerService } from '../../shared/services/error-handler.service
 import { NotificationService } from '../../shared/services/notification.service';
 import { PaginationService } from '../../shared/services/pagination.service';
 import { UsersFormService } from './services/users-form.service';
-import { UserFormData, UserState, UserFilters } from './interfaces/user-form.interface';
+import { UserCreateFormData, UserUpdateFormData, UserState, UserFilters } from './interfaces/user-form.interface';
 
 registerLocaleData(localeEs);
 import { FormsModule } from '@angular/forms';

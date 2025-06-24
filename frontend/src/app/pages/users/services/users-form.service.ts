@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import Swal from 'sweetalert2';
 import { User } from '../../../auth/interfaces/user.interface';
-import { UserFormData } from '../interfaces/user-form.interface';
+import { UserCreateFormData, UserUpdateFormData } from '../interfaces/user-form.interface';
 import { SWEET_ALERT_DEFAULTS } from '../../../shared/constants/sweet-alert.constants';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UsersFormService {
-  async showEditForm(user: User): Promise<UserFormData | undefined> {
+  async showEditForm(user: User): Promise<UserUpdateFormData | undefined> {
     const { value: formValues } = await Swal.fire({
       ...SWEET_ALERT_DEFAULTS,
       title: 'Editar Usuario',
@@ -28,7 +28,7 @@ export class UsersFormService {
     return formValues;
   }
 
-  async showCreateForm(): Promise<UserFormData | undefined> {
+  async showCreateForm(): Promise<UserCreateFormData | undefined> {
     const { value: formValues } = await Swal.fire({
       ...SWEET_ALERT_DEFAULTS,
       title: 'Nuevo Usuario',
@@ -120,7 +120,7 @@ export class UsersFormService {
     `;
   }
 
-  private validateEditForm(user: User): UserFormData | false {
+  private validateEditForm(user: User): UserUpdateFormData | false {
     const name = (document.getElementById('swal-edit-name') as HTMLInputElement)?.value.trim();
     const email = (document.getElementById('swal-edit-email') as HTMLInputElement)?.value.trim();
     const password = (document.getElementById('swal-edit-password') as HTMLInputElement)?.value;
@@ -164,7 +164,7 @@ export class UsersFormService {
       return false;
     }
 
-    const formData: UserFormData = {
+    const formData: UserUpdateFormData = {
       name,
       email
     };
@@ -177,7 +177,7 @@ export class UsersFormService {
     return formData;
   }
 
-  private validateCreateForm(): UserFormData | false {
+  private validateCreateForm(): UserCreateFormData | false {
     const name = (document.getElementById('swal-new-name') as HTMLInputElement)?.value.trim();
     const email = (document.getElementById('swal-new-email') as HTMLInputElement)?.value.trim();
     const password = (document.getElementById('swal-new-password') as HTMLInputElement)?.value;

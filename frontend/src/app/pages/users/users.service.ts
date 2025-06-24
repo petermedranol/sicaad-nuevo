@@ -1,17 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { User } from '../../auth/interfaces/user.interface';
+import { UserCreateFormData, UserUpdateFormData } from './interfaces/user-form.interface';
 
-export interface PaginationInfo {
-  current_page: number;
-  per_page: number;
-  total_records: number;
-  total_pages: number;
-  has_next_page: boolean;
-  has_previous_page: boolean;
-  from: number;
-  to: number;
-}
+import { PaginationInfo } from '../../shared/services/pagination.service';
 
 export interface ApiResponse {
   success: boolean;
@@ -25,20 +17,6 @@ export interface ApiResponse {
     };
   };
   message: string;
-}
-
-export interface UserCreateData {
-  name: string;
-  email: string;
-  password: string;
-  password_confirmation: string;
-}
-
-export interface UserUpdateData {
-  name: string;
-  email: string;
-  password?: string;
-  password_confirmation?: string;
 }
 
 @Injectable({
@@ -62,7 +40,7 @@ export class UsersService {
     ).toPromise();
   }
 
-  async createUser(userData: UserCreateData) {
+  async createUser(userData: UserCreateFormData) {
     return this.http.post<ApiResponse>(
       `${this.apiUrl}/users`,
       userData,
@@ -70,7 +48,7 @@ export class UsersService {
     ).toPromise();
   }
 
-  async updateUser(userId: number, userData: UserUpdateData) {
+  async updateUser(userId: number, userData: UserUpdateFormData) {
     return this.http.put<ApiResponse>(
       `${this.apiUrl}/users/${userId}`,
       userData,
