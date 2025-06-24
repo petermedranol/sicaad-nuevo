@@ -40,3 +40,8 @@
   color: #9ca3af !important;
   opacity: 0.8 !important;
 }
+
+/* Ajuste de padding para contenedor de botones */
+.swal2-actions {
+  padding-bottom: 1rem !important;
+}
