@@ -10,7 +10,7 @@ import { ApiMenuResponse, ApiMenuItem, MenuAccessResponse } from '../interfaces/
 export class MenuService {
   private http = inject(HttpClient);
   private readonly apiUrl = 'http://localhost/api';
-  
+
   // Claves para localStorage
   private readonly STORAGE_KEYS = {
     MENU_ITEMS: 'sicaad_menu_items',
@@ -20,59 +20,57 @@ export class MenuService {
     SEARCH_QUERY: 'sicaad_search_query',
     LAST_SYNC: 'sicaad_menu_last_sync'
   };
-  
+
   // Tiempo de caché en milisegundos (30 minutos)
   private readonly CACHE_DURATION = 30 * 60 * 1000;
-  
+
   // Signal para los menús cargados desde el backend
   private _menuItems = signal<MenuItem[]>([]);
   public menuItems = this._menuItems.asReadonly();
-  
+
   // Signal para items expandidos
   private _expandedItems = signal<Set<string>>(new Set<string>());
   public expandedItems = this._expandedItems.asReadonly();
-  
+
   // Signal para el item activo
   private _activeItemId = signal<string>('dashboard');
   public activeItemId = this._activeItemId.asReadonly();
-  
+
   // Signal para el loading
   private _loading = signal<boolean>(false);
   public loading = this._loading.asReadonly();
-  
+
   // Signal para errores
   private _error = signal<string | null>(null);
   public error = this._error.asReadonly();
-  
+
   // Signal para información del usuario
   private _userInfo = signal<any>(null);
   public userInfo = this._userInfo.asReadonly();
-  
+
   // Signal para la búsqueda
   private _searchQuery = signal<string>('');
   public searchQuery = this._searchQuery.asReadonly();
-  
+
   // Getter para compatibilidad con componentes existentes
   public get currentSearchQuery(): string {
     return this._searchQuery();
   }
-  
+
   // Computed para verificar si hay menús cargados
   public hasMenus = computed(() => this._menuItems().length > 0);
-  
+
   // Computed para menús filtrados
   public filteredMenuItems = computed(() => {
     const query = this._searchQuery().toLowerCase().trim();
     if (!query) {
       return this._menuItems();
     }
-    
+
     return this.filterMenuItemsWithParents(this._menuItems(), query);
   });
-  
+
   constructor() {
-    console.log('🔧 MenuService iniciado con API backend');
-    console.log('🔍 Verificando localStorage disponible:', typeof localStorage !== 'undefined');
     // Cargar datos persistidos al inicializar
     this.loadFromStorage();
   }
@@ -85,40 +83,36 @@ export class MenuService {
       console.log('🚨 INICIO loadUserMenus() - MÉTODO LLAMADO');
       this._loading.set(true);
       this._error.set(null);
-      
+
       console.log('🌐 Cargando menús del usuario desde backend...');
-      
+
       const response = await firstValueFrom(
-        this.http.get<ApiMenuResponse>(`${this.apiUrl}/user/menus`, { 
-          withCredentials: true 
+        this.http.get<ApiMenuResponse>(`${this.apiUrl}/user/menus`, {
+          withCredentials: true
         })
       );
 
       if (response.success) {
         // Convertir los menús de la API al formato interno
         const menuItems = this.convertApiMenusToMenuItems(response.data.menus);
-        
+
         this._menuItems.set(menuItems);
         this._userInfo.set(response.data.user_info);
-        
+
         // Persistir automáticamente en localStorage
         this.saveToStorage();
-        
-        console.log('✅ Menús cargados exitosamente:', menuItems.length, 'elementos');
-        console.log('👤 Info usuario:', response.data.user_info);
-        console.log('💾 Datos persistidos en localStorage');
-        
+
       } else {
         throw new Error(response.message || 'Error al cargar menús');
       }
-      
+
     } catch (error: any) {
       console.error('❌ Error cargando menús:', error);
       this._error.set(error.message || 'Error desconocido');
-      
+
       // Fallback a menús por defecto si es necesario
       this.loadFallbackMenus();
-      
+
     } finally {
       this._loading.set(false);
     }
@@ -138,7 +132,7 @@ export class MenuService {
         level: 0
       }
     ];
-    
+
     this._menuItems.set(fallbackMenus);
     console.log('⚠️ Menús de fallback cargados');
   }
@@ -161,7 +155,7 @@ export class MenuService {
       icon: apiMenu.icon || 'FileText',
       route: apiMenu.link || undefined,
       level: 0, // Se calculará si es necesario
-      children: apiMenu.children.length > 0 
+      children: apiMenu.children.length > 0
         ? apiMenu.children.map(child => ({
             ...this.convertApiMenuToMenuItem(child),
             level: 1
@@ -182,7 +176,7 @@ export class MenuService {
       );
 
       return response;
-      
+
     } catch (error: any) {
       console.error('❌ Error verificando acceso al menú:', error);
       return null;
@@ -194,16 +188,16 @@ export class MenuService {
    */
   private filterMenuItemsWithParents(items: MenuItem[], query: string): MenuItem[] {
     const filteredItems: MenuItem[] = [];
-    
+
     for (const item of items) {
       // Verificar si el item actual coincide
       const itemMatches = this.itemMatchesQuery(item, query);
-      
+
       // Verificar hijos recursivamente
-      const filteredChildren = item.children 
+      const filteredChildren = item.children
         ? this.filterMenuItemsWithParents(item.children, query)
         : [];
-      
+
       // Si el item coincide o tiene hijos que coinciden, incluirlo
       if (itemMatches || filteredChildren.length > 0) {
         filteredItems.push({
@@ -212,7 +206,7 @@ export class MenuService {
         });
       }
     }
-    
+
     return filteredItems;
   }
 
@@ -243,11 +237,11 @@ export class MenuService {
   }
 
   /**
-   * Expande o contrae un elemento del menú 
+   * Expande o contrae un elemento del menú
    */
   toggleExpanded(itemId: string): void {
     const currentExpanded = new Set(this._expandedItems());
-    
+
     if (currentExpanded.has(itemId)) {
       currentExpanded.delete(itemId);
       console.log('📁 Contrayendo item:', itemId);
@@ -255,7 +249,7 @@ export class MenuService {
       currentExpanded.add(itemId);
       console.log('📂 Expandiendo item:', itemId);
     }
-    
+
     this._expandedItems.set(currentExpanded);
     this.saveToStorage();
   }
@@ -273,7 +267,7 @@ export class MenuService {
   setActiveItem(itemId: string): void {
     this._activeItemId.set(itemId);
     this.saveToStorage();
-    console.log('🎯 Item activo establecido:', itemId);
+    
   }
 
   /**
@@ -292,7 +286,7 @@ export class MenuService {
       }
       return null;
     };
-    
+
     return findInItems(this._menuItems());
   }
 
@@ -313,7 +307,7 @@ export class MenuService {
     const expandParents = (items: MenuItem[], targetId: string, currentPath: string[] = []): boolean => {
       for (const item of items) {
         const newPath = [...currentPath, item.id];
-        
+
         if (item.id === targetId) {
           // Encontramos el item, expandir todos los padres en el path
           currentPath.forEach(parentId => {
@@ -323,14 +317,14 @@ export class MenuService {
           });
           return true;
         }
-        
+
         if (item.children && expandParents(item.children, targetId, newPath)) {
           return true;
         }
       }
       return false;
     };
-    
+
     expandParents(this._menuItems(), itemId);
   }
 
@@ -355,60 +349,47 @@ export class MenuService {
    */
   private saveToStorage(): void {
     try {
-      console.log('🚀 saveToStorage() llamado');
-      
       if (typeof localStorage === 'undefined') {
         console.log('❌ localStorage no disponible');
         return;
       }
 
-      console.log('✅ localStorage disponible');
-      console.log('📄 Datos a guardar:', {
-        menuItems: this._menuItems().length,
-        userInfo: !!this._userInfo(),
-        expandedItems: this._expandedItems().size,
-        activeItem: this._activeItemId()
-      });
-
       // Guardar menús
       const menuItemsJson = JSON.stringify(this._menuItems());
       localStorage.setItem(this.STORAGE_KEYS.MENU_ITEMS, menuItemsJson);
-      console.log('✅ Menús guardados:', this.STORAGE_KEYS.MENU_ITEMS);
-      
+
       // Guardar información de usuario
       if (this._userInfo()) {
         const userInfoJson = JSON.stringify(this._userInfo());
         localStorage.setItem(this.STORAGE_KEYS.USER_INFO, userInfoJson);
-        console.log('✅ Info usuario guardada:', this.STORAGE_KEYS.USER_INFO);
       }
-      
+
       // Guardar items expandidos (convertir Set a Array)
       const expandedArray = Array.from(this._expandedItems());
       localStorage.setItem(this.STORAGE_KEYS.EXPANDED_ITEMS, JSON.stringify(expandedArray));
-      console.log('✅ Items expandidos guardados:', this.STORAGE_KEYS.EXPANDED_ITEMS, expandedArray);
-      
+
       // Guardar item activo
       localStorage.setItem(this.STORAGE_KEYS.ACTIVE_ITEM, this._activeItemId());
-      console.log('✅ Item activo guardado:', this.STORAGE_KEYS.ACTIVE_ITEM, this._activeItemId());
-      
+
+
       // Guardar query de búsqueda
       localStorage.setItem(this.STORAGE_KEYS.SEARCH_QUERY, this._searchQuery());
-      console.log('✅ Query de búsqueda guardada:', this.STORAGE_KEYS.SEARCH_QUERY, this._searchQuery());
-      
+
+
       // Guardar timestamp de última sincronización
       const timestamp = Date.now().toString();
       localStorage.setItem(this.STORAGE_KEYS.LAST_SYNC, timestamp);
-      console.log('✅ Timestamp guardado:', this.STORAGE_KEYS.LAST_SYNC, timestamp);
-      
-      console.log('💾 Todos los datos del menú guardados en localStorage exitosamente');
-      
+
+
+
+
       // Verificar que realmente se guardaron
-      console.log('🔍 Verificando localStorage después del guardado:');
+
       Object.values(this.STORAGE_KEYS).forEach(key => {
         const value = localStorage.getItem(key);
-        console.log(`  ${key}: ${value ? 'EXISTS' : 'NOT FOUND'}`);
+
       });
-      
+
     } catch (error) {
       console.error('❌ Error guardando en localStorage:', error);
     }
@@ -438,39 +419,39 @@ export class MenuService {
       if (menuItemsData) {
         const menuItems = JSON.parse(menuItemsData) as MenuItem[];
         this._menuItems.set(menuItems);
-        console.log('📖 Menús cargados desde localStorage:', menuItems.length, 'elementos');
+
       }
-      
+
       // Cargar información de usuario
       const userInfoData = localStorage.getItem(this.STORAGE_KEYS.USER_INFO);
       if (userInfoData) {
         const userInfo = JSON.parse(userInfoData);
         this._userInfo.set(userInfo);
-        console.log('👤 Info de usuario cargada desde localStorage');
+
       }
-      
+
       // Cargar items expandidos (convertir Array a Set)
       const expandedItemsData = localStorage.getItem(this.STORAGE_KEYS.EXPANDED_ITEMS);
       if (expandedItemsData) {
         const expandedArray = JSON.parse(expandedItemsData) as string[];
         this._expandedItems.set(new Set(expandedArray));
-        console.log('📂 Items expandidos cargados desde localStorage:', expandedArray.length);
+
       }
-      
+
       // Cargar item activo
       const activeItem = localStorage.getItem(this.STORAGE_KEYS.ACTIVE_ITEM);
       if (activeItem) {
         this._activeItemId.set(activeItem);
-        console.log('🎯 Item activo cargado desde localStorage:', activeItem);
+
       }
-      
+
       // Cargar query de búsqueda
       const searchQuery = localStorage.getItem(this.STORAGE_KEYS.SEARCH_QUERY);
       if (searchQuery) {
         this._searchQuery.set(searchQuery);
         console.log('🔍 Query de búsqueda cargada desde localStorage:', searchQuery);
       }
-      
+
     } catch (error) {
       console.warn('⚠️ Error cargando desde localStorage:', error);
       this.clearStorage();
@@ -487,7 +468,7 @@ export class MenuService {
       Object.values(this.STORAGE_KEYS).forEach(key => {
         localStorage.removeItem(key);
       });
-      
+
       console.log('🗑️ localStorage limpiado');
     } catch (error) {
       console.warn('⚠️ Error limpiando localStorage:', error);
@@ -503,12 +484,12 @@ export class MenuService {
 
       const menuItems = localStorage.getItem(this.STORAGE_KEYS.MENU_ITEMS);
       const lastSync = localStorage.getItem(this.STORAGE_KEYS.LAST_SYNC);
-      
+
       if (!menuItems || !lastSync) return false;
-      
+
       const lastSyncTime = parseInt(lastSync);
       const now = Date.now();
-      
+
       return (now - lastSyncTime) <= this.CACHE_DURATION;
     } catch (error) {
       return false;
@@ -530,25 +511,25 @@ export class MenuService {
       // Primero verificar en localStorage/cache
       const cachedMenus = this._menuItems();
       const menuExists = this.findItemById(cachedMenus, menuId);
-      
+
       if (!menuExists) {
         console.log('🚫 Menú no encontrado en cache:', menuId);
         return false;
       }
-      
+
       // Si tenemos datos recientes en cache, confiar en ellos
       if (this.hasCachedData()) {
         console.log('✅ Acceso validado desde cache para menú:', menuId);
         return true;
       }
-      
+
       // Si el cache está expirado, validar con el backend
       const numericMenuId = parseInt(menuId);
       if (!isNaN(numericMenuId)) {
         const accessResponse = await this.checkMenuAccess(numericMenuId);
         return accessResponse?.success === true && accessResponse?.data?.has_access === true;
       }
-      
+
       return true; // Por defecto permitir acceso si no se puede validar
     } catch (error) {
       console.warn('⚠️ Error validando acceso al menú:', error);
@@ -581,7 +562,7 @@ export class MenuService {
       console.log('🔄 Recargando menús porque el cache está expirado o vacío');
       await this.loadUserMenus();
     } else {
-      console.log('📖 Menús válidos en cache, no es necesario recargar');
+
     }
   }
 

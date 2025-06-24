@@ -20,6 +20,6 @@ export class AppComponent {
   themeService = inject(ThemeService);
 
   constructor() {
-    console.log('🚀 AppComponent inicializado');
+    
   }
 }

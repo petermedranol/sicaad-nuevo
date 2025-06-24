@@ -144,7 +144,7 @@ export class UsersComponent implements OnInit {
       if (response?.success) {
         this.users.set(response.data.users);
         this.pagination.set(response.data.pagination);
-        console.log('✅ Usuarios cargados:', response.data.users.length);
+        
       } else {
         console.error('❌ Error en respuesta:', response?.message);
       }

@@ -23,7 +23,7 @@ export class LoginPageComponent implements OnInit, OnDestroy {
   error = '';
   isLoading = false;
   showPassword = false;
-  
+
   // reCAPTCHA state
   recaptchaResponse = '';
   recaptchaLoaded = false;
@@ -125,7 +125,7 @@ export class LoginPageComponent implements OnInit, OnDestroy {
     if (this.isLoading) return;
 
     this.error = '';
-    
+
     // Validar reCAPTCHA
     if (!this.recaptchaResponse) {
       this.error = 'Por favor, completa la verificación reCAPTCHA.';
@@ -141,27 +141,27 @@ export class LoginPageComponent implements OnInit, OnDestroy {
       next: async () => {
         // Paso 2: Acceso concedido
         this.loadingService.showLoginSuccess();
-        
+
         setTimeout(async () => {
           // Paso 3: Cargando dashboard y menús
           this.loadingService.showLoadingDashboard();
-          
+
           // Verificar si ya hay menús válidos en cache
           const hasValidCache = this.menuService.hasMenus();
-          
+
           if (!hasValidCache) {
             // Solo cargar desde backend si no hay cache válido
             try {
-              console.log('🔄 Cargando menús del usuario desde backend...');
+
               await this.menuService.loadUserMenus();
-              console.log('✅ Menús cargados exitosamente desde backend');
+
             } catch (error) {
               console.warn('⚠️ Error cargando menús, usando fallback:', error);
             }
           } else {
-            console.log('📖 Usando menús desde cache localStorage');
+            
           }
-          
+
           setTimeout(() => {
             this.loadingService.hide();
             this.isLoading = false;

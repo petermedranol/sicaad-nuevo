@@ -29,7 +29,7 @@ export class ThemeService {
     const theme = this.currentTheme();
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('theme', theme);
-    console.log(`🎨 Tema aplicado: ${theme}`);
+    
   });
 
   constructor() {

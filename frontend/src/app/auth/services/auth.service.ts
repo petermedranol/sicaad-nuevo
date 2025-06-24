@@ -63,7 +63,6 @@ export class AuthService {
     return this.http.get<User>(`${this.apiUrl}/user`, { withCredentials: true }).pipe(
       map(user => {
         this.currentUser.set(user);
-        console.log('🔍 Verificación de Auth exitosa, usuario recuperado:', this.currentUser());
         return true;
       }),
       catchError(() => {
