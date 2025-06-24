@@ -52,7 +52,7 @@ export class UsersComponent implements OnInit {
   private readonly topbarService = inject(TopbarService);
   private readonly errorHandler = inject(ErrorHandlerService);
   private readonly notification = inject(NotificationService);
-  private readonly paginationService = inject(PaginationService);
+  readonly paginationService = inject(PaginationService);
   readonly themeService = inject(ThemeService);
 
   // Estado
@@ -234,7 +234,10 @@ export class UsersComponent implements OnInit {
       this.sortOrder = 'ASC';
     }
 
-    this.pagination.update(p => ({ ...p, current_page: 1 }));
+    this.state.update(state => ({
+      ...state,
+      pagination: { ...state.pagination, current_page: 1 }
+    }));
     this.loadUsers();
   }
 
@@ -307,69 +310,6 @@ export class UsersComponent implements OnInit {
       } catch (error) {
         await this.errorHandler.handleApiError(error, 'Error al crear usuario');
       }
-    }
-  }
-    try {
-      // Mostrar loading
-      Swal.fire({
-        title: 'Actualizando usuario...',
-        text: 'Por favor espere',
-        allowOutsideClick: false,
-        didOpen: () => {
-          Swal.showLoading();
-        }
-      });
-
-      // Enviar petición al servidor
-      const response = await this.usersService.updateUser(userId, userData);
-
-      if (response?.success) {
-        // Éxito
-        await Swal.fire({
-          toast: true,
-          position: 'top',
-          icon: 'success',
-          title: '¡Usuario actualizado!',
-          showConfirmButton: false,
-          timer: 2500,
-          timerProgressBar: true,
-          background: '#22c55e', // Verde (Tailwind: green-500)
-          color: '#fff',         // Texto blanco
-          customClass: {
-            popup: 'swal2-toast'
-          }
-        });
-
-        // Recargar la tabla
-        await this.loadUsers();
-
-      } else {
-        throw new Error(response?.message || 'Error desconocido');
-      }
-
-    } catch (error: any) {
-      console.error('❌ Error actualizando usuario:', error);
-
-      // Extraer mensajes de error del backend
-      let errorMessage = 'Error interno del servidor';
-
-      if (error.error?.errors) {
-        // Errores de validación del backend
-        const errors = error.error.errors;
-        const errorMessages = Object.values(errors).flat();
-        errorMessage = errorMessages.join('\n');
-      } else if (error.error?.message) {
-        errorMessage = error.error.message;
-      } else if (error.message) {
-        errorMessage = error.message;
-      }
-
-      await Swal.fire({
-        icon: 'error',
-        title: 'Error al actualizar usuario',
-        text: errorMessage,
-        confirmButtonColor: '#667eea'
-      });
     }
   }
 
