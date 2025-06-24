@@ -9,7 +9,8 @@ import { SWEET_ALERT_DEFAULTS } from '../../../shared/constants/sweet-alert.cons
 })
 export class UsersFormService {
   async showEditForm(user: User): Promise<UserUpdateFormData | null> {
-    const { value: formValues } = await Swal.fire({
+    console.log('Mostrando formulario de edición para:', user);
+    const result = await Swal.fire({
       ...SWEET_ALERT_DEFAULTS,
       title: 'Editar Usuario',
       html: this.getEditFormTemplate(user),
@@ -22,10 +23,18 @@ export class UsersFormService {
       customClass: {
         popup: 'user-edit-popup'
       },
-      preConfirm: () => this.validateEditForm(user)
+      preConfirm: () => {
+        const result = this.validateEditForm(user);
+        console.log('Resultado de validación:', result);
+        return result;
+      }
     });
 
-    return formValues || null;
+    console.log('Resultado del formulario:', result);
+    if (result.isConfirmed && result.value) {
+      return result.value;
+    }
+    return null;
   }
 
   async showCreateForm(): Promise<UserCreateFormData | null> {
@@ -121,6 +130,7 @@ export class UsersFormService {
   }
 
   private validateEditForm(user: User): UserUpdateFormData | false {
+    console.log('Validando formulario con usuario:', user);
     console.log('⌛ Validando formulario de edición...');
     const name = (document.getElementById('swal-edit-name') as HTMLInputElement)?.value.trim();
     const email = (document.getElementById('swal-edit-email') as HTMLInputElement)?.value.trim();
@@ -176,6 +186,7 @@ export class UsersFormService {
     }
 
     console.log('✅ Formulario validado:', formData);
+    console.log('Datos del formulario validados:', formData);
     return formData;
   }
 

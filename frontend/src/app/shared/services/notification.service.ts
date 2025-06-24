@@ -17,6 +17,8 @@ export class NotificationService {
     await Swal.fire({
       title: message,
       icon: 'success',
+      background: '#22c55e', // Verde llamativo (Tailwind green-500)
+      color: '#fff',
       ...TOAST_DEFAULTS,
       ...SWEET_ALERT_DEFAULTS
     } as SweetAlertOptions);

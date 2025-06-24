@@ -1,17 +1,9 @@
-import { Component, OnInit, signal, inject, LOCALE_ID } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { TopbarService } from '../../services/topbar.service';
-import { ThemeService } from '../../shared/services/theme.service';
 import { CommonModule, DatePipe } from '@angular/common';
-import { registerLocaleData } from '@angular/common';
-import localeEs from '@angular/common/locales/es';
-
 import { ErrorHandlerService } from '../../shared/services/error-handler.service';
 import { NotificationService } from '../../shared/services/notification.service';
-import { PaginationService } from '../../shared/services/pagination.service';
 import { UsersFormService } from './services/users-form.service';
-import { UserCreateFormData, UserUpdateFormData, UserState, UserFilters } from './interfaces/user-form.interface';
-
-registerLocaleData(localeEs);
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule,
   Search,
@@ -29,8 +21,14 @@ import Swal from 'sweetalert2';
 
 import { User } from '../../auth/interfaces/user.interface';
 import { UsersService } from './users.service';
+import { USER_TABLE_CONFIG } from './config/users-table.config';
+import { BaseTableComponent } from '../../shared/components/base-table/base-table.component';
+import { PageTitleService } from '../../shared/services/page-title.service';
 
-
+/**
+ * Componente para la gestión de usuarios del sistema.
+ * Permite listar, buscar, crear, editar y eliminar usuarios.
+ */
 @Component({
   selector: 'app-users',
   standalone: true,
@@ -40,45 +38,18 @@ import { UsersService } from './users.service';
     LucideAngularModule,
     DatePipe
   ],
-  providers: [
-    { provide: LOCALE_ID, useValue: 'es-ES' }
-  ],
   templateUrl: './users.component.html'
 })
-export class UsersComponent implements OnInit {
-  // Servicios
+export class UsersComponent extends BaseTableComponent<User> {
+  // === Servicios ===
   private readonly usersService = inject(UsersService);
   private readonly usersFormService = inject(UsersFormService);
   private readonly topbarService = inject(TopbarService);
   private readonly errorHandler = inject(ErrorHandlerService);
   private readonly notification = inject(NotificationService);
-  readonly paginationService = inject(PaginationService);
-  readonly themeService = inject(ThemeService);
+  private readonly pageTitle = inject(PageTitleService);
 
-  // Estado
-  readonly state = signal<UserState>({
-    users: [],
-    pagination: {
-      current_page: 1,
-      per_page: 10,
-      total_records: 0,
-      total_pages: 0,
-      has_next_page: false,
-      has_previous_page: false,
-      from: 0,
-      to: 0
-    },
-    filters: {
-      page: '1',
-      limit: '10',
-      search: '',
-      sortField: 'name',
-      sortOrder: 'ASC'
-    },
-    isLoading: false
-  });
-
-  // Iconos
+  // === Iconos ===
   readonly searchIcon = Search;
   readonly editIcon = Edit;
   readonly trashIcon = Trash2;
@@ -90,17 +61,23 @@ export class UsersComponent implements OnInit {
   readonly sortDescIcon = ArrowDown;
   readonly usersIcon = Users;
 
-  // Filtros y búsqueda
-  searchQuery = '';
-  itemsPerPage = 10;
-  sortField = 'name';
-  sortOrder: 'ASC' | 'DESC' = 'ASC';
+  // === Configuración de tabla ===
+  override config = USER_TABLE_CONFIG;
 
-  // Debounce para búsqueda
-  private searchTimeout: any = null;
+  constructor() {
+    super();
+    this.state.update(state => ({
+      ...state,
+      sortField: this.config.defaultSort.field as string,
+      sortOrder: this.config.defaultSort.order
+    }));
+  }
 
-  ngOnInit() {
-    this.loadUsers();
+  /**
+   * Inicializa el componente y actualiza la barra superior y el título de la página.
+   */
+  override ngOnInit() {
+    super.ngOnInit();
     this.topbarService.updateTopbar({
       title: 'Usuarios',
       description: 'Gestión de usuarios del sistema',
@@ -113,28 +90,24 @@ export class UsersComponent implements OnInit {
         }
       ]
     });
+    this.pageTitle.setTitle('Módulo de usuarios');
   }
 
   /**
-   * Carga usuarios desde el servidor con paginación y filtros
+   * Carga usuarios desde el servidor con paginación y filtros.
    */
-  async loadUsers() {
-    this.state.update(state => ({ ...state, isLoading: true }));
-
+  override async loadData(): Promise<void> {
+    this.setLoading(true);
     try {
-      const response = await this.usersService.getUsers({
-        page: this.state().pagination.current_page.toString(),
-        limit: this.itemsPerPage.toString(),
-        search: this.searchQuery,
-        sortField: this.sortField,
-        sortOrder: this.sortOrder
-      });
+      const filters = this.tableService.createFilters(this.state());
+      const response = await this.usersService.getUsers(filters);
 
       if (response?.success) {
+        this.data.set(response.data.users);
         this.state.update(state => ({
           ...state,
-          users: response.data.users,
-          pagination: response.data.pagination
+          totalRecords: response.data.pagination.total_records,
+          totalPages: response.data.pagination.total_pages
         }));
       } else {
         throw new Error(response?.message || 'Error en respuesta del servidor');
@@ -142,109 +115,58 @@ export class UsersComponent implements OnInit {
     } catch (error) {
       await this.errorHandler.handleApiError(error, 'Error cargando usuarios');
     } finally {
-      this.state.update(state => ({ ...state, isLoading: false }));
+      this.setLoading(false);
     }
   }
 
   /**
-   * Maneja eventos de input en el campo de búsqueda
+   * Maneja eventos de input en el campo de búsqueda.
+   * @param event Evento de input del campo de búsqueda.
    */
-  onSearchInput(event: Event) {
-    const target = event.target as HTMLInputElement;
-    this.onSearchChange(target.value);
+  handleSearch(event: Event) {
+    const input = event.target as HTMLInputElement;
+    super.onSearch(input.value);
   }
 
   /**
-   * Maneja cambios en la búsqueda con debounce
+   * Cambia el número de elementos por página.
+   * @param event Evento del select.
    */
-  onSearchChange(query: string) {
-    // Limpiar timeout anterior
-    if (this.searchTimeout) {
-      clearTimeout(this.searchTimeout);
-    }
-
-    // Configurar nuevo timeout
-    this.searchTimeout = setTimeout(() => {
-      this.searchQuery = query;
-      this.state.update(state => ({
-        ...state,
-        pagination: { ...state.pagination, current_page: 1 }
-      }));
-      this.loadUsers();
-    }, 500); // 500ms de debounce
-  }
-
-  /**
-   * Maneja cambios en el select de elementos por página
-   */
-  onItemsPerPageChange(event: Event) {
+  handleItemsPerPageChange(event: Event) {
     const target = event.target as HTMLSelectElement;
     const newLimit = parseInt(target.value);
-    this.changeItemsPerPage(newLimit);
+    super.onItemsPerPageChange(newLimit);
   }
 
   /**
-   * Limpia la búsqueda
+   * Limpia la búsqueda.
    */
-  clearSearch() {
-    this.searchQuery = '';
-    this.state.update(state => ({
-      ...state,
-      pagination: { ...state.pagination, current_page: 1 }
-    }));
-    this.loadUsers();
+  override clearSearch() {
+    super.onSearch('');
   }
 
   /**
-   * Cambia el número de elementos por página
-   */
-  changeItemsPerPage(newLimit: number) {
-    this.itemsPerPage = newLimit;
-    this.state.update(state => ({
-      ...state,
-      pagination: { ...state.pagination, current_page: 1, per_page: newLimit }
-    }));
-    this.loadUsers();
-  }
-
-  /**
-   * Navega a una página específica
+   * Navega a una página específica.
+   * @param page Número de página.
    */
   goToPage(page: number) {
-    const currentState = this.state();
-    if (page >= 1 && page <= currentState.pagination.total_pages) {
-      this.state.update(state => ({
-        ...state,
-        pagination: { ...state.pagination, current_page: page }
-      }));
-      this.loadUsers();
-    }
+    super.onPageChange(page);
   }
 
   /**
-   * Ordena por campo específico
+   * Ordena por campo específico.
+   * @param field Campo por el que se ordena.
    */
-  sortBy(field: string) {
-    // Si es el mismo campo, cambiar orden
-    if (this.sortField === field) {
-      this.sortOrder = this.sortOrder === 'ASC' ? 'DESC' : 'ASC';
-    } else {
-      // Nuevo campo, empezar con ASC
-      this.sortField = field;
-      this.sortOrder = 'ASC';
-    }
-
-    this.state.update(state => ({
-      ...state,
-      pagination: { ...state.pagination, current_page: 1 }
-    }));
-    this.loadUsers();
+  sortBy(field: keyof User) {
+    super.onSort(field as keyof User);
   }
 
   /**
-   * Elimina un usuario
+   * Elimina un usuario tras confirmación.
+   * @param user Usuario a eliminar.
    */
   async deleteUser(user: User): Promise<void> {
+    Swal.close();
     const confirmed = await this.notification.showConfirmation({
       title: '¿Eliminar usuario?',
       message: `¿Está seguro de eliminar al usuario "${user.name}"?`,
@@ -254,12 +176,10 @@ export class UsersComponent implements OnInit {
 
     if (confirmed) {
       try {
-        await this.notification.showLoading('Eliminando usuario...');
         const response = await this.usersService.deleteUser(user.id);
-
         if (response?.success) {
+          await this.loadData();
           await this.notification.showSuccess('Usuario eliminado');
-          await this.loadUsers();
         } else {
           throw new Error(response?.message || 'Error desconocido');
         }
@@ -270,28 +190,21 @@ export class UsersComponent implements OnInit {
   }
 
   /**
-   * Edita un usuario
+   * Edita un usuario.
+   * @param user Usuario a editar.
    */
   async editUser(user: User): Promise<void> {
-    console.log('⌛ Iniciando edición de usuario:', user);
+    Swal.close();
     const formData = await this.usersFormService.showEditForm(user);
-    console.log('📝 Datos del formulario:', formData);
     if (formData !== null) {
       try {
-        await this.notification.showLoading('Actualizando usuario...');
-        this.usersService.updateUser(user.id, formData).subscribe({
-          next: async (response) => {
-            if (response?.success) {
-              await this.notification.showSuccess('¡Usuario actualizado!');
-              await this.loadUsers();
-            } else {
-              throw new Error(response?.message || 'Error desconocido');
-            }
-          },
-          error: async (error) => {
-            await this.errorHandler.handleApiError(error, 'Error al actualizar usuario');
-          }
-        });
+        const response = await this.usersService.updateUser(user.id, formData);
+        if (response?.success) {
+          await this.loadData();
+          await this.notification.showSuccess('¡Usuario actualizado!');
+        } else {
+          throw new Error(response?.message || 'Error desconocido');
+        }
       } catch (error) {
         await this.errorHandler.handleApiError(error, 'Error al actualizar usuario');
       }
@@ -299,18 +212,17 @@ export class UsersComponent implements OnInit {
   }
 
   /**
-   * Crea un nuevo usuario
+   * Crea un nuevo usuario.
    */
   async createUser(): Promise<void> {
+    Swal.close();
     const formData = await this.usersFormService.showCreateForm();
     if (formData !== null) {
       try {
-        await this.notification.showLoading('Creando usuario...');
         const response = await this.usersService.createUser(formData);
-
         if (response?.success) {
+          await this.loadData();
           await this.notification.showSuccess('¡Usuario creado!');
-          await this.loadUsers();
         } else {
           throw new Error(response?.message || 'Error desconocido');
         }
@@ -321,10 +233,13 @@ export class UsersComponent implements OnInit {
   }
 
   /**
-   * Generar números de página para mostrar
+   * Genera los números de página para la paginación.
    */
-  get pageNumbers(): number[] {
-    return this.paginationService.calculatePageRange(this.state().pagination).pages;
+  override get pageNumbers(): number[] {
+    return this.tableService.calculatePageRange(
+      this.state().currentPage,
+      this.state().totalPages
+    );
   }
 }
 

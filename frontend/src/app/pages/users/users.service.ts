@@ -53,12 +53,14 @@ export class UsersService {
     );
   }
 
-  updateUser(userId: number, userData: UserUpdateFormData): Observable<ApiResponse> {
+  async updateUser(userId: number, userData: UserUpdateFormData): Promise<ApiResponse> {
     console.log('⌛ Enviando petición de actualización:', { userId, userData });
-    return this.http.put<ApiResponse>(
-      `${this.apiUrl}/users/${userId}`,
-      userData,
-      { withCredentials: true }
+    return lastValueFrom(
+      this.http.put<ApiResponse>(
+        `${this.apiUrl}/users/${userId}`,
+        userData,
+        { withCredentials: true }
+      )
     );
   }
 
