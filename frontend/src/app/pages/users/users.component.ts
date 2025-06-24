@@ -279,14 +279,19 @@ export class UsersComponent implements OnInit {
     if (formData !== null) {
       try {
         await this.notification.showLoading('Actualizando usuario...');
-        const response = await this.usersService.updateUser(user.id, formData);
-
-        if (response?.success) {
-          await this.notification.showSuccess('¡Usuario actualizado!');
-          await this.loadUsers();
-        } else {
-          throw new Error(response?.message || 'Error desconocido');
-        }
+        this.usersService.updateUser(user.id, formData).subscribe({
+          next: async (response) => {
+            if (response?.success) {
+              await this.notification.showSuccess('¡Usuario actualizado!');
+              await this.loadUsers();
+            } else {
+              throw new Error(response?.message || 'Error desconocido');
+            }
+          },
+          error: async (error) => {
+            await this.errorHandler.handleApiError(error, 'Error al actualizar usuario');
+          }
+        });
       } catch (error) {
         await this.errorHandler.handleApiError(error, 'Error al actualizar usuario');
       }

@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { firstValueFrom } from 'rxjs';
+import { Observable, lastValueFrom } from 'rxjs';
 import { User } from '../../auth/interfaces/user.interface';
 import { UserCreateFormData, UserUpdateFormData } from './interfaces/user-form.interface';
 
@@ -53,14 +53,12 @@ export class UsersService {
     );
   }
 
-  async updateUser(userId: number, userData: UserUpdateFormData): Promise<ApiResponse> {
+  updateUser(userId: number, userData: UserUpdateFormData): Observable<ApiResponse> {
     console.log('⌛ Enviando petición de actualización:', { userId, userData });
-    return firstValueFrom(
-      this.http.put<ApiResponse>(
-        `${this.apiUrl}/users/${userId}`,
-        userData,
-        { withCredentials: true }
-      )
+    return this.http.put<ApiResponse>(
+      `${this.apiUrl}/users/${userId}`,
+      userData,
+      { withCredentials: true }
     );
   }
 
