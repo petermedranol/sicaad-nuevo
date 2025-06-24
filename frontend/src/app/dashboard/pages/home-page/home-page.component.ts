@@ -12,8 +12,13 @@ import {
   lucideDollarSign,
   lucideCircleCheck
 } from '@ng-icons/lucide';
-import { PageTitleService } from '../../../shared/services/page-title.service';
+
+// Servicios compartidos
+import { PageTitleService } from '../../../shared';
 import { TopbarService } from '../../../services/topbar.service';
+
+// Interfaces
+import { Stat, Activity, Task } from './interfaces/index';
 
 @Component({
   selector: 'app-home-page',
@@ -140,11 +145,11 @@ export class HomePageComponent implements OnInit {
 
   ngOnInit() {
     // Component initialization
-    this.pageTitle.setTitle('Inicio');
+    this.pageTitle.setTitle('Dashboard');
     this.topbarService.updateTopbar({
       title: 'Dashboard',
       description: 'Bienvenido al panel de control',
-      
+
     });
   }
 
