@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import Swal from 'sweetalert2';
+import Swal, { SweetAlertOptions } from 'sweetalert2';
 import { SWEET_ALERT_DEFAULTS, TOAST_DEFAULTS } from '../constants/sweet-alert.constants';
 
 export interface ConfirmationOptions {
@@ -15,20 +15,20 @@ export interface ConfirmationOptions {
 export class NotificationService {
   async showSuccess(message: string): Promise<void> {
     await Swal.fire({
-      ...SWEET_ALERT_DEFAULTS,
-      ...TOAST_DEFAULTS,
+      title: message,
       icon: 'success',
-      title: message
-    });
+      ...TOAST_DEFAULTS,
+      ...SWEET_ALERT_DEFAULTS
+    } as SweetAlertOptions);
   }
 
   async showError(title: string, message: string): Promise<void> {
     await Swal.fire({
-      ...SWEET_ALERT_DEFAULTS,
-      icon: 'error',
       title,
-      text: message
-    });
+      text: message,
+      icon: 'error',
+      ...SWEET_ALERT_DEFAULTS
+    } as SweetAlertOptions);
   }
 
   async showConfirmation(options: ConfirmationOptions): Promise<boolean> {
@@ -40,7 +40,7 @@ export class NotificationService {
       showCancelButton: true,
       confirmButtonText: options.confirmText || 'Confirmar',
       cancelButtonText: options.cancelText || 'Cancelar'
-    });
+    } as SweetAlertOptions);
     return result.isConfirmed;
   }
 
@@ -49,6 +49,6 @@ export class NotificationService {
       title,
       allowOutsideClick: false,
       didOpen: () => Swal.showLoading()
-    });
+    } as SweetAlertOptions);
   }
 }
