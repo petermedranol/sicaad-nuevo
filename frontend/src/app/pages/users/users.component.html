@@ -64,7 +64,7 @@
           </thead>
           <!-- body -->
           <tbody>
-            <tr *ngFor="let user of users()" class="hover">
+            <tr *ngFor="let user of state().users" class="hover">
               <td class="text-center font-mono text-xs">#{{ user.id }}</td>
               <td>
                 <div class="font-medium truncate" title="{{ user.name }}">{{ user.name }}</div>
@@ -90,25 +90,25 @@
           </tbody>
         </table>
         <!-- Loading State -->
-        <div *ngIf="isLoading()" class="absolute inset-0 flex items-center justify-center bg-base-100/80 z-10">
+        <div *ngIf="state().isLoading" class="absolute inset-0 flex items-center justify-center bg-base-100/80 z-10">
           <div class="loading loading-spinner loading-lg"></div>
         </div>
         <!-- Empty State -->
-        <div *ngIf="!isLoading() && users().length === 0" class="p-16 text-center">
+        <div *ngIf="!state().isLoading && state().users.length === 0" class="p-16 text-center">
           <h3 class="text-lg font-semibold">No se encontraron usuarios</h3>
           <p class="text-base-content/70">Intenta ajustar tu búsqueda o filtros.</p>
         </div>
       </div>
 
       <!-- Paginación -->
-      <div *ngIf="pagination().total_pages > 1" class="flex flex-col sm:flex-row justify-between items-center gap-4 pt-4">
+      <div *ngIf="state().pagination.total_pages > 1" class="flex flex-col sm:flex-row justify-between items-center gap-4 pt-4">
           <div class="text-sm text-base-content/70">
-              Mostrando {{ pagination().from }} a {{ pagination().to }} de {{ pagination().total_records }} registros
+              {{ paginationService.getPaginationDescription(state().pagination) }}
           </div>
           <div class="join">
-              <button class="join-item btn btn-sm" (click)="goToPage(pagination().current_page - 1)" [disabled]="!pagination().has_previous_page">«</button>
-              <button class="join-item btn btn-sm pointer-events-none">Página {{ pagination().current_page }}</button>
-              <button class="join-item btn btn-sm" (click)="goToPage(pagination().current_page + 1)" [disabled]="!pagination().has_next_page">»</button>
+              <button class="join-item btn btn-sm" (click)="goToPage(state().pagination.current_page - 1)" [disabled]="!state().pagination.has_previous_page">«</button>
+              <button class="join-item btn btn-sm pointer-events-none">Página {{ state().pagination.current_page }}</button>
+              <button class="join-item btn btn-sm" (click)="goToPage(state().pagination.current_page + 1)" [disabled]="!state().pagination.has_next_page">»</button>
           </div>
       </div>
 

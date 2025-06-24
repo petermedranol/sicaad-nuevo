@@ -1,3 +1,6 @@
+import { User } from '../../../auth/interfaces/user.interface';
+import { PaginationInfo } from '../../../shared/services/pagination.service';
+
 export interface UserFormData {
   name: string;
   email: string;

@@ -28,8 +28,7 @@ import { LucideAngularModule,
 import Swal from 'sweetalert2';
 
 import { User } from '../../auth/interfaces/user.interface';
-import { UserFormData } from './interfaces';
-import { UsersService, PaginationInfo } from './users.service';
+import { UsersService } from './users.service';
 
 
 @Component({
@@ -91,20 +90,6 @@ export class UsersComponent implements OnInit {
   readonly sortDescIcon = ArrowDown;
   readonly usersIcon = Users;
 
-  // Estados
-  isLoading = signal(false);
-  users = signal<User[]>([]);
-  pagination = signal<PaginationInfo>({
-    current_page: 1,
-    per_page: 10,
-    total_records: 0,
-    total_pages: 0,
-    has_next_page: false,
-    has_previous_page: false,
-    from: 0,
-    to: 0
-  });
-
   // Filtros y búsqueda
   searchQuery = '';
   itemsPerPage = 10;
@@ -134,11 +119,11 @@ export class UsersComponent implements OnInit {
    * Carga usuarios desde el servidor con paginación y filtros
    */
   async loadUsers() {
-    this.isLoading.set(true);
+    this.state.update(state => ({ ...state, isLoading: true }));
 
     try {
       const response = await this.usersService.getUsers({
-        page: this.pagination().current_page.toString(),
+        page: this.state().pagination.current_page.toString(),
         limit: this.itemsPerPage.toString(),
         search: this.searchQuery,
         sortField: this.sortField,
@@ -146,17 +131,18 @@ export class UsersComponent implements OnInit {
       });
 
       if (response?.success) {
-        this.users.set(response.data.users);
-        this.pagination.set(response.data.pagination);
-
+        this.state.update(state => ({
+          ...state,
+          users: response.data.users,
+          pagination: response.data.pagination
+        }));
       } else {
-        console.error('❌ Error en respuesta:', response?.message);
+        throw new Error(response?.message || 'Error en respuesta del servidor');
       }
-
     } catch (error) {
-      console.error('❌ Error cargando usuarios:', error);
+      await this.errorHandler.handleApiError(error, 'Error cargando usuarios');
     } finally {
-      this.isLoading.set(false);
+      this.state.update(state => ({ ...state, isLoading: false }));
     }
   }
 
@@ -180,7 +166,10 @@ export class UsersComponent implements OnInit {
     // Configurar nuevo timeout
     this.searchTimeout = setTimeout(() => {
       this.searchQuery = query;
-      this.pagination.update(p => ({ ...p, current_page: 1 })); // Reset a página 1
+      this.state.update(state => ({
+        ...state,
+        pagination: { ...state.pagination, current_page: 1 }
+      }));
       this.loadUsers();
     }, 500); // 500ms de debounce
   }
@@ -199,7 +188,10 @@ export class UsersComponent implements OnInit {
    */
   clearSearch() {
     this.searchQuery = '';
-    this.pagination.update(p => ({ ...p, current_page: 1 }));
+    this.state.update(state => ({
+      ...state,
+      pagination: { ...state.pagination, current_page: 1 }
+    }));
     this.loadUsers();
   }
 
@@ -208,7 +200,10 @@ export class UsersComponent implements OnInit {
    */
   changeItemsPerPage(newLimit: number) {
     this.itemsPerPage = newLimit;
-    this.pagination.update(p => ({ ...p, current_page: 1, per_page: newLimit }));
+    this.state.update(state => ({
+      ...state,
+      pagination: { ...state.pagination, current_page: 1, per_page: newLimit }
+    }));
     this.loadUsers();
   }
 
@@ -216,9 +211,12 @@ export class UsersComponent implements OnInit {
    * Navega a una página específica
    */
   goToPage(page: number) {
-    const currentPagination = this.pagination();
-    if (page >= 1 && page <= currentPagination.total_pages) {
-      this.pagination.update(p => ({ ...p, current_page: page }));
+    const currentState = this.state();
+    if (page >= 1 && page <= currentState.pagination.total_pages) {
+      this.state.update(state => ({
+        ...state,
+        pagination: { ...state.pagination, current_page: page }
+      }));
       this.loadUsers();
     }
   }
@@ -379,25 +377,7 @@ export class UsersComponent implements OnInit {
    * Generar números de página para mostrar
    */
   get pageNumbers(): number[] {
-    const maxPagesToShow = 5;
-    const totalPages = this.pagination().total_pages;
-    const currentPage = this.pagination().current_page;
-    const pages: number[] = [];
-
-    // Calcular rango de páginas a mostrar
-    let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
-    let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
-
-    // Ajustar si no hay suficientes páginas al final
-    if (endPage - startPage + 1 < maxPagesToShow) {
-      startPage = Math.max(1, endPage - maxPagesToShow + 1);
-    }
-
-    for (let i = startPage; i <= endPage; i++) {
-      pages.push(i);
-    }
-
-    return pages;
+    return this.paginationService.calculatePageRange(this.state().pagination).pages;
   }
 }
 
