@@ -1,7 +1,8 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, effect, OnInit } from '@angular/core';
 import { TopbarService } from '../../services/topbar.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { PhotoCaptureComponent } from '../../shared/components/photo-capture/photo-capture.component';
 import { LucideAngularModule,
   Search,
   Edit,
@@ -11,7 +12,8 @@ import { LucideAngularModule,
   ArrowUp,
   ArrowDown,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Camera
 } from 'lucide-angular';
 import Swal from 'sweetalert2';
 
@@ -23,6 +25,7 @@ import {
   BaseTableComponent
 } from '../../shared';
 import { PaginationService } from '../../shared/services/pagination.service';
+import { ImageProcessorService } from '../../shared/services/image-processor.service';
 
 import {
   UsersFormService,
@@ -40,11 +43,12 @@ import {
   imports: [
     CommonModule,
     FormsModule,
-    LucideAngularModule
+    LucideAngularModule,
+    PhotoCaptureComponent
   ],
   templateUrl: './users.component.html'
 })
-export class UsersComponent extends BaseTableComponent<User> {
+export class UsersComponent extends BaseTableComponent<User> implements OnInit {
   // === Servicios ===
   private readonly usersService = inject(UsersService);
   private readonly usersFormService = inject(UsersFormService);
@@ -53,6 +57,7 @@ export class UsersComponent extends BaseTableComponent<User> {
   private readonly notification = inject(NotificationService);
   private readonly pageTitle = inject(PageTitleService);
   private readonly paginationService = inject(PaginationService);
+  private readonly imageProcessor = inject(ImageProcessorService);
 
   // === Iconos ===
   readonly searchIcon = Search;
@@ -64,6 +69,7 @@ export class UsersComponent extends BaseTableComponent<User> {
   readonly plusIcon = Plus;
   readonly sortAscIcon = ArrowUp;
   readonly sortDescIcon = ArrowDown;
+  readonly cameraIcon = Camera;
 
   // === Configuración de tabla ===
   override config = USER_TABLE_CONFIG;
@@ -105,8 +111,13 @@ export class UsersComponent extends BaseTableComponent<User> {
     try {
       const filters = this.tableService.createFilters(this.state());
       const response = await this.usersService.getUsers(filters);
+      
+      // Verificar que la respuesta sea válida
+      if (!response) {
+        throw new Error('No se recibió respuesta del servidor');
+      }
 
-      if (response?.success) {
+      if (response.success) {
         this.data.set(response.data.users);
         this.state.update(state => ({
           ...state,
@@ -169,8 +180,142 @@ export class UsersComponent extends BaseTableComponent<User> {
    * Elimina un usuario tras confirmación.
    * @param user Usuario a eliminar.
    */
+  /**
+   * Abre el diálogo para capturar o subir una foto de usuario
+   * @param user Usuario al que se le asignará la foto
+   */
+  async captureUserPhoto(user: User) {
+    let photo: string | null = null;
+
+    const result = await Swal.fire({
+      title: 'Foto de Usuario',
+      html: `
+        <div class="space-y-4">
+          <div class="flex justify-center space-x-4">
+            <button type="button" class="btn btn-primary" id="webcam-btn">
+              <i class="fas fa-camera"></i>
+              Tomar Foto
+            </button>
+            <label class="btn btn-secondary">
+              <i class="fas fa-upload"></i>
+              Subir Imagen
+              <input type="file" accept="image/*" class="hidden" id="file-input">
+            </label>
+          </div>
+          <div id="preview-container" class="hidden">
+            <img id="preview-image" class="max-w-[350px] mx-auto rounded-lg shadow-lg" alt="Vista previa">
+          </div>
+          <video id="webcam-video" class="hidden max-w-[350px] mx-auto rounded-lg shadow-lg"></video>
+        </div>
+      `,
+      showCancelButton: true,
+      showConfirmButton: true,
+      showDenyButton: false,
+      confirmButtonText: 'Guardar',
+      cancelButtonText: 'Cancelar',
+      width: 'auto',
+      didOpen: async (modalElement) => {
+        const confirmButton = Swal.getConfirmButton();
+        if (confirmButton) confirmButton.classList.add('hidden');
+        const webcamBtn = Swal.getPopup()?.querySelector('#webcam-btn') as HTMLButtonElement;
+        const fileInput = Swal.getPopup()?.querySelector('#file-input') as HTMLInputElement;
+        const previewContainer = Swal.getPopup()?.querySelector('#preview-container') as HTMLDivElement;
+        const previewImage = Swal.getPopup()?.querySelector('#preview-image') as HTMLImageElement;
+        const video = Swal.getPopup()?.querySelector('#webcam-video') as HTMLVideoElement;
+        
+        let stream: MediaStream | null = null;
+
+        // Función para procesar la imagen
+        const processImage = async (imageData: string | File) => {
+          try {
+            const resizedImage = await this.imageProcessor.resizeImage(imageData);
+            previewImage.src = resizedImage;
+            previewContainer.classList.remove('hidden');
+            if (video) video.classList.add('hidden');
+            Swal.enableButtons();
+            Swal.getConfirmButton()?.classList.remove('hidden');
+            return resizedImage;
+          } catch (error) {
+            console.error('Error processing image:', error);
+            await this.notification.showError('Error', 'Error al procesar la imagen');
+            return null;
+          }
+        };
+
+        // Manejador para subida de archivo
+        fileInput.addEventListener('change', async (e) => {
+          const files = (e.target as HTMLInputElement).files;
+          if (files?.length) {
+            await processImage(files[0]);
+          }
+        });
+
+        // Manejador para webcam
+        webcamBtn.addEventListener('click', async () => {
+          try {
+            if (!stream) {
+              stream = await navigator.mediaDevices.getUserMedia({
+                video: {
+                  width: { ideal: 350 },
+                  height: { ideal: 350 },
+                  facingMode: 'user'
+                }
+              });
+              video.srcObject = stream;
+              video.classList.remove('hidden');
+              previewContainer.classList.add('hidden');
+              webcamBtn.textContent = 'Capturar';
+              await video.play();
+            } else {
+              const canvas = document.createElement('canvas');
+              canvas.width = video.videoWidth;
+              canvas.height = video.videoHeight;
+              canvas.getContext('2d')?.drawImage(video, 0, 0);
+              const photoData = canvas.toDataURL('image/jpeg', 0.8);
+              await processImage(photoData);
+              stream.getTracks().forEach(track => track.stop());
+              stream = null;
+              webcamBtn.textContent = 'Tomar Foto';
+            }
+          } catch (error) {
+            console.error('Error with webcam:', error);
+            await this.notification.showError('Error', 'Error al acceder a la cámara');
+          }
+        });
+
+        // Limpiar al cerrar
+        Swal.getPopup()?.addEventListener('close', () => {
+          if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+          }
+        });
+      },
+      preConfirm: () => {
+        const previewImage = Swal.getPopup()?.querySelector('#preview-image') as HTMLImageElement;
+        return previewImage?.src || null;
+      }
+    });
+    
+    if (result.isConfirmed && result.value) {
+      photo = result.value;
+    }
+
+    if (photo) {
+      try {
+        const response = await this.usersService.updateUserPhoto(user.id, photo);
+        if (response?.success) {
+          await this.loadData();
+          await this.notification.showSuccess('Foto actualizada con éxito');
+        } else {
+          throw new Error(response?.message || 'Error desconocido');
+        }
+      } catch (error) {
+        await this.errorHandler.handleApiError(error, 'Error al actualizar la foto');
+      }
+    }
+  }
+
   async deleteUser(user: User): Promise<void> {
-    Swal.close();
     const confirmed = await this.notification.showConfirmation({
       title: '¿Eliminar usuario?',
       message: `¿Está seguro de eliminar al usuario "${user.name}"?`,
@@ -198,7 +343,6 @@ export class UsersComponent extends BaseTableComponent<User> {
    * @param user Usuario a editar.
    */
   async editUser(user: User): Promise<void> {
-    Swal.close();
     const formData = await this.usersFormService.showEditForm(user);
     if (formData !== null) {
       try {
@@ -219,7 +363,6 @@ export class UsersComponent extends BaseTableComponent<User> {
    * Crea un nuevo usuario.
    */
   async createUser(): Promise<void> {
-    Swal.close();
     const formData = await this.usersFormService.showCreateForm();
     if (formData !== null) {
       try {

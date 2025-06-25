@@ -26,6 +26,7 @@ export interface ApiResponse {
 export class UsersService {
   private http = inject(HttpClient);
   private readonly apiUrl = 'http://localhost/api';
+  // private readonly apiUrl = '/api'; // TODO: Usar URL relativa cuando se configure el proxy
 
   async getUsers(params: {
     page: string;
@@ -59,6 +60,22 @@ export class UsersService {
       this.http.put<ApiResponse>(
         `${this.apiUrl}/users/${userId}`,
         userData,
+        { withCredentials: true }
+      )
+    );
+  }
+
+  /**
+   * Actualiza la foto de un usuario
+   * @param id ID del usuario
+   * @param photoData Datos de la foto en base64
+   * @returns Respuesta de la API
+   */
+  async updateUserPhoto(id: number, photoData: string): Promise<ApiResponse> {
+    return lastValueFrom(
+      this.http.patch<ApiResponse>(
+        `${this.apiUrl}/users/${id}/photo`,
+        { photo: photoData },
         { withCredentials: true }
       )
     );

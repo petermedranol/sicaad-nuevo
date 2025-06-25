@@ -4,6 +4,12 @@ import { User } from '../../../auth/interfaces/user.interface';
 export const USER_TABLE_CONFIG: TableConfig<User> = {
   columns: [
     { 
+      field: 'photo_path',
+      header: 'Foto',
+      sortable: false,
+      visible: true
+    },
+    { 
       field: 'id',
       header: '#',
       sortable: true,
