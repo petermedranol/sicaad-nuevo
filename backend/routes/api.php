@@ -2,11 +2,11 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\ShowImageController;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Api\UserPhotoController;
+use App\Http\Controllers\Api\ShowImageController;
 use App\Http\Middleware\CheckModuleAccess as ModuleAccess;
 
 // Ruta para obtener el token CSRF (necesario para Angular)
@@ -27,9 +27,9 @@ Route::post('/logout', function (Request $request) {
     return response()->json(['message' => 'Sesión cerrada exitosamente']);
 });
 
+
 // Rutas protegidas
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('show-image/{path}', ShowImageController::class)->where('path', '.*');
     // Obtener usuario autenticado
     Route::get('/user', function (Request $request) {
         return $request->user();
@@ -39,9 +39,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user/menus', [\App\Http\Controllers\MenuController::class, 'getUserMenus']);
     Route::get('/user/menu/{menuId}/access', [\App\Http\Controllers\MenuController::class, 'getMenuAccessLevel']);
 
+    Route::get('images/user/{userId}/{thumbnail?}', ShowImageController::class);
+
 });
 
 Route::middleware(['auth:sanctum', ModuleAccess::class . ':configuration/users'])->group(function () {
+    // Ruta protegida para imágenes de usuario
+
     Route::apiResource('users', \App\Http\Controllers\Api\UserController::class);
     Route::patch('users/{user}/photo', [UserPhotoController::class, 'update']);
 });

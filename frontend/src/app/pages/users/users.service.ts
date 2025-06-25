@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 import { Observable, lastValueFrom } from 'rxjs';
 import { User } from '../../auth/interfaces/user.interface';
 import { UserCreateFormData, UserUpdateFormData } from './interfaces/user-form.interface';
@@ -25,8 +26,7 @@ export interface ApiResponse {
 })
 export class UsersService {
   private http = inject(HttpClient);
-  private readonly apiUrl = 'http://localhost/api';
-  // private readonly apiUrl = '/api'; // TODO: Usar URL relativa cuando se configure el proxy
+  private readonly apiUrl = `${environment.apiUrl}/api`;
 
   async getUsers(params: {
     page: string;

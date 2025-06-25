@@ -3,22 +3,45 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Storage;
-use Symfony\Component\HttpFoundation\Response;
+use App\Models\User;
+use Illuminate\Http\Request;
 
 class ShowImageController extends Controller
 {
-    public function __invoke($path)
+    /**
+     * Muestra una imagen de usuario
+     *
+     * @param int $userId
+     * @param bool $thumbnail
+     * @return \Illuminate\Http\Response
+     */
+    public function __invoke($userId, $thumbnail = true)
     {
-        $path = 'public/' . $path;
-        
-        if (!Storage::exists($path)) {
-            return response()->json(['message' => 'Image not found'], Response::HTTP_NOT_FOUND);
+        $user = User::find($userId);
+
+        if (!$user || !$user->photo_path) {
+            return response()->json(['error' => 'Image not found'], 404);
         }
 
-        $file = Storage::get($path);
-        $type = Storage::mimeType($path);
+        $isThumbnail = filter_var($thumbnail, FILTER_VALIDATE_BOOLEAN);
+        $filename = $user->photo_path;
+        if ($isThumbnail) {
+            $filename = str_replace('.webp', '_thumb.webp', $filename);
+        }
+        $relativePath = 'photos/' . ($isThumbnail ? 'thumbnails/' : '') . $filename;
+        $fullPath = storage_path('app/public/' . $relativePath);
 
-        return response($file, 200)->header('Content-Type', $type);
+        if (!file_exists($fullPath)) {
+            return response()->json(['error' => 'Image not found'], 404);
+        }
+
+        $file = file_get_contents($fullPath);
+        $type = mime_content_type($fullPath);
+        $hash = md5_file($fullPath);
+
+        return response($file)
+            ->header('Content-Type', $type)
+            ->header('Cache-Control', 'public, max-age=31536000')
+            ->header('ETag', '"' . $hash . '"');
     }
 }

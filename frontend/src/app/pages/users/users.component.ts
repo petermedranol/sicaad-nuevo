@@ -1,5 +1,6 @@
 import { Component, inject, effect, OnInit } from '@angular/core';
 import { TopbarService } from '../../services/topbar.service';
+import { environment } from '../../../environments/environment';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PhotoCaptureComponent } from '../../shared/components/photo-capture/photo-capture.component';
@@ -13,7 +14,10 @@ import { LucideAngularModule,
   ArrowDown,
   ChevronLeft,
   ChevronRight,
-  Camera
+  Camera,
+  Upload,
+  Save,
+  X
 } from 'lucide-angular';
 import Swal from 'sweetalert2';
 
@@ -57,7 +61,10 @@ export class UsersComponent extends BaseTableComponent<User> implements OnInit {
   private readonly notification = inject(NotificationService);
   private readonly pageTitle = inject(PageTitleService);
   private readonly paginationService = inject(PaginationService);
-  private readonly imageProcessor = inject(ImageProcessorService);
+private readonly imageProcessor = inject(ImageProcessorService);
+
+  // Make environment accessible in template
+  protected readonly environment = environment;
 
   // === Iconos ===
   readonly searchIcon = Search;
@@ -70,6 +77,9 @@ export class UsersComponent extends BaseTableComponent<User> implements OnInit {
   readonly sortAscIcon = ArrowUp;
   readonly sortDescIcon = ArrowDown;
   readonly cameraIcon = Camera;
+  readonly uploadIcon = Upload;
+  readonly saveIcon = Save;
+  readonly xIcon = X;
 
   // === Configuración de tabla ===
   override config = USER_TABLE_CONFIG;
@@ -191,33 +201,59 @@ export class UsersComponent extends BaseTableComponent<User> implements OnInit {
       title: 'Foto de Usuario',
       html: `
         <div class="space-y-4">
-          <div class="flex justify-center space-x-4">
-            <button type="button" class="btn btn-primary" id="webcam-btn">
-              <i class="fas fa-camera"></i>
-              Tomar Foto
-            </button>
-            <label class="btn btn-secondary">
-              <i class="fas fa-upload"></i>
-              Subir Imagen
-              <input type="file" accept="image/*" class="hidden" id="file-input">
-            </label>
+          <div class="flex flex-col items-center gap-4">
+            <div class="flex gap-4">
+              <button type="button" class="btn btn-primary gap-2" id="webcam-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+                Tomar Foto
+              </button>
+              <label class="btn btn-secondary gap-2" role="button" tabindex="0">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                Subir Imagen
+                <input type="file" accept="image/*" class="hidden" id="file-input">
+              </label>
+            </div>
+            <div class="text-sm text-base-content/70 text-center hidden" id="camera-instructions">
+              Cuando estés listo, presiona el botón "Capturar" para tomar la foto
+            </div>
           </div>
-          <div id="preview-container" class="hidden">
+
+          <div id="preview-container" class="hidden space-y-2">
+            <div class="text-sm text-base-content/70 text-center">
+              Vista previa de la foto
+            </div>
             <img id="preview-image" class="max-w-[350px] mx-auto rounded-lg shadow-lg" alt="Vista previa">
           </div>
-          <video id="webcam-video" class="hidden max-w-[350px] mx-auto rounded-lg shadow-lg"></video>
+
+          <div id="camera-container" class="hidden space-y-2">
+            <div class="text-sm text-base-content/70 text-center">
+              Vista de la cámara
+            </div>
+            <video id="webcam-video" class="max-w-[350px] mx-auto rounded-lg shadow-lg"></video>
+          </div>
         </div>
       `,
       showCancelButton: true,
       showConfirmButton: true,
       showDenyButton: false,
-      confirmButtonText: 'Guardar',
-      cancelButtonText: 'Cancelar',
+      confirmButtonText: `<span class="flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Guardar</span>`,
+      cancelButtonText: `<span class="flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Cancelar</span>`,
+      showClass: {
+        popup: 'swal2-noanimation',
+        backdrop: 'swal2-noanimation'
+      },
+      buttonsStyling: false,
+      customClass: {
+        confirmButton: 'btn btn-primary gap-2',
+        cancelButton: 'btn btn-ghost gap-2'
+      },
       width: 'auto',
       didOpen: async (modalElement) => {
         const confirmButton = Swal.getConfirmButton();
         if (confirmButton) confirmButton.classList.add('hidden');
         const webcamBtn = Swal.getPopup()?.querySelector('#webcam-btn') as HTMLButtonElement;
+        const cameraInstructions = Swal.getPopup()?.querySelector('#camera-instructions') as HTMLDivElement;
+        const cameraContainer = Swal.getPopup()?.querySelector('#camera-container') as HTMLDivElement;
         const fileInput = Swal.getPopup()?.querySelector('#file-input') as HTMLInputElement;
         const previewContainer = Swal.getPopup()?.querySelector('#preview-container') as HTMLDivElement;
         const previewImage = Swal.getPopup()?.querySelector('#preview-image') as HTMLImageElement;
@@ -229,9 +265,10 @@ export class UsersComponent extends BaseTableComponent<User> implements OnInit {
         const processImage = async (imageData: string | File) => {
           try {
             const resizedImage = await this.imageProcessor.resizeImage(imageData);
-            previewImage.src = resizedImage;
-            previewContainer.classList.remove('hidden');
-            if (video) video.classList.add('hidden');
+              previewImage.src = resizedImage;
+              previewContainer.classList.remove('hidden');
+              cameraContainer.classList.add('hidden');
+              cameraInstructions.classList.add('hidden');
             Swal.enableButtons();
             Swal.getConfirmButton()?.classList.remove('hidden');
             return resizedImage;
@@ -262,9 +299,10 @@ export class UsersComponent extends BaseTableComponent<User> implements OnInit {
                 }
               });
               video.srcObject = stream;
-              video.classList.remove('hidden');
+              cameraContainer.classList.remove('hidden');
               previewContainer.classList.add('hidden');
-              webcamBtn.textContent = 'Capturar';
+              cameraInstructions.classList.remove('hidden');
+              webcamBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg> Capturar';
               await video.play();
             } else {
               const canvas = document.createElement('canvas');
@@ -275,7 +313,7 @@ export class UsersComponent extends BaseTableComponent<User> implements OnInit {
               await processImage(photoData);
               stream.getTracks().forEach(track => track.stop());
               stream = null;
-              webcamBtn.textContent = 'Tomar Foto';
+              webcamBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg> Tomar Nueva Foto';
             }
           } catch (error) {
             console.error('Error with webcam:', error);

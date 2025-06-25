@@ -99,7 +99,7 @@
                   <div class="avatar">
                     <div class="w-10 h-10 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
                       <!-- Debug URL: {{user.photo_path}} -->
-                      <img [src]="user.photo_path ? 'http://localhost/storage/photos/thumbnails/' + user.photo_path.replace('.webp', '_thumb.webp') : '/no-image.png'" 
+<img [src]="(user.photo_path) ? environment.apiUrl + '/api/images/user/' + user.id + '/true?v=' + user.photo_hash : '/no-image.png'"
                            [alt]="'Foto de ' + user.name" />
                     </div>
                   </div>
@@ -117,23 +117,23 @@
                 </td>
                 <td class="text-center">
                   <div class="flex justify-center gap-1">
-                    <button 
-                      class="btn btn-ghost btn-xs btn-square" 
-                      (click)="captureUserPhoto(user)" 
+                    <button
+                      class="btn btn-ghost btn-xs btn-square"
+                      (click)="captureUserPhoto(user)"
                       title="Cambiar foto"
                       [attr.aria-label]="'Cambiar foto de ' + user.name">
                       <lucide-icon [img]="cameraIcon" class="w-4 h-4"></lucide-icon>
                     </button>
-            <button 
-              class="btn btn-ghost btn-xs btn-square" 
-              (click)="editUser(user)" 
+            <button
+              class="btn btn-ghost btn-xs btn-square"
+              (click)="editUser(user)"
               title="Editar"
               [attr.aria-label]="'Editar usuario ' + user.name">
                       <lucide-icon [img]="editIcon" class="w-4 h-4"></lucide-icon>
                     </button>
-            <button 
-              class="btn btn-ghost btn-xs btn-square text-error" 
-              (click)="deleteUser(user)" 
+            <button
+              class="btn btn-ghost btn-xs btn-square text-error"
+              (click)="deleteUser(user)"
               title="Eliminar"
               [attr.aria-label]="'Eliminar usuario ' + user.name">
                       <lucide-icon [img]="trashIcon" class="w-4 h-4"></lucide-icon>
@@ -167,17 +167,17 @@
             Mostrando {{ from }} a {{ to }} de {{ state().totalRecords }} registros
           </div>
           <div class="join">
-            <button 
-              class="join-item btn btn-sm" 
-              (click)="goToPage(state().currentPage - 1)" 
+            <button
+              class="join-item btn btn-sm"
+              (click)="goToPage(state().currentPage - 1)"
               [disabled]="state().currentPage === 1"
               [attr.aria-label]="'Página anterior'">
               «
             </button>
             <button class="join-item btn btn-sm pointer-events-none">Página {{ state().currentPage }}</button>
-            <button 
-              class="join-item btn btn-sm" 
-              (click)="goToPage(state().currentPage + 1)" 
+            <button
+              class="join-item btn btn-sm"
+              (click)="goToPage(state().currentPage + 1)"
               [disabled]="state().currentPage === state().totalPages"
               [attr.aria-label]="'Página siguiente'">
               »

@@ -10,6 +10,7 @@ use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable
 {
@@ -40,6 +41,8 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
+
+    protected $appends = ['photo_hash'];
 
     /**
      * Get the attributes that should be cast.
@@ -168,5 +171,18 @@ class User extends Authenticatable
     public function scopeByCampus($query, string $campus)
     {
         return $query->where('campus', $campus);
+    }
+
+    /**
+     * Get hash for user's photo for cache busting
+     */
+    public function getPhotoHashAttribute(): ?string
+    {
+        if (!$this->photo_path) {
+            return null;
+        }
+        
+        $thumbPath = 'public/photos/thumbnails/' . str_replace('.webp', '_thumb.webp', $this->photo_path);
+        return Storage::exists($thumbPath) ? md5_file(Storage::path('app/' . $thumbPath)) : null;
     }
 }

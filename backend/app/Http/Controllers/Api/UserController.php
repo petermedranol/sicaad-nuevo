@@ -51,7 +51,7 @@ class UserController extends Controller
             $query->orderBy($sortField, $sortOrder);
 
             // Ejecutar paginación
-            $paginated = $query->paginate($limit, ['id', 'name', 'email', 'created_at', 'updated_at'], 'page', $page);
+            $paginated = $query->paginate($limit, ['id', 'name', 'email', 'created_at', 'updated_at', 'photo_path'], 'page', $page);
 
             // Formatear usuarios para el frontend
             $users = $paginated->getCollection()->map(function ($user) {
@@ -61,7 +61,9 @@ class UserController extends Controller
                     'email' => $user->email,
                     'created_at' => $user->created_at->toISOString(),
                     'updated_at' => $user->updated_at->toISOString(),
-                    'formatted_date' => $user->created_at->format('d/m/Y')
+                    'formatted_date' => $user->created_at->format('d/m/Y'),
+                    'photo_path' => $user->photo_path,
+                    'photo_hash' => $user->photo_path ? md5_file(storage_path('app/public/photos/thumbnails/' . str_replace('.webp', '_thumb.webp', $user->photo_path))) : null
                 ];
             });
 
