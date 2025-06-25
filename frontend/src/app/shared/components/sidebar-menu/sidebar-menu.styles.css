@@ -1,0 +1,42 @@
+/* Estilos específicos para el tema claro */
+[data-theme="cupcake"] aside {
+  background-color: #444d58 !important;
+}
+
+[data-theme="cupcake"] aside nav .menu-link {
+  color: white !important;
+}
+
+[data-theme="cupcake"] aside nav .text-xs {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+[data-theme="cupcake"] aside nav lucide-icon,
+[data-theme="cupcake"] aside nav ng-icon {
+  color: white !important;
+}
+
+[data-theme="cupcake"] aside nav .menu-link:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-theme="cupcake"] aside nav .menu-link.active {
+  background-color: var(--cecytec-green-medium) !important;
+  color: white !important;
+}
+
+[data-theme="cupcake"] aside nav span,
+[data-theme="cupcake"] aside nav div {
+  color: white !important;
+}
+
+/* Menú flotante */
+[data-theme="cupcake"] aside nav .menu-float {
+  background-color: white !important;
+  color: #1e293b !important;
+}
+
+[data-theme="cupcake"] aside nav .menu-float span,
+[data-theme="cupcake"] aside nav .menu-float div {
+  color: #1e293b !important;
+}

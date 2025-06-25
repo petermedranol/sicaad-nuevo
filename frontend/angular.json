@@ -26,8 +26,10 @@
                 "input": "public"
               }
             ],
-            "styles": [
-              "src/styles.css"
+"styles": [
+              "src/styles.css",
+              "src/app/shared/styles/custom.css",
+              "src/app/shared/components/sidebar-menu/sidebar-menu.styles.css"
             ],
             "scripts": []
           },

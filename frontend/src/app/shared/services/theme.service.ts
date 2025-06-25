@@ -27,9 +27,9 @@ export class ThemeService {
    */
   private themeEffect = effect(() => {
     const theme = this.currentTheme();
+    document.documentElement.classList.toggle('dark', theme === 'dark');
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('theme', theme);
-    
   });
 
   constructor() {

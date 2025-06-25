@@ -1,0 +1,50 @@
+/* Custom styles to override base colors */
+
+/* Sidebar background */
+aside {
+  background-color: var(--cecytec-sidebar-bg) !important;
+  color: white !important;
+}
+
+aside .text-base-content,
+aside .text-base-content\/70,
+aside .text-base-content\/60 {
+  color: white !important;
+}
+
+/* Topbar background */
+nav.topbar {
+  background-color: var(--cecytec-sidebar-bg) !important;
+  color: white !important;
+}
+
+nav.topbar .text-base-content,
+nav.topbar .text-base-content\/70,
+nav.topbar .text-base-content\/60 {
+  color: white !important;
+}
+
+/* Menu items */
+aside .menu-item {
+  color: white !important;
+}
+
+aside .menu-item:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+aside .menu-item.active {
+  background-color: var(--cecytec-green-medium) !important;
+  color: white !important;
+}
+
+/* Icons in sidebar and topbar */
+aside lucide-icon,
+nav.topbar lucide-icon {
+  color: white !important;
+}
+
+/* Override base background colors */
+.bg-base-100 {
+  background-color: var(--cecytec-sidebar-bg) !important;
+}

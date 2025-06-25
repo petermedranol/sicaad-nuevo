@@ -1,4 +1,4 @@
-<nav class="w-full h-16 bg-base-100 border-b border-base-300/60">
+<nav class="w-full h-16 bg-bg text-text border-b border-base-300/60">
   <div class="flex justify-between items-center w-full h-full px-4 lg:px-6">
     <!-- Izquierda: Botón de menú (móvil) y Título de página -->
     <div class="flex items-center gap-2">
@@ -30,7 +30,7 @@
 
       <div class="tooltip tooltip-bottom" [attr.data-tip]="themeTooltip()">
         <button
-          class="btn btn-ghost btn-sm btn-circle"
+class="btn btn-ghost btn-sm btn-circle bg-accent text-text"
           (click)="onToggleTheme()">
           <lucide-icon [img]="themeIcon()" class="w-4 h-4 text-base-content/80"></lucide-icon>
         </button>

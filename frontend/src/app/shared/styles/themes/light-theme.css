@@ -178,19 +178,43 @@
   background-color: #f8fafc !important;
 }
 
-/* Sidebar - FORZAR gris suave */
+/* Sidebar - FORZAR gris oscuro */
 [data-theme="cupcake"] aside,
 [data-theme="cupcake"] aside.bg-base-100,
 [data-theme="cupcake"] .bg-base-100 aside {
-  background-color: #f1f5f9 !important;
-  border-right: 1px solid #e2e8f0 !important;
+  background-color: #444d58 !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: white !important;
+}
+
+[data-theme="cupcake"] header,
+[data-theme="cupcake"] header.bg-base-100 {
+  background-color: #444d58 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Textos del sidebar en blanco */
+[data-theme="cupcake"] aside h1,
+[data-theme="cupcake"] aside h2,
+[data-theme="cupcake"] aside h3,
+[data-theme="cupcake"] aside p,
+[data-theme="cupcake"] aside span,
+[data-theme="cupcake"] aside .text-base-content,
+[data-theme="cupcake"] aside .text-base-content\/60,
+[data-theme="cupcake"] aside .text-base-content\/70 {
+  color: white !important;
+}
+
+[data-theme="cupcake"] aside lucide-icon,
+[data-theme="cupcake"] aside ng-icon {
+  color: white !important;
 }
 
 /* Header - FORZAR gris oscuro */
 [data-theme="cupcake"] header,
 [data-theme="cupcake"] header.bg-base-100 {
-  background-color: #64748b !important;
-  border-bottom: 1px solid #475569 !important;
+  background-color: #444d58 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
 }
 
 /* Títulos en header gris oscuro - FORZAR */
