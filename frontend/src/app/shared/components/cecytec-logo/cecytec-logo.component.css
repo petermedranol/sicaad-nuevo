@@ -68,7 +68,7 @@
   font-family: 'Inter', 'Segoe UI', sans-serif;
   font-size: 16px;
   font-weight: 700;
-  color: #111827;
+  color: white;
   line-height: 1.2;
 }
 
@@ -86,7 +86,7 @@
   font-family: 'Inter', 'Segoe UI', sans-serif;
   font-size: 9px;
   font-weight: 500;
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.7);
   line-height: 1.1;
   margin-top: 0;
 }
@@ -100,11 +100,11 @@
 }
 
 .logo-text--dark .logo-title {
-  color: #FFFFFF;
+  color: var(--navbar-text);
 }
 
 .logo-text--dark .logo-subtitle {
-  color: #d1d5db;
+  color: rgba(var(--navbar-text), 0.7);
 }
 
 /* Animación sutil */

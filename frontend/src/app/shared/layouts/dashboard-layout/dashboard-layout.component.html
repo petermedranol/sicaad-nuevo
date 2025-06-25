@@ -10,7 +10,7 @@
 
   <!-- Sidebar -->
   <aside
-class="fixed top-0 left-0 h-screen bg-base-100 text-base-content border-r border-base-300/10 z-40 transition-all duration-300 lg:translate-x-0"
+    class="fixed top-0 left-0 h-screen bg-navbar text-navbar-text border-r border-base-300/10 z-40 transition-all duration-300 lg:translate-x-0"
     [class.w-64]="!sidebarService.isSidebarCollapsed()"
     [class.w-20]="sidebarService.isSidebarCollapsed()"
     [class.translate-x-0]="sidebarService.isSidebarOpen()"
@@ -30,7 +30,7 @@ class="fixed top-0 left-0 h-screen bg-base-100 text-base-content border-r border
     [class.lg:pl-64]="!sidebarService.isSidebarCollapsed()"
     [class.lg:pl-20]="sidebarService.isSidebarCollapsed()">
 
-    <!-- Topbar Restaurado -->
+    <!-- Topbar -->
     <header class="sticky top-0 z-20">
       <app-topbar
         (toggleSidebar)="toggleSidebar()">
@@ -39,12 +39,12 @@ class="fixed top-0 left-0 h-screen bg-base-100 text-base-content border-r border
 
     <!-- Botón para colapsar sidebar en Desktop -->
     <button
-      class="fixed top-5 z-50 btn btn-xs btn-circle btn-ghost hidden lg:flex shadow-md bg-base-100"
+      class="fixed top-5 z-50 btn btn-xs btn-circle btn-ghost hidden lg:flex shadow-md bg-navbar"
       [style.left]="(sidebarService.isSidebarCollapsed() ? 4.25 : 15.25) + 'rem'"
       (click)="toggleSidebarCollapse()">
       <ng-icon
         [name]="sidebarService.isSidebarCollapsed() ? 'lucideChevronRight' : 'lucideChevronLeft'"
-        class="w-3.5 h-3.5 text-base-content">
+        class="w-3.5 h-3.5 text-white dark:text-navbar-text">
       </ng-icon>
     </button>
 

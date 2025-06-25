@@ -5,10 +5,10 @@
           (click)="onItemClick(item, $event)"
           (mouseenter)="onMouseEnter(item.id, $event)"
           (mouseleave)="onMouseLeave()"
-          class="flex items-center gap-3 p-3 rounded-lg transition-colors"
+          class="flex items-center gap-3 p-3 rounded-lg transition-colors text-white dark:text-navbar-text"
           [ngClass]="{
-            'bg-primary text-primary-content': isItemActive(item.id),
-'hover:bg-slate-300': !isItemActive(item.id),
+            'bg-primary text-white': isItemActive(item.id),
+            'hover:bg-white/10': !isItemActive(item.id),
             'pl-6': level === 1 && !isCollapsed,
             'pl-9': level === 2 && !isCollapsed,
             'justify-center': isCollapsed
@@ -20,8 +20,8 @@
               [img]="getIconByName(item.icon)"
               class="w-5 h-5 shrink-0"
               [ngClass]="{
-                'text-primary-content/80': isItemActive(item.id),
-                'text-base-content/60': !isItemActive(item.id)
+                'text-white': isItemActive(item.id),
+                'text-white/70 dark:text-navbar-text/70': !isItemActive(item.id)
               }">
             </lucide-icon>
           }
@@ -30,15 +30,15 @@
           @if (!isCollapsed) {
             <div class="flex flex-col flex-1 min-w-0">
               <span
-                class="font-medium"
+                class="font-medium text-white dark:text-navbar-text"
                 [innerHTML]="hasChildren(item) ? 'Configuración' : (item.title | highlight:searchQuery)">
               </span>
               @if (item.description && !hasChildren(item)) {
                 <span
                   class="text-xs break-words max-w-full block"
                   [ngClass]="{
-                    'text-primary-content/70': isItemActive(item.id),
-                    'text-base-content/60': !isItemActive(item.id)
+                    'text-white': isItemActive(item.id),
+                    'text-white/70 dark:text-navbar-text/70': !isItemActive(item.id)
                   }"
                   [innerHTML]="item.description | highlight:searchQuery">
                 </span>
@@ -49,7 +49,7 @@
             @if (hasChildren(item)) {
               <lucide-icon
                 [img]="isItemExpanded(item.id) ? chevronDown : chevronRight"
-                class="w-4 h-4 transition-transform"
+                class="w-4 h-4 transition-transform text-white/70 dark:text-navbar-text/70"
                 [class.rotate-180]="isItemExpanded(item.id)">
               </lucide-icon>
             }
@@ -75,17 +75,16 @@
 
         <!-- Menú flotante directo y simple -->
         @if (isCollapsed && hasChildren(item) && hoveredItemId === item.id) {
-<div
-class="absolute left-full top-0 ml-2 rounded-lg shadow-xl z-50 min-w-[200px] bg-slate-200 !bg-slate-200"
+          <div
+            class="absolute left-full top-0 ml-2 rounded-lg shadow-xl z-50 min-w-[200px] bg-navbar"
             (mouseenter)="onMouseEnter(item.id, $event)"
             (mouseleave)="onMouseLeave()"
-            (click)="$event.stopPropagation()"
-          >
-<div class="py-2 bg-slate-200">
+            (click)="$event.stopPropagation()">
+            <div class="py-2">
               <!-- Título fijo de Configuración -->
-              <div class="px-4 py-2 text-sm font-medium text-base-content/80">Configuración</div>
+              <div class="px-4 py-2 text-sm font-medium text-white/80 dark:text-navbar-text/80">Configuración</div>
               <!-- Menú de usuarios con hover sólido -->
-              <div class="mt-1 [&_.menu-link:hover]:bg-primary [&_.menu-link:hover]:bg-opacity-20 [&_.menu-link:hover]:text-primary">
+              <div class="mt-1 [&_.menu-link:hover]:bg-white/10">
                 <app-sidebar-menu
                   [menuItems]="item.children!"
                   [level]="1"
@@ -104,4 +103,3 @@ class="absolute left-full top-0 ml-2 rounded-lg shadow-xl z-50 min-w-[200px] bg-
       </li>
     }
   </ul>
-

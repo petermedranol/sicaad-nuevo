@@ -11,6 +11,8 @@ module.exports = {
         primary: 'var(--color-primary)',
         secondary: 'var(--color-secondary)',
         accent: 'var(--color-accent)',
+        navbar: 'var(--color-navbar)',
+        'navbar-text': 'var(--color-navbar-text)',
       }
     },
   },
