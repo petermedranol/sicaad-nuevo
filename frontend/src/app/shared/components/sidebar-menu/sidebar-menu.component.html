@@ -1,14 +1,14 @@
-<ul class="menu p-0">
+<ul class="menu p-0 bg-[#444d58] dark:bg-navbar">
     @for (item of menuItems; track item.id) {
       <li class="relative">
         <a
           (click)="onItemClick(item, $event)"
           (mouseenter)="onMouseEnter(item.id, $event)"
           (mouseleave)="onMouseLeave()"
-          class="flex items-center gap-3 p-3 rounded-lg transition-colors text-white dark:text-navbar-text"
+          class="flex items-center gap-3 p-3 rounded-lg transition-colors text-white dark:text-navbar-text hover:text-white hover:bg-[#43A047] bg-[#444d58] dark:bg-navbar"
           [ngClass]="{
-            'bg-primary text-white': isItemActive(item.id),
-            'hover:bg-white/10': !isItemActive(item.id),
+            'border-[#43A047] border-2 text-white': isItemActive(item.id),
+            'hover:bg-[#43A047]': !isItemActive(item.id),
             'pl-6': level === 1 && !isCollapsed,
             'pl-9': level === 2 && !isCollapsed,
             'justify-center': isCollapsed
@@ -28,7 +28,7 @@
 
           <!-- Título y Descripción - solo mostrar si no está colapsado -->
           @if (!isCollapsed) {
-            <div class="flex flex-col flex-1 min-w-0">
+          <div class="flex flex-col flex-1 min-w-0">
               <span
                 class="font-medium text-white dark:text-navbar-text"
                 [innerHTML]="hasChildren(item) ? 'Configuración' : (item.title | highlight:searchQuery)">
@@ -76,15 +76,15 @@
         <!-- Menú flotante directo y simple -->
         @if (isCollapsed && hasChildren(item) && hoveredItemId === item.id) {
           <div
-            class="absolute left-full top-0 ml-2 rounded-lg shadow-xl z-50 min-w-[200px] bg-navbar"
+            class="absolute left-full top-0 ml-2 rounded-lg shadow-xl z-50 min-w-[200px] bg-[#444d58] dark:bg-navbar hover:bg-[#444d58] dark:hover:bg-navbar [&_a:hover]:bg-[#43A047] [&_a.active]:border-[#43A047] [&_a.active]:border-2"
             (mouseenter)="onMouseEnter(item.id, $event)"
             (mouseleave)="onMouseLeave()"
             (click)="$event.stopPropagation()">
-            <div class="py-2">
+            <div class="py-2 bg-[#444d58] dark:bg-navbar">
               <!-- Título fijo de Configuración -->
-              <div class="px-4 py-2 text-sm font-medium text-white/80 dark:text-navbar-text/80">Configuración</div>
+              <div class="px-4 py-2 text-sm font-medium text-white dark:text-navbar-text">Configuración</div>
               <!-- Menú de usuarios con hover sólido -->
-              <div class="mt-1 [&_.menu-link:hover]:bg-white/10">
+              <div class="mt-1">
                 <app-sidebar-menu
                   [menuItems]="item.children!"
                   [level]="1"

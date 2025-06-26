@@ -39,13 +39,13 @@
 
     <!-- Botón para colapsar sidebar en Desktop -->
     <button
-      class="fixed top-5 z-50 btn btn-xs btn-circle btn-ghost hidden lg:flex shadow-md bg-navbar"
+      class="fixed top-5 z-50 btn btn-xs btn-circle hidden lg:flex shadow-md bg-[#ff8c00] hover:bg-[#ff8c00]/90 border-none"
       [style.left]="(sidebarService.isSidebarCollapsed() ? 4.25 : 15.25) + 'rem'"
       (click)="toggleSidebarCollapse()">
       <ng-icon
         [name]="sidebarService.isSidebarCollapsed() ? 'lucideChevronRight' : 'lucideChevronLeft'"
-        class="w-3.5 h-3.5 text-white dark:text-navbar-text">
-      </ng-icon>
+        class="w-3.5 h-3.5 text-white"
+      ></ng-icon>
     </button>
 
     <!-- Contenido de la página -->

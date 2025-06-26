@@ -42,6 +42,15 @@
   opacity: 0.8 !important;
 }
 
+/* Estilos para las tablas */
+thead tr {
+  @apply bg-base-200 dark:bg-base-300 !important;
+}
+
+thead th {
+  @apply text-base-content dark:text-base-content font-medium !important;
+}
+
 /* Ajuste de padding para contenedor de botones */
 .swal2-actions {
   padding-bottom: 1rem !important;

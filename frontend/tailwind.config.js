@@ -13,6 +13,7 @@ module.exports = {
         accent: 'var(--color-accent)',
         navbar: 'var(--color-navbar)',
         'navbar-text': 'var(--color-navbar-text)',
+        'active': 'var(--color-active)',
       }
     },
   },

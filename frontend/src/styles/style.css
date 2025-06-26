@@ -6,6 +6,7 @@
   --color-accent: #3b82f6;
   --color-navbar: #444d58;
   --color-navbar-text: #f9fafb;
+  --color-active: #43A047;
 }
 .dark {
   --color-bg: #1f2937;
@@ -15,4 +16,5 @@
   --color-accent: #60a5fa;
   --color-navbar: #1f2937;
   --color-navbar-text: #f9fafb;
+  --color-active: #43A047; /* Color verde para elementos activos */
 }
