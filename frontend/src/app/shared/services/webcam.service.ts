@@ -21,7 +21,6 @@ export class WebcamService {
       this.isInitialized.set(true);
       return true;
     } catch (error) {
-      console.error('Error accessing webcam:', error);
       return false;
     }
   }

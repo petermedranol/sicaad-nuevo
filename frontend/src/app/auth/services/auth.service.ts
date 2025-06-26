@@ -72,7 +72,7 @@ export class AuthService {
         });
       }),
       map(response => response.user),
-      tap(() => console.log('✅ Login exitoso, datos inicializados:', this.currentUser()))
+      tap(() => {})
     );
   }
 
@@ -84,7 +84,6 @@ export class AuthService {
     try {
       // Primero guardamos las preferencias mientras aún estamos autenticados
       await this.userSettings.saveToServer();
-      console.log('✅ Preferencias guardadas en el servidor');
 
       // Luego hacemos logout
       await lastValueFrom(this.http.post(`${this.apiUrl}/logout`, {}, { withCredentials: true }));
@@ -92,9 +91,7 @@ export class AuthService {
       this.currentUser.set(null); // Limpia el usuario
       this.userSettings.remove(); // Limpia todas las configuraciones
       this.router.navigate(['/auth/login']);
-      console.log('🔒 Sesión cerrada');
     } catch (error) {
-      console.error('Error durante el logout:', error);
       // Aseguramos que el usuario sea desconectado incluso si hay error
       this.currentUser.set(null);
       this.userSettings.remove();
@@ -114,7 +111,6 @@ export class AuthService {
       }),
       catchError(() => {
         this.currentUser.set(null);
-        console.log('🔍 Verificación de Auth fallida, no hay sesión.');
         return of(false);
       })
     );

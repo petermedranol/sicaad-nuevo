@@ -27,7 +27,7 @@ private _menuItems = signal<MenuItem[]>([]);
   public activeItemId = this._activeItemId.asReadonly();
   public hasMenus = computed(() => this._menuItems().length > 0);
   public currentSearchQuery: string = '';
-  private searchDebounceTimeout: any;
+  private searchDebounceTimeout?: number;
 
   // Método público para establecer los menús (usado al inicializar desde el login)
   public setMenuItems(items: MenuItem[]): void {
@@ -75,7 +75,6 @@ public expandedItems(): Set<string> {
   }
 
   async ensureMenusLoaded(): Promise<void> {
-    console.log('🚀 Iniciando carga de menús');
     try {
       // Primero sincronizar con el servidor para obtener las preferencias más recientes
       await this.userSettings.syncWithServer();
@@ -85,26 +84,21 @@ public expandedItems(): Set<string> {
       
       // Restaurar todo el estado desde las preferencias sincronizadas
       if (preferences?.searchQuery !== undefined) {
-        console.log('🔍 Restaurando searchQuery:', preferences.searchQuery);
         this.currentSearchQuery = preferences.searchQuery;
       }
       
       if (preferences?.activeItem) {
-        console.log('🎯 Restaurando activeItem:', preferences.activeItem);
         this._activeItemId.set(preferences.activeItem);
       }
       
       if (preferences?.expandedItems) {
-        console.log('📂 Restaurando expandedItems:', preferences.expandedItems);
         this._expandedItems.set(new Set(preferences.expandedItems));
       }
     } catch (error) {
-      console.error('❌ Error al sincronizar con el servidor:', error);
     }
 
     // Si ya tenemos menús en el servicio
     if (this.hasMenus()) {
-      console.log('✅ Menús ya cargados en el servicio');
       return;
     }
 
@@ -112,7 +106,6 @@ public expandedItems(): Set<string> {
     const preferences = this.userSettings.getAll();
     
     if (preferences?.menuItems?.length > 0) {
-      console.log('✅ Cargando menús desde preferencias');
       const menuItems = this.convertApiMenusToMenuItems(preferences.menuItems);
       this._menuItems.set(menuItems);
       
@@ -120,13 +113,11 @@ public expandedItems(): Set<string> {
     }
 
     // Si no hay menús en preferencias, cargar del servidor
-    console.log('⚡ Cargando menús del servidor');
     await this.loadUserMenus();
     
     // Después de cargar del servidor, restaurar estado si existe
     const currentPreferences = this.userSettings.getAll();
     if (currentPreferences.activeItem) {
-      console.log('🎯 Restaurando activeItem después de carga:', currentPreferences.activeItem);
       this._activeItemId.set(currentPreferences.activeItem);
     }
   }
@@ -145,13 +136,11 @@ public expandedItems(): Set<string> {
       if (response.success) {
         const menuItems = this.convertApiMenusToMenuItems(response.data.menus);
         this._menuItems.set(menuItems);
-        console.log('✅ Menús cargados exitosamente');
       } else {
         throw new Error('Error al cargar menús');
       }
 
     } catch (error: any) {
-      console.error('❌ Error cargando menús:', error);
       this._error.set(error.message || 'Error desconocido');
       this._menuItems.set([]);
     } finally {
@@ -177,21 +166,29 @@ children: apiMenu.children?.map((child: any) => ({
   setActiveItem(itemId: string): void {
     if (this._activeItemId() === itemId) return;
     this._activeItemId.set(itemId);
-    console.log('🎯 Item activo establecido:', itemId);
 }
 
   updateActiveItemByRoute(route: string): void {
-    const foundItem = this.findItemByRoute(route);
-    if (foundItem) {
+    const found = this.findItemByRoute(route);
+    if (found) {
       // Actualizar activeItem en el servicio
-      this.setActiveItem(foundItem.id);
+      this.setActiveItem(found.item.id);
       
-      // Actualizar activeItem en las preferencias
+      // Expandir automáticamente los menús padres
+      const expandedItems = new Set(this._expandedItems());
+      found.parents.forEach(parent => {
+        if (!expandedItems.has(parent.id)) {
+          expandedItems.add(parent.id);
+        }
+      });
+      this._expandedItems.set(expandedItems);
+      
+      // Actualizar preferencias
       const preferences = this.userSettings.getAll();
-      preferences.activeItem = foundItem.id;
+      preferences.activeItem = found.item.id;
+      preferences.expandedItems = Array.from(expandedItems);
       this.userSettings.saveAll(preferences);
       
-      console.log('🎯 Item activo actualizado en preferencias:', foundItem.id);
     }
   }
 
@@ -209,7 +206,6 @@ children: apiMenu.children?.map((child: any) => ({
     preferences.expandedItems = Array.from(expandedItems);
     this.userSettings.saveAll(preferences);
 
-    console.log('🔼 Menús expandidos actualizados en preferencias:', Array.from(expandedItems));
   }
 
   async setSearchQuery(query: string): Promise<void> {
@@ -232,17 +228,22 @@ children: apiMenu.children?.map((child: any) => ({
         
         // Sincronizar con el servidor
         await this.userSettings.saveToServer();
-        console.log('🔍 Query actualizada y sincronizada:', query);
       } catch (error) {
-        console.error('❌ Error al sincronizar query:', error);
       }
     }, 300);
+  }
+
+  private clearDebounceTimeout() {
+    if (this.searchDebounceTimeout) {
+      clearTimeout(this.searchDebounceTimeout);
+      this.searchDebounceTimeout = undefined;
+    }
   }
 
   async clearSearch(): Promise<void> {
     if (this.searchDebounceTimeout) {
       clearTimeout(this.searchDebounceTimeout);
-      this.searchDebounceTimeout = null;
+      this.searchDebounceTimeout = undefined;
     }
     
     this.currentSearchQuery = '';
@@ -252,18 +253,20 @@ children: apiMenu.children?.map((child: any) => ({
       preferences.searchQuery = '';
       this.userSettings.saveAll(preferences);
       await this.userSettings.saveToServer();
-      console.log('🧹 Search query limpiada y sincronizada');
     } catch (error) {
-      console.error('❌ Error al limpiar search query:', error);
     }
   }
 
-  findItemByRoute(route: string): MenuItem | null {
-    const findInItems = (items: MenuItem[]): MenuItem | null => {
+  findItemByRoute(route: string): { item: MenuItem, parents: MenuItem[] } | null {
+    // Normalizar la ruta
+    const normalizedRoute = route === '/' ? '' : route;
+    
+    const findInItems = (items: MenuItem[], parents: MenuItem[] = []): { item: MenuItem, parents: MenuItem[] } | null => {
       for (const item of items) {
-        if (item.route === route) return item;
+        // Comparar con la ruta normalizada
+        if (item.route === normalizedRoute) return { item, parents };
         if (item.children) {
-          const found = findInItems(item.children);
+          const found = findInItems(item.children, [...parents, item]);
           if (found) return found;
         }
       }

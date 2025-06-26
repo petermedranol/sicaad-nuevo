@@ -94,7 +94,6 @@ export class PhotoCaptureComponent implements OnInit, OnDestroy {
     try {
       await this.webcamService.initialize();
     } catch (error) {
-      console.error('Error initializing webcam:', error);
     }
   }
 
@@ -105,7 +104,6 @@ export class PhotoCaptureComponent implements OnInit, OnDestroy {
       this.previewImage.set(resizedPhoto);
       this.showVideo.set(false);
     } catch (error) {
-      console.error('Error capturing photo:', error);
     }
   }
 
@@ -118,7 +116,6 @@ export class PhotoCaptureComponent implements OnInit, OnDestroy {
         this.previewImage.set(resizedPhoto);
         this.showVideo.set(false);
       } catch (error) {
-        console.error('Error processing image:', error);
       }
     }
   }

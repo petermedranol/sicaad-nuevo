@@ -31,7 +31,6 @@ export class ThemeService {
    */
   private themeEffect = effect(() => {
     const theme = this.currentTheme();
-    console.log('🔄 Efecto de tema ejecutándose, nuevo tema:', theme);
     
     // Aplicar clases y atributos
     document.documentElement.classList.remove('dark', 'light');
@@ -40,7 +39,6 @@ export class ThemeService {
     
     const user = this.authService.currentUser();
     if (user?.id) {
-      console.log('💾 Guardando tema en localStorage:', theme);
       // Guardar el tema y todas las configuraciones existentes
       const currentSettings = this.userSettings.getAll();
       this.userSettings.saveAll({
@@ -50,7 +48,6 @@ export class ThemeService {
       
       // Verificar inmediatamente que se guardó correctamente
       const savedSettings = this.userSettings.getAll();
-      console.log('✅ Configuraciones actualizadas:', savedSettings);
     }
   });
 
@@ -59,10 +56,8 @@ export class ThemeService {
 
     // Escuchar eventos de sincronización de preferencias
     this.userSettings.preferencesSync.subscribe(() => {
-      console.log('🔄 Preferencias sincronizadas, actualizando tema...');
       const allSettings = this.userSettings.getAll();
       if (allSettings?.theme && (allSettings.theme === 'light' || allSettings.theme === 'dark')) {
-        console.log('🎨 Aplicando tema desde preferencias sincronizadas:', allSettings.theme);
         this.currentTheme.set(allSettings.theme);
       }
     });
@@ -77,15 +72,12 @@ export class ThemeService {
   private initializeTheme(): void {
     try {
       const user = this.authService.currentUser();
-      console.log('🔍 Usuario actual:', user?.id);
       
       // Obtener todas las configuraciones
       const allSettings = this.userSettings.getAll();
-      console.log('📦 Todas las configuraciones:', allSettings);
       
       // Si hay un tema guardado en las configuraciones, usarlo
       if (allSettings && allSettings.theme && (allSettings.theme === 'light' || allSettings.theme === 'dark')) {
-        console.log('🎨 Usando tema guardado:', allSettings.theme);
         this.currentTheme.set(allSettings.theme);
         return;
       }
@@ -94,17 +86,14 @@ export class ThemeService {
       // usar preferencia del sistema
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       const defaultTheme = prefersDark ? 'dark' : 'light';
-      console.log('⚙️ Usando tema por defecto del sistema:', defaultTheme);
       this.currentTheme.set(defaultTheme);
       
       // Si hay usuario, guardar el tema por defecto
       if (user?.id) {
-        console.log('💾 Guardando tema por defecto:', defaultTheme);
         this.userSettings.set('theme', defaultTheme);
       }
       
     } catch (e) {
-      console.error('❌ Error al inicializar el tema:', e);
       this.currentTheme.set('light'); // Fallback seguro
     }
   }
@@ -114,7 +103,6 @@ export class ThemeService {
    */
   toggleTheme(): void {
     const newTheme = this.currentTheme() === 'light' ? 'dark' : 'light';
-    console.log('🔄 Cambiando tema a:', newTheme);
     this.currentTheme.set(newTheme);
   }
 }

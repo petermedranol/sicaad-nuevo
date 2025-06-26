@@ -16,6 +16,7 @@ import {
 // Servicios compartidos
 import { PageTitleService } from '../../../shared';
 import { TopbarService } from '../../../shared/services/topbar.service';
+import { MenuService } from '../../../shared/services/menu.service';
 
 // Interfaces
 import { Stat, Activity, Task } from './interfaces/index';
@@ -56,6 +57,7 @@ export class HomePageComponent implements OnInit {
   readonly checkIcon = 'lucideCircleCheck';
   private readonly pageTitle = inject(PageTitleService);
   private readonly topbarService = inject(TopbarService);
+  private readonly menuService = inject(MenuService);
 
   // Estadísticas mock
   stats = [
@@ -149,7 +151,6 @@ export class HomePageComponent implements OnInit {
     this.topbarService.updateTopbar({
       title: 'Dashboard',
       description: 'Bienvenido al panel de control',
-
     });
   }
 

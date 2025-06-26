@@ -19,17 +19,14 @@ export const permissionGuard: CanActivateFn = async (route: ActivatedRouteSnapsh
     // Rutas siempre permitidas
     const publicRoutes = ['/dashboard', '/profile'];
     if (publicRoutes.includes(currentUrl)) {
-      console.log('✅ Acceso permitido a ruta pública:', currentUrl);
       return true;
     }
 
     // Cargar menús (desde preferencias o servidor si es necesario)
     await menuService.ensureMenusLoaded();
-    console.log('📜 Menús disponibles en guard');
 
     const menu = menuService.menuItems();
     if (!menu || !Array.isArray(menu) || menu.length === 0) {
-      console.log('❌ No hay menús disponibles');
       router.navigate(['/dashboard']);
       return false;
     }
@@ -40,13 +37,11 @@ export const permissionGuard: CanActivateFn = async (route: ActivatedRouteSnapsh
 
         // Coincidencia exacta
         if (itemRoute === targetUrl) {
-          console.log('✅ Acceso permitido - coincidencia exacta:', targetUrl);
           return true;
         }
 
         // Ruta hija (permitir acceso a subrutas)
         if (itemRoute && targetUrl.startsWith(itemRoute + '/')) {
-          console.log('✅ Acceso permitido - subruta de:', itemRoute);
           return true;
         }
 
@@ -61,8 +56,6 @@ export const permissionGuard: CanActivateFn = async (route: ActivatedRouteSnapsh
     const access = hasAccess(menu, currentUrl);
     
     if (!access) {
-      console.log('❌ Acceso denegado a:', currentUrl);
-      console.log('📄 Menús disponibles:', menu);
       router.navigate(['/dashboard']);
     }
 

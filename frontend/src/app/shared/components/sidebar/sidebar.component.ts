@@ -1,6 +1,8 @@
-import { Component, inject, Input, Output, EventEmitter, ViewChild, ElementRef, OnInit } from '@angular/core';
+import { Component, inject, Input, Output, EventEmitter, ViewChild, ElementRef, OnInit, OnDestroy } from '@angular/core';
+import { Subject } from 'rxjs';
+import { filter, takeUntil } from 'rxjs/operators';
+import { Router, NavigationEnd } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
 import { CecytecLogoComponent } from '../cecytec-logo/cecytec-logo.component';
 import { SidebarMenuComponent } from '../sidebar-menu/sidebar-menu.component';
 import { MenuItem } from '../sidebar-menu/sidebar-menu.component';
@@ -46,8 +48,28 @@ import { MenuService } from '../../services/menu.service';
   ],
   templateUrl: './sidebar.component.html',
 })
-export class SidebarComponent implements OnInit {
+export class SidebarComponent implements OnInit, OnDestroy {
   private router = inject(Router);
+
+  private destroy$ = new Subject<void>();
+
+  ngOnDestroy() {
+    // Limpiar timeout de hover
+    if (this.hoverTimeout) {
+      clearTimeout(this.hoverTimeout);
+    }
+    
+    // Limpiar todos los timeouts pendientes
+    this.timeouts.forEach(timeoutId => clearTimeout(timeoutId));
+    this.timeouts = [];
+    
+    // Limpiar suscripciones
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+private hoverTimeout?: number;
+private timeouts: number[] = [];
 
   @Input() sidebarService = inject(SidebarService);
   @Input() themeService = inject(ThemeService);
@@ -65,20 +87,43 @@ export class SidebarComponent implements OnInit {
   ngOnInit() {
     this.searchQuery = this.menuService.currentSearchQuery;
     this.updateSearchInput();
+
+    // Suscribirse a eventos de navegación
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd),
+      takeUntil(this.destroy$)
+    ).subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+        // Normalizar la ruta después de redirecciones
+        const normalizedRoute = event.urlAfterRedirects === '/' ? '' : event.urlAfterRedirects;
+        // Actualizar el estado del menú basado en la ruta actual
+        this.menuService.updateActiveItemByRoute(normalizedRoute);
+      }
+    });
   }
 
   private updateSearchInput(): void {
-    setTimeout(() => {
+    const timeoutId = setTimeout(() => {
       if (this.searchInput?.nativeElement) {
         this.searchInput.nativeElement.value = this.searchQuery;
       }
     }, 100);
+    this.timeouts.push(timeoutId);
   }
 
   navigateTo(route: string): void {
-    // Solo emitir el evento, dejar que el parent maneje la navegación
+    // Normalizar la ruta
+    const normalizedRoute = route === '/' ? '' : route;
+    
+    // Si es la ruta actual, solo actualizar el estado del menú
+    if (this.router.url === normalizedRoute) {
+      this.menuService.updateActiveItemByRoute(normalizedRoute);
+      return;
+    }
+    
+    // Si no es la ruta actual, primero navegar y dejar que el
+    // NavigationEnd actualice el estado del menú
     this.navigate.emit(route);
-    this.menuService.updateActiveItemByRoute(route);
   }
 
   onCloseSidebar(): void {
@@ -126,8 +171,9 @@ export class SidebarComponent implements OnInit {
 
   focusSearch(): void {
     if (this.isCollapsed) {
-      this.sidebarService.toggleSidebarCollapse();
-      setTimeout(() => this.searchInput.nativeElement.focus(), 300);
+    this.sidebarService.toggleSidebarCollapse();
+    const timeoutId = setTimeout(() => this.searchInput.nativeElement.focus(), 300);
+    this.timeouts.push(timeoutId);
     } else {
       this.searchInput.nativeElement.focus();
     }

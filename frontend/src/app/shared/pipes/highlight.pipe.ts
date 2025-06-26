@@ -19,9 +19,7 @@ export class HighlightPipe implements PipeTransform {
     const regex = new RegExp(`(${this.escapeRegExp(query)})`, 'gi');
     
     // Reemplazar las coincidencias con un span resaltado
-    console.log('Highlighting text:', text, 'with query:', query);
     const replaced = text.replace(regex, '<mark class="bg-[#ff8c00] text-white px-1 rounded text-xs inline-block">$1</mark>')
-    console.log('Highlighted result:', replaced);
     return this.sanitizer.bypassSecurityTrustHtml(replaced);
   }
 

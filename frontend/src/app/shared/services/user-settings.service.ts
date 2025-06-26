@@ -46,7 +46,6 @@ export class UserSettingsService {
       // Guardar el activeItem actual antes de sincronizar
       const currentSettings = this.getAll();
       const activeItem = currentSettings.activeItem;
-      console.log('🔑 Item activo antes de sincronizar:', activeItem);
 
       const response = await lastValueFrom(this.http.get<{preferences: any}>(this.API_URL, { withCredentials: true }));
       if (response?.preferences) {
@@ -55,12 +54,10 @@ export class UserSettingsService {
           ...response.preferences,
           activeItem: response.preferences.activeItem || activeItem
         };
-        console.log('💾 Guardando preferencias con item activo:', newSettings.activeItem);
         this.saveAll(newSettings);
         this.preferencesSync.next();
       }
     } catch (error) {
-      console.error('Error al sincronizar preferencias con el servidor:', error);
     }
   }
 
@@ -72,7 +69,6 @@ export class UserSettingsService {
       const settings = this.getAll();
       await lastValueFrom(this.http.post(this.API_URL, { preferences: settings }, { withCredentials: true }));
     } catch (error) {
-      console.error('Error al guardar preferencias en el servidor:', error);
     }
   }
 
@@ -116,7 +112,6 @@ export class UserSettingsService {
         localStorage.removeItem('sicaad_user_settings_global');
         migrated = true;
       } catch (error) {
-        console.error('Error migrando configuraciones globales:', error);
       }
     }
 
@@ -139,7 +134,6 @@ export class UserSettingsService {
             migrated = true;
           }
         } catch (error) {
-          console.error(`Error migrando configuraciones de usuario ${key}:`, error);
         }
       }
     }

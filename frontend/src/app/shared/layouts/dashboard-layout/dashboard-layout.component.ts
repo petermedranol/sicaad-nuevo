@@ -61,10 +61,14 @@ export class DashboardLayoutComponent implements OnInit {
     this.themeService.toggleTheme();
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.sidebarService.init();
-    this.menuService.ensureMenusLoaded();
-    console.log('🎉 DashboardLayout inicializado');
+    await this.menuService.ensureMenusLoaded();
+    
+    // Asegurarse de que el estado inicial del menú se establezca correctamente
+    const currentRoute = this.router.url === '/' ? '' : this.router.url;
+    this.menuService.updateActiveItemByRoute(currentRoute);
+    
   }
 
   onNavigate(route: string) {
@@ -75,7 +79,6 @@ export class DashboardLayoutComponent implements OnInit {
         this.closeSidebar();
       }
     } else {
-      console.log('✅ Ya estamos en la ruta:', route);
     }
   }
 
@@ -84,11 +87,9 @@ export class DashboardLayoutComponent implements OnInit {
   }
 
   showNotifications() {
-    console.log('Mostrar notificaciones');
   }
 
   showProfile() {
-    console.log('Mostrar perfil de usuario');
   }
 
   private isMobile(): boolean {

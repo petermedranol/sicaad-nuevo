@@ -138,17 +138,9 @@ export class SidebarMenuComponent {
   }
 
   highlightText(text: string): any {
-    // Debug input
-    console.log('🔍 Input ->', {
-      text: text,
-      searchQuery: this.getSearchQuery(),
-      hasText: !!text,
-      hasQuery: !!this.searchQuery
-    });
 
     const query = this.getSearchQuery();
     if (!text || !query || query.trim() === '') {
-      console.log('⚠️ Returning original text - No text or query');
       return text;
     }
 
@@ -156,21 +148,16 @@ export class SidebarMenuComponent {
     const pattern = `(${this.escapeRegExp(query)})`;
     const regex = new RegExp(pattern, 'gi');
 
-    console.log('🎯 Search pattern ->', pattern);
 
     try {
       const html = `<span style="color: inherit !important; border-bottom: 2px solid #ff8c00 !important; display: inline !important; position: relative !important;">$1</span>`;
-      console.log('📝 HTML template ->', html);
 
       const highlighted = text.replace(regex, html);
-      console.log('✨ Generated HTML ->', highlighted);
 
       const result = this.sanitizer.bypassSecurityTrustHtml(highlighted);
-      console.log('🔒 Final result ->', result);
 
       return result;
     } catch (error) {
-      console.error('❌ Error in highlighting:', error);
       return text;
     }
   }

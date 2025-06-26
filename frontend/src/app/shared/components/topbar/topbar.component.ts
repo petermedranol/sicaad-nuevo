@@ -65,11 +65,9 @@ export class TopbarComponent {
   }
 
   onShowNotifications(): void {
-    console.log('Mostrar notificaciones...');
   }
 
   onShowProfile(): void {
-    console.log('Mostrar perfil...');
   }
 
   onLogout(): void {

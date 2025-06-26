@@ -1,4 +1,5 @@
 import { Component, inject, OnInit, OnDestroy, Renderer2, Inject } from '@angular/core';
+import { Subject, takeUntil } from 'rxjs';
 import { CommonModule, DOCUMENT } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
@@ -17,6 +18,8 @@ import { environment } from '../../../../environments/environment';
   styleUrl: './login-page.component.css'
 })
 export class LoginPageComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
+  private timeouts: number[] = [];
   // Form data
   email = '';
   password = '';
@@ -54,6 +57,14 @@ export class LoginPageComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    // Limpiar todos los timeouts
+    this.timeouts.forEach(id => clearTimeout(id));
+    
+    // Completar el subject de destroy
+    this.destroy$.next();
+    this.destroy$.complete();
+    
+    // Limpiar el script de reCAPTCHA
     this.removeRecaptchaScript();
   }
 
@@ -80,7 +91,7 @@ export class LoginPageComponent implements OnInit, OnDestroy {
   private initializeRecaptcha(): void {
     if (typeof (window as any).grecaptcha !== 'undefined' && !this.recaptchaLoaded) {
       this.recaptchaLoaded = true;
-      setTimeout(() => {
+      const timeoutId = setTimeout(() => {
         this.renderRecaptcha();
       }, 100);
     }
@@ -142,7 +153,7 @@ export class LoginPageComponent implements OnInit, OnDestroy {
         // Paso 2: Acceso concedido
         this.loadingService.showLoginSuccess();
 
-        setTimeout(() => {
+    const timeoutId = setTimeout(() => {
           // Obtener el activeItem y su ruta correspondiente de las preferencias
           const preferences = this.userSettings.getAll();
           const activeItemId = preferences?.activeItem;
@@ -167,7 +178,7 @@ export class LoginPageComponent implements OnInit, OnDestroy {
           this.router.navigate([route || '/dashboard']);
           
           // Paso 4: Ocultar loading después de la navegación
-          setTimeout(() => {
+          const timeoutId = setTimeout(() => {
             this.loadingService.hide();
             this.isLoading = false;
           }, 800);

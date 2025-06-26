@@ -12,7 +12,6 @@ export const authGuard: CanActivateFn = (): Observable<boolean> => {
   return authService.checkAuthentication().pipe(
     tap(isAuthenticated => {
       if (!isAuthenticated) {
-        console.log('🔒 No autenticado, redirigiendo a login');
         router.navigate(['/auth/login']);
       }
     }),

@@ -196,6 +196,36 @@ private readonly imageProcessor = inject(ImageProcessorService);
    */
   async captureUserPhoto(user: User) {
     let photo: string | null = null;
+    let stream: MediaStream | null = null;
+    let cleanupListeners: (() => void)[] = [];
+    
+    // Función para limpiar el stream y los recursos
+    const cleanup = () => {
+      try {
+        // Limpiar stream de la cámara
+        if (stream) {
+          stream.getTracks().forEach(track => {
+            track.enabled = false;
+            track.stop();
+          });
+          stream = null;
+        }
+
+        // Remover todos los event listeners registrados
+        cleanupListeners.forEach(removeFn => removeFn());
+        cleanupListeners = [];
+
+        // Remover el listener de beforeunload
+        window.removeEventListener('beforeunload', cleanup);
+
+        // Limpiar referencias a elementos del DOM
+        const video = Swal.getPopup()?.querySelector('#webcam-video') as HTMLVideoElement;
+        if (video) {
+          video.srcObject = null;
+        }
+      } catch (error) {
+      }
+    };
 
     const result = await Swal.fire({
       title: 'Foto de Usuario',
@@ -248,6 +278,9 @@ private readonly imageProcessor = inject(ImageProcessorService);
         cancelButton: 'btn btn-ghost gap-2'
       },
       width: 'auto',
+      willClose: () => {
+        cleanup();
+      },
       didOpen: async (modalElement) => {
         const confirmButton = Swal.getConfirmButton();
         if (confirmButton) confirmButton.classList.add('hidden');
@@ -259,7 +292,6 @@ private readonly imageProcessor = inject(ImageProcessorService);
         const previewImage = Swal.getPopup()?.querySelector('#preview-image') as HTMLImageElement;
         const video = Swal.getPopup()?.querySelector('#webcam-video') as HTMLVideoElement;
         
-        let stream: MediaStream | null = null;
 
         // Función para procesar la imagen
         const processImage = async (imageData: string | File) => {
@@ -273,19 +305,20 @@ private readonly imageProcessor = inject(ImageProcessorService);
             Swal.getConfirmButton()?.classList.remove('hidden');
             return resizedImage;
           } catch (error) {
-            console.error('Error processing image:', error);
             await this.notification.showError('Error', 'Error al procesar la imagen');
             return null;
           }
         };
 
         // Manejador para subida de archivo
-        fileInput.addEventListener('change', async (e) => {
+        const handleFileInput = async (e: Event) => {
           const files = (e.target as HTMLInputElement).files;
           if (files?.length) {
             await processImage(files[0]);
           }
-        });
+        };
+        fileInput.addEventListener('change', handleFileInput);
+        cleanupListeners.push(() => fileInput.removeEventListener('change', handleFileInput));
 
         // Manejador para webcam
         webcamBtn.addEventListener('click', async () => {
@@ -308,25 +341,32 @@ private readonly imageProcessor = inject(ImageProcessorService);
               const canvas = document.createElement('canvas');
               canvas.width = video.videoWidth;
               canvas.height = video.videoHeight;
-              canvas.getContext('2d')?.drawImage(video, 0, 0);
-              const photoData = canvas.toDataURL('image/jpeg', 0.8);
-              await processImage(photoData);
-              stream.getTracks().forEach(track => track.stop());
-              stream = null;
+              const ctx = canvas.getContext('2d');
+              if (ctx) {
+                ctx.drawImage(video, 0, 0);
+                const photoData = canvas.toDataURL('image/jpeg', 0.8);
+                // Limpiar el contexto del canvas
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                await processImage(photoData);
+              }
+              cleanup();
               webcamBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg> Tomar Nueva Foto';
             }
           } catch (error) {
-            console.error('Error with webcam:', error);
             await this.notification.showError('Error', 'Error al acceder a la cámara');
           }
         });
 
-        // Limpiar al cerrar
-        Swal.getPopup()?.addEventListener('close', () => {
-          if (stream) {
-            stream.getTracks().forEach(track => track.stop());
-          }
-        });
+        // Limpiar en todos los eventos posibles de cierre
+        modalElement.addEventListener('cancel', cleanup);
+        modalElement.addEventListener('confirm', cleanup);
+        window.addEventListener('beforeunload', cleanup);
+        
+        // Registrar la limpieza de eventos del modal
+        cleanupListeners.push(
+          () => modalElement.removeEventListener('cancel', cleanup),
+          () => modalElement.removeEventListener('confirm', cleanup)
+        );
       },
       preConfirm: () => {
         const previewImage = Swal.getPopup()?.querySelector('#preview-image') as HTMLImageElement;

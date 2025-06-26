@@ -1,10 +1,12 @@
 import { Directive, OnInit, OnDestroy, inject, signal } from '@angular/core';
+import { Subject, takeUntil } from 'rxjs';
 import { Subscription } from 'rxjs';
 import { TableService } from '../../services/table.service';
 import { TableState, TableConfig, SortOrder } from '../../interfaces/table.interface';
 
 @Directive()
 export abstract class BaseTableComponent<T> implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
   protected tableService = inject(TableService);
   protected searchSubscription?: Subscription;
 
@@ -26,14 +28,14 @@ export abstract class BaseTableComponent<T> implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    if (this.searchSubscription) {
-      this.searchSubscription.unsubscribe();
-    }
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   protected setupSearch() {
-    this.searchSubscription = this.tableService
+    this.tableService
       .setupSearch()
+      .pipe(takeUntil(this.destroy$))
       .subscribe(async query => {
         this.state.update(state => ({
           ...state,

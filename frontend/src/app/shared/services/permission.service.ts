@@ -24,12 +24,9 @@ export class PermissionService {
       this.userMenu.set(menu);
       
       if (menu.length > 0) {
-        console.log('📋 PermissionService: Menú cargado', menu);
       } else {
-        console.log('📋 PermissionService: No hay menú disponible');
       }
     } catch (error) {
-      console.error('❌ PermissionService: Error cargando menú', error);
       this.userMenu.set([]);
     }
   }
@@ -48,7 +45,6 @@ export class PermissionService {
     const menu = this.userMenu();
     
     if (!menu || menu.length === 0) {
-      console.log('🚫 PermissionService: No hay menú disponible');
       return false;
     }
     
@@ -143,11 +139,6 @@ export class PermissionService {
    * Logs para debugging
    */
   debugPermissions(route: string) {
-    console.log('🔍 PermissionService Debug:');
-    console.log('- Ruta solicitada:', route);
-    console.log('- Menú disponible:', this.userMenu());
-    console.log('- Tiene acceso:', this.hasAccessToRoute(route));
-    console.log('- Rutas permitidas:', this.getAllowedRoutes());
   }
 }
 
