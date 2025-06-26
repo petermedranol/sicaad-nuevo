@@ -3,6 +3,7 @@ import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError } from 'rxjs/operators';
 import { Observable, throwError } from 'rxjs';
+import { UserSettingsService } from '../shared/services/user-settings.service';
 
 // URLs que no deben ser interceptadas
 const WHITELIST_URLS = [
@@ -20,6 +21,7 @@ export const sessionExpiredInterceptor: HttpInterceptorFn = (req, next) => {
     return next(req);
   }
   const router = inject(Router);
+  const userSettings = inject(UserSettingsService);
 
   // Almacenar la ubicación actual para redirigir después del login
   const currentPath = router.url;
@@ -32,7 +34,7 @@ export const sessionExpiredInterceptor: HttpInterceptorFn = (req, next) => {
         
         // Limpiar storage y redirigir solo si no estamos ya en login
         if (!router.url.includes('/login')) {
-          localStorage.clear();
+          userSettings.remove();
           sessionStorage.clear();
           
           // Timeout para evitar posibles condiciones de carrera

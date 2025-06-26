@@ -4,11 +4,13 @@ import { Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { map, catchError, switchMap, tap } from 'rxjs/operators';
 import { User } from '../interfaces/user.interface';
+import { UserSettingsService } from '../../shared/services/user-settings.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
+  private readonly userSettings = inject(UserSettingsService);
 
   private baseUrl = 'http://localhost'; // Ajusta a tu variable de entorno
   private apiUrl = `${this.baseUrl}/api`;
@@ -33,7 +35,22 @@ export class AuthService {
           recaptcha_response: recaptchaResponse,
         }, { withCredentials: true })
       ),
-      tap(user => this.currentUser.set(user)), // Almacena el usuario en la señal
+      tap(user => {
+        this.currentUser.set(user); // Almacena el usuario en la señal
+        
+        // Migrar todas las configuraciones a una estructura plana
+        this.userSettings.migrateFromOldKeys({
+          'sicaad_expanded_items': 'expandedItems',
+          'sicaad_active_item': 'activeItem',
+          'sicaad_menu_items': 'menuItems',
+          'userMenu': 'menuItems',
+          'sicaad_user_info': 'userInfo',
+          'sicaad_search_query': 'searchQuery',
+          'sicaad_menu_last_sync': 'lastSync',
+          'sidebarCollapsed': 'sidebarCollapsed',
+          'theme': 'theme'
+        });
+      }),
       tap(() => console.log('✅ Login exitoso, usuario almacenado:', this.currentUser()))
     );
   }
@@ -49,7 +66,7 @@ export class AuthService {
       )
       .subscribe(() => {
         this.currentUser.set(null); // Limpia el usuario
-        localStorage.clear(); // Limpia el localStorage
+        this.userSettings.remove(); // Limpia todas las configuraciones
         this.router.navigate(['/auth/login']);
         console.log('🔒 Sesión cerrada');
       });

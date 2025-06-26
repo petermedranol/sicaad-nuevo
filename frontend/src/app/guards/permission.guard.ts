@@ -2,6 +2,7 @@ import { inject } from '@angular/core';
 import { Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { CanActivateFn } from '@angular/router';
 import { PermissionService } from '../shared/services/permission.service';
+import { UserSettingsService } from '../shared/services/user-settings.service';
 
 /**
  * Guard que verifica si el usuario tiene permisos para acceder a una ruta específica
@@ -12,29 +13,37 @@ export const permissionGuard: CanActivateFn = (route: ActivatedRouteSnapshot, st
   try {
     const currentUrl = state.url;
 
-    // Verificar si hay menús en localStorage
-    const menuData = localStorage.getItem('sicaad_menu_items');
+    // Rutas siempre permitidas
+    const publicRoutes = ['/dashboard', '/profile'];
+    if (publicRoutes.includes(currentUrl)) {
+      console.log('✅ Acceso permitido a ruta pública:', currentUrl);
+      return true;
+    }
 
-    if (!menuData) {
+    const userSettings = inject(UserSettingsService);
+    
+    // Obtener toda la configuración del usuario
+    const settings = userSettings.getAll();
+    const menu = settings.menuItems;
 
-      // Redirigir al dashboard silentemente
+    if (!menu || !Array.isArray(menu)) {
+      console.log('❌ No hay menús cargados, redirigiendo a dashboard');
       router.navigate(['/dashboard']);
-
       return false;
     }
 
-    const menu = JSON.parse(menuData);
-
-    // Función simple para buscar acceso
+    // Función mejorada para buscar acceso
     const hasAccess = (items: any[], targetUrl: string): boolean => {
       for (const item of items) {
         // Coincidencia exacta
         if (item.route === targetUrl) {
+          console.log('✅ Acceso permitido - coincidencia exacta:', targetUrl);
           return true;
         }
 
-        // Ruta hija
+        // Ruta hija (permitir acceso a subrutas)
         if (item.route && targetUrl.startsWith(item.route + '/')) {
+          console.log('✅ Acceso permitido - subruta de:', item.route);
           return true;
         }
 
@@ -46,14 +55,15 @@ export const permissionGuard: CanActivateFn = (route: ActivatedRouteSnapshot, st
       return false;
     };
 
-    if (hasAccess(menu, currentUrl)) {
-      return true;
+    const access = hasAccess(menu, currentUrl);
+    
+    if (!access) {
+      console.log('❌ Acceso denegado a:', currentUrl);
+      console.log('📄 Menús disponibles:', menu);
+      router.navigate(['/dashboard']);
     }
 
-    // Redirigir al dashboard silentemente
-    router.navigate(['/dashboard']);
-
-    return false;
+    return access;
 
   } catch (error) {
     router.navigate(['/dashboard']);

@@ -1,11 +1,14 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, inject } from '@angular/core';
 import { MenuItem } from '../interfaces/menu-item.interface';
+import { UserSettingsService } from './user-settings.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PermissionService {
   private userMenu = signal<MenuItem[]>([]);
+  private readonly userSettings = inject(UserSettingsService);
+  private readonly userId = 'global';
   
   constructor() {
     this.loadUserMenu();
@@ -16,20 +19,14 @@ export class PermissionService {
    */
   private loadUserMenu() {
     try {
-      // Intentar primero la clave que usa MenuService
-      let menuData = localStorage.getItem('sicaad_menu_items');
+      // Intentar obtener menús del servicio centralizado
+      const menu = this.userSettings.get<MenuItem[]>('menuItems', []);
+      this.userMenu.set(menu);
       
-      // Fallback a la clave alternativa
-      if (!menuData) {
-        menuData = localStorage.getItem('userMenu');
-      }
-      
-      if (menuData) {
-        const menu: MenuItem[] = JSON.parse(menuData);
-        this.userMenu.set(menu);
+      if (menu.length > 0) {
         console.log('📋 PermissionService: Menú cargado', menu);
       } else {
-        console.log('📋 PermissionService: No hay menú en localStorage');
+        console.log('📋 PermissionService: No hay menú disponible');
       }
     } catch (error) {
       console.error('❌ PermissionService: Error cargando menú', error);

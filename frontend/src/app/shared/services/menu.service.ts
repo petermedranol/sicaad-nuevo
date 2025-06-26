@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { MenuItem } from '../interfaces/menu-item.interface';
 import { ApiMenuResponse, ApiMenuItem, MenuAccessResponse } from '../interfaces/api-menu.interface';
+import { UserSettingsService } from './user-settings.service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,15 +12,8 @@ export class MenuService {
   private http = inject(HttpClient);
   private readonly apiUrl = 'http://localhost/api';
 
-  // Claves para localStorage
-  private readonly STORAGE_KEYS = {
-    MENU_ITEMS: 'sicaad_menu_items',
-    USER_INFO: 'sicaad_user_info',
-    EXPANDED_ITEMS: 'sicaad_expanded_items',
-    ACTIVE_ITEM: 'sicaad_active_item',
-    SEARCH_QUERY: 'sicaad_search_query',
-    LAST_SYNC: 'sicaad_menu_last_sync'
-  };
+  private readonly userSettings = inject(UserSettingsService);
+  private readonly userId = 'global';  // Usamos 'global' para configuraciones globales
 
   // Tiempo de caché en milisegundos (30 minutos)
   private readonly CACHE_DURATION = 30 * 60 * 1000;
@@ -96,12 +90,24 @@ export class MenuService {
         // Convertir los menús de la API al formato interno
         const menuItems = this.convertApiMenusToMenuItems(response.data.menus);
 
+        // Guardar todo en un solo objeto de configuración
+        const settings = {
+          menuItems: menuItems,
+          userInfo: response.data.user_info,
+          expandedItems: Array.from(this._expandedItems()),
+          activeItem: this._activeItemId(),
+          searchQuery: this._searchQuery(),
+          lastSync: Date.now().toString()
+        };
+
+        // Actualizar signals locales
         this._menuItems.set(menuItems);
         this._userInfo.set(response.data.user_info);
 
-        // Persistir automáticamente en localStorage
-        this.saveToStorage();
+        // Guardar todo de una vez en localStorage
+        this.userSettings.saveAll(settings);
 
+        console.log('💾 Menús guardados:', menuItems);
       } else {
         throw new Error(response.message || 'Error al cargar menús');
       }
@@ -349,49 +355,21 @@ export class MenuService {
    */
   private saveToStorage(): void {
     try {
-      if (typeof localStorage === 'undefined') {
-        console.log('❌ localStorage no disponible');
-        return;
-      }
-
-      // Guardar menús
-      const menuItemsJson = JSON.stringify(this._menuItems());
-      localStorage.setItem(this.STORAGE_KEYS.MENU_ITEMS, menuItemsJson);
-
-      // Guardar información de usuario
-      if (this._userInfo()) {
-        const userInfoJson = JSON.stringify(this._userInfo());
-        localStorage.setItem(this.STORAGE_KEYS.USER_INFO, userInfoJson);
-      }
-
-      // Guardar items expandidos (convertir Set a Array)
-      const expandedArray = Array.from(this._expandedItems());
-      localStorage.setItem(this.STORAGE_KEYS.EXPANDED_ITEMS, JSON.stringify(expandedArray));
-
-      // Guardar item activo
-      localStorage.setItem(this.STORAGE_KEYS.ACTIVE_ITEM, this._activeItemId());
-
-
-      // Guardar query de búsqueda
-      localStorage.setItem(this.STORAGE_KEYS.SEARCH_QUERY, this._searchQuery());
-
-
-      // Guardar timestamp de última sincronización
-      const timestamp = Date.now().toString();
-      localStorage.setItem(this.STORAGE_KEYS.LAST_SYNC, timestamp);
-
-
-
-
-      // Verificar que realmente se guardaron
-
-      Object.values(this.STORAGE_KEYS).forEach(key => {
-        const value = localStorage.getItem(key);
-
-      });
+      // Crear un objeto con todas las configuraciones actuales
+      const currentSettings = {
+        menuItems: this._menuItems(),
+        userInfo: this._userInfo(),
+        expandedItems: Array.from(this._expandedItems()),
+        activeItem: this._activeItemId(),
+        searchQuery: this._searchQuery(),
+        lastSync: Date.now().toString()
+      };
+      
+      // Guardar todas las configuraciones de una vez
+      this.userSettings.saveAll(currentSettings);
 
     } catch (error) {
-      console.error('❌ Error guardando en localStorage:', error);
+      console.error('❌ Error guardando configuraciones:', error);
     }
   }
 
@@ -400,10 +378,8 @@ export class MenuService {
    */
   private loadFromStorage(): void {
     try {
-      if (typeof localStorage === 'undefined') return;
-
       // Verificar si los datos en cache están vigentes
-      const lastSync = localStorage.getItem(this.STORAGE_KEYS.LAST_SYNC);
+      const lastSync = this.userSettings.get('lastSync', null);
       if (lastSync) {
         const lastSyncTime = parseInt(lastSync);
         const now = Date.now();
@@ -415,45 +391,38 @@ export class MenuService {
       }
 
       // Cargar menús
-      const menuItemsData = localStorage.getItem(this.STORAGE_KEYS.MENU_ITEMS);
-      if (menuItemsData) {
-        const menuItems = JSON.parse(menuItemsData) as MenuItem[];
+      const menuItems = this.userSettings.get('menuItems', null);
+      if (menuItems) {
         this._menuItems.set(menuItems);
-
       }
 
       // Cargar información de usuario
-      const userInfoData = localStorage.getItem(this.STORAGE_KEYS.USER_INFO);
-      if (userInfoData) {
-        const userInfo = JSON.parse(userInfoData);
+      const userInfo = this.userSettings.get('userInfo', null);
+      if (userInfo) {
         this._userInfo.set(userInfo);
-
       }
 
       // Cargar items expandidos (convertir Array a Set)
-      const expandedItemsData = localStorage.getItem(this.STORAGE_KEYS.EXPANDED_ITEMS);
-      if (expandedItemsData) {
-        const expandedArray = JSON.parse(expandedItemsData) as string[];
+      const expandedArray = this.userSettings.get('expandedItems', []);
+      if (expandedArray) {
         this._expandedItems.set(new Set(expandedArray));
-
       }
 
       // Cargar item activo
-      const activeItem = localStorage.getItem(this.STORAGE_KEYS.ACTIVE_ITEM);
+      const activeItem = this.userSettings.get('activeItem', 'dashboard');
       if (activeItem) {
         this._activeItemId.set(activeItem);
-
       }
 
       // Cargar query de búsqueda
-      const searchQuery = localStorage.getItem(this.STORAGE_KEYS.SEARCH_QUERY);
+      const searchQuery = this.userSettings.get('searchQuery', '');
       if (searchQuery) {
         this._searchQuery.set(searchQuery);
-        console.log('🔍 Query de búsqueda cargada desde localStorage:', searchQuery);
+        console.log('🔍 Query de búsqueda cargada:', searchQuery);
       }
 
     } catch (error) {
-      console.warn('⚠️ Error cargando desde localStorage:', error);
+      console.warn('⚠️ Error cargando configuraciones:', error);
       this.clearStorage();
     }
   }
@@ -463,15 +432,22 @@ export class MenuService {
    */
   private clearStorage(): void {
     try {
-      if (typeof localStorage === 'undefined') return;
+      // Crear un objeto con todas las configuraciones en null
+      const emptySettings = {
+        menuItems: null,
+        userInfo: null,
+        expandedItems: null,
+        activeItem: null,
+        searchQuery: null,
+        lastSync: null
+      };
+      
+      // Guardar todas las configuraciones de una vez
+      this.userSettings.saveAll(emptySettings);
 
-      Object.values(this.STORAGE_KEYS).forEach(key => {
-        localStorage.removeItem(key);
-      });
-
-      console.log('🗑️ localStorage limpiado');
+      console.log('🗑️ Configuraciones limpiadas');
     } catch (error) {
-      console.warn('⚠️ Error limpiando localStorage:', error);
+      console.warn('⚠️ Error limpiando configuraciones:', error);
     }
   }
 
@@ -480,10 +456,8 @@ export class MenuService {
    */
   private hasCachedData(): boolean {
     try {
-      if (typeof localStorage === 'undefined') return false;
-
-      const menuItems = localStorage.getItem(this.STORAGE_KEYS.MENU_ITEMS);
-      const lastSync = localStorage.getItem(this.STORAGE_KEYS.LAST_SYNC);
+      const menuItems = this.userSettings.get('menuItems', null);
+      const lastSync = this.userSettings.get('lastSync', null);
 
       if (!menuItems || !lastSync) return false;
 

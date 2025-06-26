@@ -1,4 +1,6 @@
-import { Injectable, signal, effect, computed } from '@angular/core';
+import { Injectable, signal, effect, computed, inject } from '@angular/core';
+import { UserSettingsService } from './user-settings.service';
+import { AuthService } from '../../auth/services/auth.service';
 
 /**
  * Servicio para gestionar los temas de la aplicación (claro/oscuro).
@@ -8,6 +10,8 @@ import { Injectable, signal, effect, computed } from '@angular/core';
   providedIn: 'root'
 })
 export class ThemeService {
+  private userSettings = inject(UserSettingsService);
+  private authService = inject(AuthService);
   /**
    * Señal que almacena el tema actual ('light' o 'dark').
    * Se inicializa con 'light' como valor por defecto.
@@ -27,9 +31,27 @@ export class ThemeService {
    */
   private themeEffect = effect(() => {
     const theme = this.currentTheme();
-    document.documentElement.classList.toggle('dark', theme === 'dark');
+    console.log('🔄 Efecto de tema ejecutándose, nuevo tema:', theme);
+    
+    // Aplicar clases y atributos
+    document.documentElement.classList.remove('dark', 'light');
+    document.documentElement.classList.add(theme);
     document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('theme', theme);
+    
+    const user = this.authService.currentUser();
+    if (user?.id) {
+      console.log('💾 Guardando tema en localStorage:', theme);
+      // Guardar el tema y todas las configuraciones existentes
+      const currentSettings = this.userSettings.getAll();
+      this.userSettings.saveAll({
+        ...currentSettings,
+        theme: theme
+      });
+      
+      // Verificar inmediatamente que se guardó correctamente
+      const savedSettings = this.userSettings.getAll();
+      console.log('✅ Configuraciones actualizadas:', savedSettings);
+    }
   });
 
   constructor() {
@@ -44,15 +66,35 @@ export class ThemeService {
    */
   private initializeTheme(): void {
     try {
-      const storedTheme = localStorage.getItem('theme');
-      if (storedTheme === 'light' || storedTheme === 'dark') {
-        this.currentTheme.set(storedTheme);
-      } else {
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        this.currentTheme.set(prefersDark ? 'dark' : 'light');
+      const user = this.authService.currentUser();
+      console.log('🔍 Usuario actual:', user?.id);
+      
+      // Obtener todas las configuraciones
+      const allSettings = this.userSettings.getAll();
+      console.log('📦 Todas las configuraciones:', allSettings);
+      
+      // Si hay un tema guardado en las configuraciones, usarlo
+      if (allSettings && allSettings.theme && (allSettings.theme === 'light' || allSettings.theme === 'dark')) {
+        console.log('🎨 Usando tema guardado:', allSettings.theme);
+        this.currentTheme.set(allSettings.theme);
+        return;
       }
+      
+      // Si no hay tema guardado o el usuario no está autenticado,
+      // usar preferencia del sistema
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const defaultTheme = prefersDark ? 'dark' : 'light';
+      console.log('⚙️ Usando tema por defecto del sistema:', defaultTheme);
+      this.currentTheme.set(defaultTheme);
+      
+      // Si hay usuario, guardar el tema por defecto
+      if (user?.id) {
+        console.log('💾 Guardando tema por defecto:', defaultTheme);
+        this.userSettings.set('theme', defaultTheme);
+      }
+      
     } catch (e) {
-      console.error('Error al inicializar el tema:', e);
+      console.error('❌ Error al inicializar el tema:', e);
       this.currentTheme.set('light'); // Fallback seguro
     }
   }
@@ -61,6 +103,8 @@ export class ThemeService {
    * Cambia el tema actual entre 'light' y 'dark'.
    */
   toggleTheme(): void {
-    this.currentTheme.update(current => (current === 'light' ? 'dark' : 'light'));
+    const newTheme = this.currentTheme() === 'light' ? 'dark' : 'light';
+    console.log('🔄 Cambiando tema a:', newTheme);
+    this.currentTheme.set(newTheme);
   }
 }
