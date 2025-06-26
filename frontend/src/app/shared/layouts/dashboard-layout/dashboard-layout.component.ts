@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../auth/services/auth.service';
 import { ThemeService } from '../../services/theme.service';
-import { TopbarService } from '../../../services/topbar.service';
+import { TopbarService } from '../../../shared/services/topbar.service';
 import { SidebarService } from '../../services/sidebar.service';
 import { MenuService } from '../../services/menu.service';
 import { SidebarComponent } from '../../components/sidebar/sidebar.component';

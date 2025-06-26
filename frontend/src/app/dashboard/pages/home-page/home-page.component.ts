@@ -15,7 +15,7 @@ import {
 
 // Servicios compartidos
 import { PageTitleService } from '../../../shared';
-import { TopbarService } from '../../../services/topbar.service';
+import { TopbarService } from '../../../shared/services/topbar.service';
 
 // Interfaces
 import { Stat, Activity, Task } from './interfaces/index';

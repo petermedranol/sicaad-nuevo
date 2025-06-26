@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import Swal from 'sweetalert2';
-import { User } from '../../../auth/interfaces/user.interface';
+import { User } from '../../../../auth/interfaces/user.interface';
 import { UserCreateFormData, UserUpdateFormData } from '../interfaces/user-form.interface';
-import { SWEET_ALERT_DEFAULTS } from '../../../shared/constants/sweet-alert.constants';
+import { SWEET_ALERT_DEFAULTS } from '../../../../shared/constants/sweet-alert.constants';
 
 @Injectable({
   providedIn: 'root'

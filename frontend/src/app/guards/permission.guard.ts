@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { CanActivateFn } from '@angular/router';
-import { PermissionService } from '../services/permission.service';
+import { PermissionService } from '../shared/services/permission.service';
 
 /**
  * Guard que verifica si el usuario tiene permisos para acceder a una ruta específica

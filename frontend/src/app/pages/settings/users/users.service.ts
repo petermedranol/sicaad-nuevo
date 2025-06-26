@@ -1,11 +1,11 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../environments/environment';
+import { environment } from '../../../../environments/environment';
 import { Observable, lastValueFrom } from 'rxjs';
-import { User } from '../../auth/interfaces/user.interface';
+import { User } from '../../../auth/interfaces/user.interface';
 import { UserCreateFormData, UserUpdateFormData } from './interfaces/user-form.interface';
 
-import { PaginationInfo } from '../../shared/services/pagination.service';
+import { PaginationInfo } from '../../../shared/services/pagination.service';
 
 export interface ApiResponse {
   success: boolean;

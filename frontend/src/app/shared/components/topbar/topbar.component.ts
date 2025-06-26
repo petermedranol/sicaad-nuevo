@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { LucideAngularModule } from 'lucide-angular';
 import { Menu, Sun, Moon, Bell } from 'lucide-angular';
 import { ThemeService } from '../../services/theme.service'; // CORREGIDO
-import { TopbarService } from '../../../services/topbar.service';
+import { TopbarService } from '../../../shared/services/topbar.service';
 import { AuthService } from '../../../auth/services/auth.service';
 // Asumimos que la interfaz de usuario está en auth/interfaces, si no, hay que crearla.
 // import { User } from '../../../auth/interfaces/user.interface';

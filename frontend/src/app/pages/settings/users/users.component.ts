@@ -1,9 +1,9 @@
 import { Component, inject, effect, OnInit } from '@angular/core';
-import { TopbarService } from '../../services/topbar.service';
-import { environment } from '../../../environments/environment';
+import { TopbarService } from '../../../shared/services/topbar.service';
+import { environment } from '../../../../environments/environment';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { PhotoCaptureComponent } from '../../shared/components/photo-capture/photo-capture.component';
+import { PhotoCaptureComponent } from '../../../shared/components/photo-capture/photo-capture.component';
 import { LucideAngularModule,
   Search,
   Edit,
@@ -21,15 +21,15 @@ import { LucideAngularModule,
 } from 'lucide-angular';
 import Swal from 'sweetalert2';
 
-import { User } from '../../auth/interfaces/user.interface';
+import { User } from '../../../auth/interfaces/user.interface';
 import {
   ErrorHandlerService,
   NotificationService,
   PageTitleService,
   BaseTableComponent
-} from '../../shared';
-import { PaginationService } from '../../shared/services/pagination.service';
-import { ImageProcessorService } from '../../shared/services/image-processor.service';
+} from '../../../shared';
+import { PaginationService } from '../../../shared/services/pagination.service';
+import { ImageProcessorService } from '../../../shared/services/image-processor.service';
 
 import {
   UsersFormService,

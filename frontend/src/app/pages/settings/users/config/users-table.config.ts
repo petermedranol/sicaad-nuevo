@@ -1,5 +1,5 @@
-import { TableConfig } from '../../../shared/interfaces/table.interface';
-import { User } from '../../../auth/interfaces/user.interface';
+import { TableConfig } from '../../../../shared/interfaces/table.interface';
+import { User } from '../../../../auth/interfaces/user.interface';
 
 export const USER_TABLE_CONFIG: TableConfig<User> = {
   columns: [

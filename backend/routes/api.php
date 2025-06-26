@@ -43,7 +43,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 });
 
-Route::middleware(['auth:sanctum', ModuleAccess::class . ':configuration/users'])->group(function () {
+Route::middleware(['auth:sanctum', ModuleAccess::class . ':settings/users'])->group(function () {
     // Ruta protegida para imágenes de usuario
 
     Route::apiResource('users', \App\Http\Controllers\Api\UserController::class);

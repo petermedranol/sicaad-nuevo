@@ -1,5 +1,5 @@
-import { User } from '../../../auth/interfaces/user.interface';
-import { PaginationInfo } from '../../../shared/services/pagination.service';
+import { User } from '../../../../auth/interfaces/user.interface';
+import { PaginationInfo } from '../../../../shared/services/pagination.service';
 
 export interface UserFormBase {
   name: string;

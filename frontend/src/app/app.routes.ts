@@ -21,14 +21,14 @@ export const routes: Routes = [
     loadChildren: () => import('./dashboard/dashboard.routes').then(m => m.dashboardRoutes)
   },
   {
-    path: 'configuration',
+    path: 'settings',
     canActivate: [authGuard],
     loadComponent: () => import('./shared/layouts/dashboard-layout/dashboard-layout.component').then(m => m.DashboardLayoutComponent),
     children: [
       {
         path: 'users',
         canActivate: [permissionGuard],
-        loadComponent: () => import('./pages/users/users.component').then(m => m.UsersComponent)
+loadComponent: () => import('./pages/settings/users/users.component').then(m => m.UsersComponent)
       }
     ]
   },

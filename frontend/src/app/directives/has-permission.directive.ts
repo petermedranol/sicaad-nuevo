@@ -1,5 +1,5 @@
 import { Directive, Input, TemplateRef, ViewContainerRef, inject, OnInit, OnDestroy } from '@angular/core';
-import { PermissionService } from '../services/permission.service';
+import { PermissionService } from '../shared/services/permission.service';
 
 /**
  * Directiva para mostrar/ocultar elementos basándose en permisos del usuario
