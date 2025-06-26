@@ -56,6 +56,16 @@ export class ThemeService {
 
   constructor() {
     this.initializeTheme();
+
+    // Escuchar eventos de sincronización de preferencias
+    this.userSettings.preferencesSync.subscribe(() => {
+      console.log('🔄 Preferencias sincronizadas, actualizando tema...');
+      const allSettings = this.userSettings.getAll();
+      if (allSettings?.theme && (allSettings.theme === 'light' || allSettings.theme === 'dark')) {
+        console.log('🎨 Aplicando tema desde preferencias sincronizadas:', allSettings.theme);
+        this.currentTheme.set(allSettings.theme);
+      }
+    });
   }
 
   /**

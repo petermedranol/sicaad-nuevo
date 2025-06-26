@@ -76,7 +76,7 @@ export class SidebarComponent implements OnInit {
   }
 
   navigateTo(route: string): void {
-    this.router.navigate([route]);
+    // Solo emitir el evento, dejar que el parent maneje la navegación
     this.navigate.emit(route);
     this.menuService.updateActiveItemByRoute(route);
   }

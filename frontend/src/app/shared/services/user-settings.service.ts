@@ -1,8 +1,17 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable, lastValueFrom, Subject } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class UserSettingsService {
   private readonly SETTINGS_KEY = 'sicaad_user_settings';
+  private readonly API_URL = `${environment.apiUrl}/api/user/preferences`;
+
+  // Evento que se emite cuando las preferencias se sincronizan
+  public preferencesSync = new Subject<void>();
+
+  constructor(private http: HttpClient) {}
 
   getAll(): any {
     const data = localStorage.getItem(this.SETTINGS_KEY);
@@ -27,6 +36,44 @@ export class UserSettingsService {
     const settings = data ? JSON.parse(data) : {};
     Object.assign(settings, newSettings);
     localStorage.setItem(this.SETTINGS_KEY, JSON.stringify(settings));
+  }
+
+  /**
+   * Sincroniza las preferencias con el servidor
+   */
+  async syncWithServer(): Promise<void> {
+    try {
+      // Guardar el activeItem actual antes de sincronizar
+      const currentSettings = this.getAll();
+      const activeItem = currentSettings.activeItem;
+      console.log('🔑 Item activo antes de sincronizar:', activeItem);
+
+      const response = await lastValueFrom(this.http.get<{preferences: any}>(this.API_URL, { withCredentials: true }));
+      if (response?.preferences) {
+        // Asegurarse de preservar el activeItem
+        const newSettings = {
+          ...response.preferences,
+          activeItem: response.preferences.activeItem || activeItem
+        };
+        console.log('💾 Guardando preferencias con item activo:', newSettings.activeItem);
+        this.saveAll(newSettings);
+        this.preferencesSync.next();
+      }
+    } catch (error) {
+      console.error('Error al sincronizar preferencias con el servidor:', error);
+    }
+  }
+
+  /**
+   * Guarda las preferencias en el servidor
+   */
+  async saveToServer(): Promise<void> {
+    try {
+      const settings = this.getAll();
+      await lastValueFrom(this.http.post(this.API_URL, { preferences: settings }, { withCredentials: true }));
+    } catch (error) {
+      console.error('Error al guardar preferencias en el servidor:', error);
+    }
   }
 
   remove(): void {

@@ -1,5 +1,5 @@
-<div
-  class="min-h-screen bg-base-200">
+<ng-container *ngIf="menuService.hasMenus(); else loading">
+<div class="min-h-screen bg-base-200">
 
   <!-- Overlay para sidebar en móvil -->
   <div
@@ -62,3 +62,13 @@
     </footer>
   </div>
 </div>
+</ng-container>
+
+<ng-template #loading>
+  <div class="min-h-screen bg-base-200 flex items-center justify-center">
+    <div class="text-center">
+      <span class="loading loading-spinner loading-lg"></span>
+      <p class="mt-4 text-base-content/70">Cargando menús...</p>
+    </div>
+  </div>
+</ng-template>

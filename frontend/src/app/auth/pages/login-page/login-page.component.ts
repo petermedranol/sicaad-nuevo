@@ -4,9 +4,9 @@ import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { ThemeService } from '../../../shared/services/theme.service';
 import { LoadingService } from '../../../shared/services/loading.service';
-import { MenuService } from '../../../shared/services/menu.service';
 import { Router } from '@angular/router';
 import { LucideAngularModule, Mail, Lock, LogIn, Eye, EyeOff, Sun, Moon, Clock } from 'lucide-angular';
+import { UserSettingsService } from '../../../shared/services/user-settings.service';
 import { environment } from '../../../../environments/environment';
 
 @Component({
@@ -36,7 +36,7 @@ export class LoginPageComponent implements OnInit, OnDestroy {
   private loadingService = inject(LoadingService);
   private renderer = inject(Renderer2);
   private document = inject(DOCUMENT);
-  private menuService = inject(MenuService);
+  private userSettings = inject(UserSettingsService);
   themeService = inject(ThemeService);
 
   // Iconos disponibles en el template
@@ -142,30 +142,34 @@ export class LoginPageComponent implements OnInit, OnDestroy {
         // Paso 2: Acceso concedido
         this.loadingService.showLoginSuccess();
 
-        setTimeout(async () => {
-          // Paso 3: Cargando dashboard y menús
-          this.loadingService.showLoadingDashboard();
-
-          // Verificar si ya hay menús válidos en cache
-          const hasValidCache = this.menuService.hasMenus();
-
-          if (!hasValidCache) {
-            // Solo cargar desde backend si no hay cache válido
-            try {
-
-              await this.menuService.loadUserMenus();
-
-            } catch (error) {
-              console.warn('⚠️ Error cargando menús, usando fallback:', error);
+        setTimeout(() => {
+          // Obtener el activeItem y su ruta correspondiente de las preferencias
+          const preferences = this.userSettings.getAll();
+          const activeItemId = preferences?.activeItem;
+          
+          // Buscar el menú correspondiente y su ruta
+          const menuItems = preferences?.menuItems || [];
+          const findRouteById = (items: any[], id: string): string | null => {
+            for (const item of items) {
+              if (item.id.toString() === id) return item.link;
+              if (item.children) {
+                const route = findRouteById(item.children, id);
+                if (route) return route;
+              }
             }
-          } else {
-            
-          }
-
+            return null;
+          };
+          
+          // Obtener la ruta basada en el activeItem o usar dashboard como fallback
+          const route = activeItemId ? findRouteById(menuItems, activeItemId) : null;
+          
+          // Navegar a la ruta encontrada o al dashboard por defecto
+          this.router.navigate([route || '/dashboard']);
+          
+          // Paso 4: Ocultar loading después de la navegación
           setTimeout(() => {
             this.loadingService.hide();
             this.isLoading = false;
-            this.router.navigateByUrl('/dashboard');
           }, 800);
         }, 600);
       },

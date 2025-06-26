@@ -1,8 +1,9 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
-import { map, tap } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { map, tap, switchMap } from 'rxjs/operators';
+import { Observable, from } from 'rxjs';
+import { MenuNavigationService } from '../../shared/services/menu-navigation.service';
 
 export const loginGuard: CanActivateFn = (): Observable<boolean> => {
   const authService = inject(AuthService);
@@ -11,11 +12,10 @@ export const loginGuard: CanActivateFn = (): Observable<boolean> => {
   return authService.checkAuthentication().pipe(
     tap(isAuthenticated => {
       if (isAuthenticated) {
-        console.log('🔑 Usuario ya autenticado, redirigiendo a dashboard.');
-        router.navigateByUrl('/dashboard');
+        console.log('🔒 Usuario ya autenticado, redirigiendo a dashboard');
+        router.navigate(['/dashboard']);
       }
     }),
-    // El guard debe devolver `true` para permitir el paso si NO está autenticado.
     map(isAuthenticated => !isAuthenticated)
   );
 };

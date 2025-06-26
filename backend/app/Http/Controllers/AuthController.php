@@ -60,13 +60,26 @@ class AuthController extends Controller
         // Login exitoso
         $user = Auth::user();
         
+        // Obtener y preparar preferencias del usuario
+        $preferences = optional($user->preference)->preferences ?? [];
+        
+        // SIEMPRE obtener los menús actualizados del usuario
+        $menuController = new MenuController();
+        $menuResponse = $menuController->getUserMenus(request())->getData();
+        $preferences['menuItems'] = $menuResponse->data->menus;
+        
+        // Eliminar información redundante de las preferencias
+        unset($preferences['userInfo']);
+        
+        // Devolver la información simplificada
         return response()->json([
             'message' => 'Login exitoso',
             'user' => [
                 'id' => $user->id,
                 'email' => $user->email,
                 'name' => $user->name,
-            ]
+            ],
+            'preferences' => $preferences
         ]);
     }
 

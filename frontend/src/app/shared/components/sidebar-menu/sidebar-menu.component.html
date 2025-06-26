@@ -1,5 +1,5 @@
 <ul class="menu p-0 bg-[#444d58] dark:bg-navbar">
-    @for (item of menuItems; track item.id) {
+@for (item of filteredMenuItems; track item.id) {
       <li class="relative">
         <a
           (click)="onItemClick(item, $event)"
@@ -30,18 +30,20 @@
           @if (!isCollapsed) {
           <div class="flex flex-col flex-1 min-w-0">
               <span
-                class="font-medium text-white dark:text-navbar-text"
-                [innerHTML]="hasChildren(item) ? 'Configuración' : (item.title | highlight:searchQuery)">
-              </span>
+                [class.text-white]="true"
+                [innerHTML]="hasChildren(item) ? 'Configuración' : highlightText(item.title)"
+                style="display: block;"
+              ></span>
               @if (item.description && !hasChildren(item)) {
                 <span
-                  class="text-xs break-words max-w-full block"
+                  [class.text-white]="true" class="text-xs block"
                   [ngClass]="{
                     'text-white': isItemActive(item.id),
                     'text-white/70 dark:text-navbar-text/70': !isItemActive(item.id)
                   }"
-                  [innerHTML]="item.description | highlight:searchQuery">
-                </span>
+                  [innerHTML]="highlightText(item.description)"
+                  style="display: block;"
+                ></span>
               }
             </div>
 

@@ -7,6 +7,7 @@ import { ThemeService } from '../../services/theme.service';
 import { TopbarService } from '../../../shared/services/topbar.service';
 import { SidebarService } from '../../services/sidebar.service';
 import { MenuService } from '../../services/menu.service';
+import { UserSettingsService } from '../../services/user-settings.service';
 import { SidebarComponent } from '../../components/sidebar/sidebar.component';
 import { TopbarComponent } from '../../components/topbar/topbar.component';
 import { User } from '../../../auth/interfaces/user.interface';
@@ -37,7 +38,8 @@ export class DashboardLayoutComponent implements OnInit {
   private authService = inject(AuthService);
   themeService = inject(ThemeService);
   sidebarService = inject(SidebarService);
-  private menuService = inject(MenuService);
+  menuService = inject(MenuService);
+  private userSettings = inject(UserSettingsService);
   private loadingService = inject(LoadingService);
   private topbarService = inject(TopbarService);
 
@@ -59,20 +61,21 @@ export class DashboardLayoutComponent implements OnInit {
     this.themeService.toggleTheme();
   }
 
-  async ngOnInit() {
+  ngOnInit() {
     this.sidebarService.init();
-
-    try {
-      await this.menuService.ensureMenusLoaded();
-    } catch (error) {
-      console.warn('⚠️ Error verificando menús:', error);
-    }
+    this.menuService.ensureMenusLoaded();
+    console.log('🎉 DashboardLayout inicializado');
   }
 
   onNavigate(route: string) {
-    this.router.navigate([route]);
-    if (this.isMobile()) {
-      this.closeSidebar();
+    // Solo navegar si la ruta es diferente a la actual
+    if (this.router.url !== route) {
+      this.router.navigate([route]);
+      if (this.isMobile()) {
+        this.closeSidebar();
+      }
+    } else {
+      console.log('✅ Ya estamos en la ruta:', route);
     }
   }
 

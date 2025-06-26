@@ -1,16 +1,21 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, of } from 'rxjs';
+import { Observable, of, lastValueFrom } from 'rxjs';
+import { MenuNavigationService } from '../../shared/services/menu-navigation.service';
 import { map, catchError, switchMap, tap } from 'rxjs/operators';
 import { User } from '../interfaces/user.interface';
+import { LoginResponse } from '../interfaces/login-response.interface';
 import { UserSettingsService } from '../../shared/services/user-settings.service';
+import { MenuService } from '../../shared/services/menu.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
   private readonly userSettings = inject(UserSettingsService);
+  private readonly menuNavigation = inject(MenuNavigationService);
+  private readonly menuService = inject(MenuService);
 
   private baseUrl = 'http://localhost'; // Ajusta a tu variable de entorno
   private apiUrl = `${this.baseUrl}/api`;
@@ -29,16 +34,31 @@ export class AuthService {
   login(email: string, password: string, recaptchaResponse: string): Observable<User> {
     return this.http.get(`${this.baseUrl}/sanctum/csrf-cookie`, { withCredentials: true }).pipe(
       switchMap(() =>
-        this.http.post<User>(`${this.apiUrl}/login`, {
+        this.http.post<LoginResponse>(`${this.apiUrl}/login`, {
           email,
           password,
           recaptcha_response: recaptchaResponse,
         }, { withCredentials: true })
       ),
-      tap(user => {
-        this.currentUser.set(user); // Almacena el usuario en la señal
+      tap(response => {
+        // Guardar el usuario
+        this.currentUser.set(response.user);
         
-        // Migrar todas las configuraciones a una estructura plana
+        // Limpiar las preferencias anteriores
+        this.userSettings.remove();
+        
+        // Guardar las nuevas preferencias y asegurar que activeItem esté presente
+        const preferences = {
+          ...response.preferences,
+          activeItem: response.preferences['activeItem'] || '1' // Default a Inicio si no hay activeItem
+        };
+        this.userSettings.saveAll(preferences);
+        
+        // Inicializar los menús
+        const menuItems = this.menuService.convertApiMenusToMenuItems(response.preferences['menuItems']);
+        this.menuService.setMenuItems(menuItems);
+        
+        // Migrar configuraciones antiguas por si acaso
         this.userSettings.migrateFromOldKeys({
           'sicaad_expanded_items': 'expandedItems',
           'sicaad_active_item': 'activeItem',
@@ -51,7 +71,8 @@ export class AuthService {
           'theme': 'theme'
         });
       }),
-      tap(() => console.log('✅ Login exitoso, usuario almacenado:', this.currentUser()))
+      map(response => response.user),
+      tap(() => console.log('✅ Login exitoso, datos inicializados:', this.currentUser()))
     );
   }
 
@@ -59,17 +80,26 @@ export class AuthService {
    * Cierra la sesión del usuario.
    * Limpia la señal de usuario y redirige al login.
    */
-  logout(): void {
-    this.http.post(`${this.apiUrl}/logout`, {}, { withCredentials: true })
-      .pipe(
-        catchError(() => of(null)) // Ignora errores al desloguear
-      )
-      .subscribe(() => {
-        this.currentUser.set(null); // Limpia el usuario
-        this.userSettings.remove(); // Limpia todas las configuraciones
-        this.router.navigate(['/auth/login']);
-        console.log('🔒 Sesión cerrada');
-      });
+  async logout(): Promise<void> {
+    try {
+      // Primero guardamos las preferencias mientras aún estamos autenticados
+      await this.userSettings.saveToServer();
+      console.log('✅ Preferencias guardadas en el servidor');
+
+      // Luego hacemos logout
+      await lastValueFrom(this.http.post(`${this.apiUrl}/logout`, {}, { withCredentials: true }));
+      
+      this.currentUser.set(null); // Limpia el usuario
+      this.userSettings.remove(); // Limpia todas las configuraciones
+      this.router.navigate(['/auth/login']);
+      console.log('🔒 Sesión cerrada');
+    } catch (error) {
+      console.error('Error durante el logout:', error);
+      // Aseguramos que el usuario sea desconectado incluso si hay error
+      this.currentUser.set(null);
+      this.userSettings.remove();
+      this.router.navigate(['/auth/login']);
+    }
   }
 
   /**

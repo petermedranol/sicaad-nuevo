@@ -1,8 +1,9 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
-import { map, tap } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { map, tap, switchMap } from 'rxjs/operators';
+import { Observable, from } from 'rxjs';
+import { MenuNavigationService } from '../../shared/services/menu-navigation.service';
 
 export const authGuard: CanActivateFn = (): Observable<boolean> => {
   const authService = inject(AuthService);
@@ -11,10 +12,10 @@ export const authGuard: CanActivateFn = (): Observable<boolean> => {
   return authService.checkAuthentication().pipe(
     tap(isAuthenticated => {
       if (!isAuthenticated) {
-        console.log('🚫 Acceso denegado por AuthGuard, redirigiendo a login.');
-        router.navigateByUrl('/auth/login');
+        console.log('🔒 No autenticado, redirigiendo a login');
+        router.navigate(['/auth/login']);
       }
     }),
-    map(isAuthenticated => isAuthenticated) // Asegura que el observable emita el booleano
+    map(isAuthenticated => isAuthenticated)
   );
 };

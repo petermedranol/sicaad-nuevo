@@ -1,12 +1,14 @@
 import { Pipe, PipeTransform } from '@angular/core';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Pipe({
   name: 'highlight',
   standalone: true
 })
 export class HighlightPipe implements PipeTransform {
+  constructor(private sanitizer: DomSanitizer) {}
   
-  transform(text: string, searchQuery: string): string {
+  transform(text: string, searchQuery: string): SafeHtml {
     if (!text || !searchQuery || searchQuery.trim() === '') {
       return text;
     }
@@ -17,7 +19,10 @@ export class HighlightPipe implements PipeTransform {
     const regex = new RegExp(`(${this.escapeRegExp(query)})`, 'gi');
     
     // Reemplazar las coincidencias con un span resaltado
-    return text.replace(regex, '<mark class="search-highlight">$1</mark>');
+    console.log('Highlighting text:', text, 'with query:', query);
+    const replaced = text.replace(regex, '<mark class="bg-[#ff8c00] text-white px-1 rounded text-xs inline-block">$1</mark>')
+    console.log('Highlighted result:', replaced);
+    return this.sanitizer.bypassSecurityTrustHtml(replaced);
   }
 
   private escapeRegExp(string: string): string {

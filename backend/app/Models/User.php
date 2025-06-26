@@ -7,7 +7,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\UserPreference;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\Storage;
@@ -171,6 +173,14 @@ class User extends Authenticatable
     public function scopeByCampus($query, string $campus)
     {
         return $query->where('campus', $campus);
+    }
+
+    /**
+     * Get user preferences
+     */
+    public function preference(): HasOne
+    {
+        return $this->hasOne(UserPreference::class);
     }
 
     /**

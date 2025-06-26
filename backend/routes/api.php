@@ -39,6 +39,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user/menus', [\App\Http\Controllers\MenuController::class, 'getUserMenus']);
     Route::get('/user/menu/{menuId}/access', [\App\Http\Controllers\MenuController::class, 'getMenuAccessLevel']);
 
+    // User preferences routes
+    Route::post('/user/preferences', [\App\Http\Controllers\UserPreferenceController::class, 'store']);
+    Route::get('/user/preferences', [\App\Http\Controllers\UserPreferenceController::class, 'show']);
+
     Route::get('images/user/{userId}/{thumbnail?}', ShowImageController::class);
 
 });

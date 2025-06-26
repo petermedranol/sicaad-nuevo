@@ -3,12 +3,15 @@ import { Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/ro
 import { CanActivateFn } from '@angular/router';
 import { PermissionService } from '../shared/services/permission.service';
 import { UserSettingsService } from '../shared/services/user-settings.service';
+import { MenuService } from '../shared/services/menu.service';
+import { AuthService } from '../auth/services/auth.service';
 
 /**
  * Guard que verifica si el usuario tiene permisos para acceder a una ruta específica
  */
-export const permissionGuard: CanActivateFn = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
+export const permissionGuard: CanActivateFn = async (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
   const router = inject(Router);
+  const menuService = inject(MenuService);
 
   try {
     const currentUrl = state.url;
@@ -20,30 +23,30 @@ export const permissionGuard: CanActivateFn = (route: ActivatedRouteSnapshot, st
       return true;
     }
 
-    const userSettings = inject(UserSettingsService);
-    
-    // Obtener toda la configuración del usuario
-    const settings = userSettings.getAll();
-    const menu = settings.menuItems;
+    // Cargar menús (desde preferencias o servidor si es necesario)
+    await menuService.ensureMenusLoaded();
+    console.log('📜 Menús disponibles en guard');
 
-    if (!menu || !Array.isArray(menu)) {
-      console.log('❌ No hay menús cargados, redirigiendo a dashboard');
+    const menu = menuService.menuItems();
+    if (!menu || !Array.isArray(menu) || menu.length === 0) {
+      console.log('❌ No hay menús disponibles');
       router.navigate(['/dashboard']);
       return false;
     }
-
     // Función mejorada para buscar acceso
     const hasAccess = (items: any[], targetUrl: string): boolean => {
       for (const item of items) {
+        const itemRoute = item.link || item.route;
+
         // Coincidencia exacta
-        if (item.route === targetUrl) {
+        if (itemRoute === targetUrl) {
           console.log('✅ Acceso permitido - coincidencia exacta:', targetUrl);
           return true;
         }
 
         // Ruta hija (permitir acceso a subrutas)
-        if (item.route && targetUrl.startsWith(item.route + '/')) {
-          console.log('✅ Acceso permitido - subruta de:', item.route);
+        if (itemRoute && targetUrl.startsWith(itemRoute + '/')) {
+          console.log('✅ Acceso permitido - subruta de:', itemRoute);
           return true;
         }
 
