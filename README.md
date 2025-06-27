@@ -77,3 +77,7 @@ cp .env.example .env
 ---
 
 > Recuerda configurar las variables de entorno y los permisos necesarios para el almacenamiento y la base de datos.
+
+## Descargo de responsabilidad
+
+Este software se proporciona "tal cual", sin garantías de ningún tipo, expresas o implícitas. El uso del software es bajo su propio riesgo. Los autores y colaboradores no serán responsables de ningún daño o perjuicio derivado del uso de este software.
