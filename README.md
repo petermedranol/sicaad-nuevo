@@ -20,11 +20,40 @@ cp .env.example .env
 
 ### Frontend (Angular)
 
-```sh
-cd frontend
-npm install
-ng serve
-```
+1. Instala las dependencias:
+   ```sh
+   cd frontend
+   npm install
+   ```
+
+2. Configura reCAPTCHA de Google:
+   - Ve a [Google reCAPTCHA Admin](https://www.google.com/recaptcha/admin)
+   - Crea una nueva clave para tu sitio
+   - Anota la **Site Key** y **Secret Key**
+
+3. Configura los archivos de entorno:
+   ```sh
+   # Copia los archivos de ejemplo
+   cp src/environments/environment.example.ts src/environments/environment.ts
+   cp src/environments/environment.prod.example.ts src/environments/environment.prod.ts
+   
+   # Edita los archivos y agrega tu Site Key de reCAPTCHA
+   ```
+
+4. Inicia el servidor de desarrollo:
+   ```sh
+   ng serve
+   ```
+
+## Configuración Adicional
+
+### reCAPTCHA
+- **Backend:** Agrega las claves de reCAPTCHA en el archivo `.env` del backend
+- **Frontend:** Configura la Site Key en los archivos de entorno (`environment.ts` y `environment.prod.ts`)
+
+### Variables de Entorno
+- **Backend:** Copia `.env.example` a `.env` y configura la base de datos
+- **Frontend:** Copia los archivos `environment.example.ts` a `environment.ts` y `environment.prod.ts`
 
 ## Uso
 
