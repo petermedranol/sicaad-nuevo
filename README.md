@@ -2,8 +2,30 @@
 
 Proyecto con arquitectura separada:
 
-- **Backend:** Laravel 12 (usando Sail/Docker)
+- **Backend:** Laravel 12 (usando Sail/Docker y Sanctum para autenticación)
 - **Frontend:** Angular 19 (stand alone components)
+
+## Estado del proyecto
+
+En desarrollo — ¡colaboraciones bienvenidas!
+
+## Requisitos
+
+- **Docker** (para Laravel Sail)
+- **Node.js/NPM** (para el frontend)
+
+## Descripción técnica
+
+### Backend
+
+Este proyecto usa **Laravel Sail** como entorno de desarrollo y contenedores Docker, y **Laravel Sanctum** para autenticación de API y manejo de sesiones seguras.
+
+- **Laravel Sail:** Proporciona un entorno de desarrollo basado en Docker (ver comandos en la sección de instalación).
+- **Sanctum:** Gestiona la autenticación basada en tokens y sesiones para el frontend Angular y el backend Laravel.
+
+### Frontend
+
+Aplicación Angular 19 con componentes standalone, comunicación con la API autenticada mediante Sanctum.
 
 ## Instalación
 
@@ -16,49 +38,36 @@ cp .env.example .env
 ./vendor/bin/sail up -d
 ./vendor/bin/sail artisan key:generate
 ./vendor/bin/sail artisan migrate
-./vendor/bin/sail artisan db:seed
 ```
-
-> **Nota:** El seeder creará un usuario administrador con las credenciales:
-> - **Email:** admin@admin.com
-> - **Contraseña:** admin123
-
-> **Alternativa sin Docker/Sail:** Si prefieres usar PHP local, reemplaza `./vendor/bin/sail artisan` por `php artisan` en todos los comandos.
 
 ### Frontend (Angular)
 
 1. Instala las dependencias:
-   ```sh
-   cd frontend
-   npm install
-   ```
+    ```sh
+    cd frontend
+    npm install
+    ```
 
 2. Configura reCAPTCHA de Google:
-   - Ve a [Google reCAPTCHA Admin](https://www.google.com/recaptcha/admin)
-   - Crea una nueva clave para tu sitio
-   - Anota la **Site Key** y **Secret Key**
+    - Ve a [Google reCAPTCHA Admin](https://www.google.com/recaptcha/admin)
+    - Crea una nueva clave para tu sitio
+    - Anota la **Site Key** y **Secret Key**
 
 3. Configura los archivos de entorno:
-   ```sh
-   # Copia los archivos de ejemplo
-   cp src/environments/environment.example.ts src/environments/environment.ts
-   cp src/environments/environment.prod.example.ts src/environments/environment.prod.ts
-   
-   # Edita los archivos y agrega tu Site Key de reCAPTCHA
-   ```
+    ```sh
+    # Copia los archivos de ejemplo
+    cp src/environments/environment.example.ts src/environments/environment.ts
+    cp src/environments/environment.prod.example.ts src/environments/environment.prod.ts
+
+    # Edita los archivos y agrega tu Site Key de reCAPTCHA
+    ```
 
 4. Inicia el servidor de desarrollo:
-   ```sh
-   ng serve
-   ```
+    ```sh
+    ng serve
+    ```
 
 ## Configuración Adicional
-
-### Datos Iniciales
-El seeder `InitialSetupSeeder` incluye:
-- **Menús del sistema:** Inicio, Configuración y Usuarios
-- **Usuario administrador:** admin@admin.com / admin123
-- **Permisos de acceso** configurados automáticamente
 
 ### reCAPTCHA
 - **Backend:** Agrega las claves de reCAPTCHA en el archivo `.env` del backend
@@ -71,15 +80,15 @@ El seeder `InitialSetupSeeder` incluye:
 ## Uso
 
 1. Levanta el backend con Sail:  
-   ```sh
-   cd backend
-   ./vendor/bin/sail up -d
-   ```
+    ```sh
+    cd backend
+    ./vendor/bin/sail up -d
+    ```
 2. Inicia el frontend:  
-   ```sh
-   cd frontend
-   ng serve
-   ```
+    ```sh
+    cd frontend
+    ng serve
+    ```
 3. Accede a la aplicación desde tu navegador.
 
 ## Estructura
@@ -90,6 +99,14 @@ El seeder `InitialSetupSeeder` incluye:
 ---
 
 > Recuerda configurar las variables de entorno y los permisos necesarios para el almacenamiento y la base de datos.
+
+## Contribuir
+
+¡Las contribuciones son bienvenidas! Por favor, abre un issue o pull request para sugerir mejoras, reportar bugs o proponer nuevas funcionalidades.
+
+## Contacto
+
+Para consultas o soporte, contacta a [petermedranol@gmail.com](mailto:petermedranol@gmail.com).
 
 ## Descargo de responsabilidad
 
