@@ -20,5 +20,7 @@ Thumbs.db
 *.swp
 *.swo
 
-/frontend/src/environments/environment*.ts
+# Archivos de configuración de entorno de Angular
+/frontend/src/environments/environment.ts
+/frontend/src/environments/environment.prod.ts
 !/frontend/src/environments/environment*.example.ts
