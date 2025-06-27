@@ -13,17 +13,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Seeders en orden de dependencias
+        // Seeder principal con configuración inicial
         $this->call([
-            UserTypeSeeder::class,
-            MenuSeeder::class,
-        ]);
-
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+            InitialSetupSeeder::class,
         ]);
     }
 }

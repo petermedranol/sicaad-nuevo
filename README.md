@@ -16,7 +16,12 @@ cp .env.example .env
 ./vendor/bin/sail up -d
 ./vendor/bin/sail artisan key:generate
 ./vendor/bin/sail artisan migrate
+./vendor/bin/sail artisan db:seed
 ```
+
+> **Nota:** El seeder creará un usuario administrador con las credenciales:
+> - **Email:** admin@admin.com
+> - **Contraseña:** admin123
 
 ### Frontend (Angular)
 
@@ -46,6 +51,12 @@ cp .env.example .env
    ```
 
 ## Configuración Adicional
+
+### Datos Iniciales
+El seeder `InitialSetupSeeder` incluye:
+- **Menús del sistema:** Inicio, Configuración y Usuarios
+- **Usuario administrador:** admin@admin.com / admin123
+- **Permisos de acceso** configurados automáticamente
 
 ### reCAPTCHA
 - **Backend:** Agrega las claves de reCAPTCHA en el archivo `.env` del backend
