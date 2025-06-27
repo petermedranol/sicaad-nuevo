@@ -23,6 +23,8 @@ cp .env.example .env
 > - **Email:** admin@admin.com
 > - **Contraseña:** admin123
 
+> **Alternativa sin Docker/Sail:** Si prefieres usar PHP local, reemplaza `./vendor/bin/sail artisan` por `php artisan` en todos los comandos.
+
 ### Frontend (Angular)
 
 1. Instala las dependencias:
