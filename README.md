@@ -106,7 +106,7 @@ cp .env.example .env
 
 ## Contacto
 
-Para consultas o soporte, contacta a [petermedranol@gmail.com](mailto:petermedranol@gmail.com).
+Para consultas o soporte, contacta a [petermedrano@gmail.com](mailto:petermedranol@gmail.com).
 
 ## Descargo de responsabilidad
 
