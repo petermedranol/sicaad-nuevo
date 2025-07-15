@@ -1,6 +1,7 @@
 import { Injectable, signal, effect, computed, inject } from '@angular/core';
 import { UserSettingsService } from './user-settings.service';
 import { AuthService } from '../../auth/services/auth.service';
+import { environment } from '../../../environments/environment';
 
 /**
  * Servicio para gestionar los temas de la aplicación (claro/oscuro).
@@ -31,12 +32,12 @@ export class ThemeService {
    */
   private themeEffect = effect(() => {
     const theme = this.currentTheme();
-    
+
     // Aplicar clases y atributos
     document.documentElement.classList.remove('dark', 'light');
     document.documentElement.classList.add(theme);
     document.documentElement.setAttribute('data-theme', theme);
-    
+
     const user = this.authService.currentUser();
     if (user?.id) {
       // Guardar el tema y todas las configuraciones existentes
@@ -45,9 +46,9 @@ export class ThemeService {
         ...currentSettings,
         theme: theme
       });
-      
-      // Verificar inmediatamente que se guardó correctamente
-      const savedSettings = this.userSettings.getAll();
+
+      // Solo log en desarrollo con datos seguros
+      this.logSafeData({ theme });
     }
   });
 
@@ -72,29 +73,42 @@ export class ThemeService {
   private initializeTheme(): void {
     try {
       const user = this.authService.currentUser();
-      
+
       // Obtener todas las configuraciones
       const allSettings = this.userSettings.getAll();
-      
+
       // Si hay un tema guardado en las configuraciones, usarlo
       if (allSettings && allSettings.theme && (allSettings.theme === 'light' || allSettings.theme === 'dark')) {
         this.currentTheme.set(allSettings.theme);
         return;
       }
-      
+
       // Si no hay tema guardado o el usuario no está autenticado,
       // usar preferencia del sistema
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       const defaultTheme = prefersDark ? 'dark' : 'light';
       this.currentTheme.set(defaultTheme);
-      
+
       // Si hay usuario, guardar el tema por defecto
       if (user?.id) {
         this.userSettings.set('theme', defaultTheme);
       }
-      
+
     } catch (e) {
       this.currentTheme.set('light'); // Fallback seguro
+    }
+  }
+
+  /**
+   * Log de datos seguros solo en desarrollo
+   */
+  private logSafeData(data: { theme: string }) {
+    if (!environment.production) {
+      const safeData = {
+        theme: data.theme,
+        timestamp: new Date().toISOString()
+      };
+      console.log('🎨 Configuraciones de tema guardadas:', safeData);
     }
   }
 

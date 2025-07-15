@@ -43,16 +43,21 @@ export class UserSettingsService {
    */
   async syncWithServer(): Promise<void> {
     try {
-      // Guardar el activeItem actual antes de sincronizar
+      // Guardar configuraciones locales importantes antes de sincronizar
       const currentSettings = this.getAll();
+      const localSidebarOpen = currentSettings.sidebarOpen;
+      const localSidebarCollapsed = currentSettings.sidebarCollapsed;
       const activeItem = currentSettings.activeItem;
 
       const response = await lastValueFrom(this.http.get<{preferences: any}>(this.API_URL, { withCredentials: true }));
       if (response?.preferences) {
-        // Asegurarse de preservar el activeItem
+        // Asegurarse de preservar valores manejados localmente
         const newSettings = {
           ...response.preferences,
-          activeItem: response.preferences.activeItem || activeItem
+          activeItem: response.preferences.activeItem || activeItem,
+          // Preservar configuraciones del sidebar que se manejan localmente
+          sidebarOpen: localSidebarOpen !== undefined ? localSidebarOpen : response.preferences.sidebarOpen,
+          sidebarCollapsed: localSidebarCollapsed !== undefined ? localSidebarCollapsed : response.preferences.sidebarCollapsed
         };
         this.saveAll(newSettings);
         this.preferencesSync.next();

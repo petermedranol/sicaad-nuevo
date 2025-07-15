@@ -1,4 +1,5 @@
 @import './styles/style.css';
+@import 'animate.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -63,4 +64,26 @@ thead th {
 /* Ajuste de padding para contenedor de botones */
 .swal2-actions {
   padding-bottom: 1rem !important;
+}
+
+/* Estilos personalizados para animaciones del formulario */
+.form-container {
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: all 0.3s ease-out;
+}
+
+.form-container.show {
+  max-height: 1000px; /* Altura suficiente para el contenido */
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.form-container.hide {
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: all 0.3s ease-in;
 }

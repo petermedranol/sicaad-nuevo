@@ -1,9 +1,10 @@
-import { Component, inject, effect, OnInit } from '@angular/core';
+import { Component, inject, effect, OnInit, OnDestroy } from '@angular/core';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { TopbarService } from '../../../shared/services/topbar.service';
 import { environment } from '../../../../environments/environment';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { PhotoCaptureComponent } from '../../../shared/components/photo-capture/photo-capture.component';
 import { LucideAngularModule,
   Search,
   Edit,
@@ -47,12 +48,15 @@ import {
   imports: [
     CommonModule,
     FormsModule,
-    LucideAngularModule,
-    PhotoCaptureComponent
+    LucideAngularModule
   ],
   templateUrl: './users.component.html'
 })
-export class UsersComponent extends BaseTableComponent<User> implements OnInit {
+export class UsersComponent extends BaseTableComponent<User> implements OnInit, OnDestroy {
+  // === Memory Leak Prevention ===
+  private cleanupEventListeners: (() => void)[] = [];
+  private timeouts: number[] = [];
+
   // === Servicios ===
   private readonly usersService = inject(UsersService);
   private readonly usersFormService = inject(UsersFormService);
@@ -84,6 +88,20 @@ private readonly imageProcessor = inject(ImageProcessorService);
   // === Configuración de tabla ===
   override config = USER_TABLE_CONFIG;
 
+  // === Formulario de creación/edición ===
+  showCreateForm = false;
+  isClosingForm = false;
+  isFormReady = false;
+  creatingUser = false;
+  isEditMode = false; // Nueva propiedad para modo edición
+  editingUserId: number | null = null; // ID del usuario siendo editado
+  createFormData = {
+    name: '',
+    email: '',
+    password: '',
+    password_confirmation: ''
+  };
+
   constructor() {
     super();
     this.state.update(state => ({
@@ -91,6 +109,39 @@ private readonly imageProcessor = inject(ImageProcessorService);
       sortField: this.config.defaultSort.field as string,
       sortOrder: this.config.defaultSort.order
     }));
+  }
+
+  /**
+   * Limpia todos los recursos para prevenir memory leaks.
+   */
+  override ngOnDestroy() {
+    // Limpiar event listeners
+    this.cleanupEventListeners.forEach(cleanup => cleanup());
+    this.cleanupEventListeners = [];
+
+    // Limpiar timeouts
+    this.timeouts.forEach(id => clearTimeout(id));
+    this.timeouts = [];
+
+    // Llamar al ngOnDestroy del parent que maneja destroy$
+    super.ngOnDestroy();
+  }
+
+  /**
+   * Agrega un event listener con limpieza automática.
+   */
+  private addEventListenerWithCleanup(element: EventTarget, event: string, handler: EventListener) {
+    element.addEventListener(event, handler);
+    this.cleanupEventListeners.push(() => element.removeEventListener(event, handler));
+  }
+
+  /**
+   * Crea un timeout con limpieza automática.
+   */
+  private addSafeTimeout(callback: () => void, delay: number): number {
+    const id = window.setTimeout(callback, delay);
+    this.timeouts.push(id);
+    return id;
   }
 
   /**
@@ -121,7 +172,7 @@ private readonly imageProcessor = inject(ImageProcessorService);
     try {
       const filters = this.tableService.createFilters(this.state());
       const response = await this.usersService.getUsers(filters);
-      
+
       // Verificar que la respuesta sea válida
       if (!response) {
         throw new Error('No se recibió respuesta del servidor');
@@ -198,7 +249,7 @@ private readonly imageProcessor = inject(ImageProcessorService);
     let photo: string | null = null;
     let stream: MediaStream | null = null;
     let cleanupListeners: (() => void)[] = [];
-    
+
     // Función para limpiar el stream y los recursos
     const cleanup = () => {
       try {
@@ -291,7 +342,7 @@ private readonly imageProcessor = inject(ImageProcessorService);
         const previewContainer = Swal.getPopup()?.querySelector('#preview-container') as HTMLDivElement;
         const previewImage = Swal.getPopup()?.querySelector('#preview-image') as HTMLImageElement;
         const video = Swal.getPopup()?.querySelector('#webcam-video') as HTMLVideoElement;
-        
+
 
         // Función para procesar la imagen
         const processImage = async (imageData: string | File) => {
@@ -317,8 +368,7 @@ private readonly imageProcessor = inject(ImageProcessorService);
             await processImage(files[0]);
           }
         };
-        fileInput.addEventListener('change', handleFileInput);
-        cleanupListeners.push(() => fileInput.removeEventListener('change', handleFileInput));
+        this.addEventListenerWithCleanup(fileInput, 'change', handleFileInput);
 
         // Manejador para webcam
         webcamBtn.addEventListener('click', async () => {
@@ -355,25 +405,17 @@ private readonly imageProcessor = inject(ImageProcessorService);
           } catch (error) {
             await this.notification.showError('Error', 'Error al acceder a la cámara');
           }
-        });
-
-        // Limpiar en todos los eventos posibles de cierre
-        modalElement.addEventListener('cancel', cleanup);
-        modalElement.addEventListener('confirm', cleanup);
-        window.addEventListener('beforeunload', cleanup);
-        
-        // Registrar la limpieza de eventos del modal
-        cleanupListeners.push(
-          () => modalElement.removeEventListener('cancel', cleanup),
-          () => modalElement.removeEventListener('confirm', cleanup)
-        );
+        });        // Limpiar en todos los eventos posibles de cierre
+        this.addEventListenerWithCleanup(modalElement, 'cancel', cleanup);
+        this.addEventListenerWithCleanup(modalElement, 'confirm', cleanup);
+        this.addEventListenerWithCleanup(window, 'beforeunload', cleanup);
       },
       preConfirm: () => {
         const previewImage = Swal.getPopup()?.querySelector('#preview-image') as HTMLImageElement;
         return previewImage?.src || null;
       }
     });
-    
+
     if (result.isConfirmed && result.value) {
       photo = result.value;
     }
@@ -421,39 +463,154 @@ private readonly imageProcessor = inject(ImageProcessorService);
    * @param user Usuario a editar.
    */
   async editUser(user: User): Promise<void> {
-    const formData = await this.usersFormService.showEditForm(user);
-    if (formData !== null) {
-      try {
-        const response = await this.usersService.updateUser(user.id, formData);
-        if (response?.success) {
-          await this.loadData();
-          await this.notification.showSuccess('¡Usuario actualizado!');
-        } else {
-          throw new Error(response?.message || 'Error desconocido');
+    this.isEditMode = true;
+    this.editingUserId = user.id;
+    this.showCreateForm = true;
+    this.isFormReady = false;
+
+    // Llenar el formulario con los datos del usuario
+    this.createFormData = {
+      name: user.name,
+      email: user.email,
+      password: '',
+      password_confirmation: ''
+    };
+
+    // Pequeño delay para permitir que Angular renderice el elemento antes de aplicar la animación
+    this.addSafeTimeout(() => {
+      this.isFormReady = true;
+
+      // Enfocar el primer campo después de que se complete la animación
+      this.addSafeTimeout(() => {
+        const nameInput = document.getElementById('create-name');
+        if (nameInput) {
+          nameInput.focus();
         }
-      } catch (error) {
-        await this.errorHandler.handleApiError(error, 'Error al actualizar usuario');
-      }
-    }
+      }, 100);
+    }, 50);
   }
 
   /**
    * Crea un nuevo usuario.
    */
   async createUser(): Promise<void> {
-    const formData = await this.usersFormService.showCreateForm();
-    if (formData !== null) {
-      try {
-        const response = await this.usersService.createUser(formData);
-        if (response?.success) {
-          await this.loadData();
-          await this.notification.showSuccess('¡Usuario creado!');
-        } else {
-          throw new Error(response?.message || 'Error desconocido');
+    this.isEditMode = false;
+    this.editingUserId = null;
+    this.showCreateForm = true;
+    this.isFormReady = false;
+    this.resetCreateForm();
+
+    // Pequeño delay para permitir que Angular renderice el elemento antes de aplicar la animación
+    this.addSafeTimeout(() => {
+      this.isFormReady = true;
+
+      // Enfocar el primer campo después de que se complete la animación
+      this.addSafeTimeout(() => {
+        const nameInput = document.getElementById('create-name');
+        if (nameInput) {
+          nameInput.focus();
         }
-      } catch (error) {
-        await this.errorHandler.handleApiError(error, 'Error al crear usuario');
+      }, 100);
+    }, 50);
+  }
+
+  /**
+   * Cancela la creación/edición de usuario y oculta el formulario.
+   */
+  cancelCreateUser(): void {
+    this.isClosingForm = true;
+    // Esperar a que termine la animación de salida antes de ocultar
+    this.addSafeTimeout(() => {
+      this.showCreateForm = false;
+      this.isClosingForm = false;
+      this.isFormReady = false;
+      this.isEditMode = false;
+      this.editingUserId = null;
+      this.resetCreateForm();
+    }, 300); // Duración de la animación
+  }
+
+  /**
+   * Reinicia los datos del formulario de creación.
+   */
+  private resetCreateForm(): void {
+    this.createFormData = {
+      name: '',
+      email: '',
+      password: '',
+      password_confirmation: ''
+    };
+  }
+
+  /**
+   * Maneja el envío del formulario de creación/edición de usuario.
+   */
+  async submitCreateUser(event: Event): Promise<void> {
+    event.preventDefault();
+
+    // Validaciones para modo creación o si se está cambiando contraseña en edición
+    if (!this.isEditMode || (this.createFormData.password || this.createFormData.password_confirmation)) {
+      // Validar que las contraseñas coincidan
+      if (this.createFormData.password !== this.createFormData.password_confirmation) {
+        await this.notification.showError('Error', 'Las contraseñas no coinciden');
+        return;
       }
+
+      // Validar longitud mínima de contraseña solo si se está proporcionando
+      if (this.createFormData.password && this.createFormData.password.length < 8) {
+        await this.notification.showError('Error', 'La contraseña debe tener al menos 8 caracteres');
+        return;
+      }
+    }
+
+    this.creatingUser = true;
+    try {
+      let response;
+
+      if (this.isEditMode && this.editingUserId) {
+        // Modo edición
+        const updateData: any = {
+          name: this.createFormData.name,
+          email: this.createFormData.email
+        };
+
+        // Solo incluir contraseña si se proporcionó
+        if (this.createFormData.password) {
+          updateData.password = this.createFormData.password;
+          updateData.password_confirmation = this.createFormData.password_confirmation;
+        }
+
+        response = await this.usersService.updateUser(this.editingUserId, updateData);
+      } else {
+        // Modo creación
+        response = await this.usersService.createUser(this.createFormData);
+      }
+
+      if (response?.success) {
+        await this.loadData();
+        await this.notification.showSuccess(
+          this.isEditMode ? '¡Usuario actualizado!' : '¡Usuario creado!'
+        );
+        this.isClosingForm = true;
+        // Animación de salida antes de cerrar
+        this.addSafeTimeout(() => {
+          this.showCreateForm = false;
+          this.isClosingForm = false;
+          this.isFormReady = false;
+          this.isEditMode = false;
+          this.editingUserId = null;
+          this.resetCreateForm();
+        }, 300);
+      } else {
+        throw new Error(response?.message || 'Error desconocido');
+      }
+    } catch (error) {
+      await this.errorHandler.handleApiError(
+        error,
+        this.isEditMode ? 'Error al actualizar usuario' : 'Error al crear usuario'
+      );
+    } finally {
+      this.creatingUser = false;
     }
   }
 

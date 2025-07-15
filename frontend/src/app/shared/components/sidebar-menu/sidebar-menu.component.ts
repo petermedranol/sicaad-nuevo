@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule, ChevronDown, ChevronRight, Home, Users, FileText, BarChart3, Settings, Building2, UserCheck, Shield, Database, Archive } from 'lucide-angular';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -15,7 +15,9 @@ export type { MenuItem } from '../../interfaces/menu-item.interface';
   templateUrl: './sidebar-menu.component.html',
   styles: []
 })
-export class SidebarMenuComponent {
+export class SidebarMenuComponent implements OnDestroy {
+  private timeouts: number[] = [];
+
   constructor(private sanitizer: DomSanitizer) {}
   @Input() menuItems: MenuItem[] = [];
   private _filteredItems: MenuItem[] = [];
@@ -48,26 +50,24 @@ export class SidebarMenuComponent {
 
   hoveredItemId: string | null = null;
 
-  private hoverTimeout: any;
+  private hoverTimeout: any;  onMouseEnter(itemId: string, event: MouseEvent) {
+    // Cancelar timeouts anteriores
+    this.timeouts.forEach(id => clearTimeout(id));
+    this.timeouts = [];
 
-  onMouseEnter(itemId: string, event: MouseEvent) {
-    if (this.hoverTimeout) {
-      clearTimeout(this.hoverTimeout);
-    }
-    
     const target = event.currentTarget as HTMLElement;
     const rect = target.getBoundingClientRect();
-    
+
     // Actualizar la posición del menú
     requestAnimationFrame(() => {
       document.documentElement.style.setProperty('--menu-top', `${rect.top}px`);
     });
-    
+
     this.hoveredItemId = itemId;
   }
 
   onMouseLeave() {
-    this.hoverTimeout = setTimeout(() => {
+    this.addSafeTimeout(() => {
       this.hoveredItemId = null;
     }, 300); // Incrementamos el delay para dar más tiempo al usuario
   }
@@ -116,7 +116,7 @@ export class SidebarMenuComponent {
     return items.filter(item => {
       const titleMatch = item.title?.toLowerCase().includes(query);
       const descriptionMatch = item.description?.toLowerCase().includes(query);
-      
+
       // Si el item tiene hijos, también los filtramos
       if (item.children && item.children.length > 0) {
         const filteredChildren = this.filterItems(item.children, query);
@@ -124,7 +124,7 @@ export class SidebarMenuComponent {
           return true;
         }
       }
-      
+
       return titleMatch || descriptionMatch;
     });
   }
@@ -164,5 +164,17 @@ export class SidebarMenuComponent {
 
   private escapeRegExp(string: string): string {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  ngOnDestroy() {
+    // Limpiar timeouts
+    this.timeouts.forEach(id => clearTimeout(id));
+    this.timeouts = [];
+  }
+
+  private addSafeTimeout(callback: () => void, delay: number): number {
+    const id = window.setTimeout(callback, delay);
+    this.timeouts.push(id);
+    return id;
   }
 }

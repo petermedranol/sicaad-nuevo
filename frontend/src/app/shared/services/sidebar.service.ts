@@ -23,12 +23,20 @@ export class SidebarService {
 
     // En escritorio, restaurar desde UserSettings o usar valores por defecto.
     const user = this.authService.currentUser();
+
     if (user?.id) {
-      const savedOpen = this.userSettings.get<string>('sidebarOpen', 'true');
-      const savedCollapsed = this.userSettings.get<string>('sidebarCollapsed', 'false');
-      
-      this.isSidebarOpen.set(savedOpen === 'true');
-      this.isSidebarCollapsed.set(savedCollapsed === 'true');
+      // Limpiar keys viejas de localStorage que puedan interferir
+      localStorage.removeItem('sidebarCollapsed');
+
+      const savedOpen = this.userSettings.get<boolean>('sidebarOpen', true);
+      const savedCollapsed = this.userSettings.get<boolean>('sidebarCollapsed', false);
+
+      // Garantizar que son booleanos
+      const isOpen = Boolean(savedOpen);
+      const isCollapsed = Boolean(savedCollapsed);
+
+      this.isSidebarOpen.set(isOpen);
+      this.isSidebarCollapsed.set(isCollapsed);
     } else {
       // Por defecto, el sidebar está abierto en escritorio.
       this.isSidebarOpen.set(true);
@@ -44,7 +52,7 @@ export class SidebarService {
     if (!this.isMobile()) {
       const user = this.authService.currentUser();
       if (user?.id) {
-        this.userSettings.set('sidebarOpen', String(newValue));
+        this.userSettings.set('sidebarOpen', newValue);
       }
     }
   }
@@ -58,10 +66,10 @@ export class SidebarService {
 
     const newValue = !this.isSidebarCollapsed();
     this.isSidebarCollapsed.set(newValue);
-    
+
     const user = this.authService.currentUser();
     if (user?.id) {
-      this.userSettings.set('sidebarCollapsed', String(newValue));
+      this.userSettings.set('sidebarCollapsed', newValue);
     }
   }
 
@@ -70,7 +78,7 @@ export class SidebarService {
     if (!this.isMobile()) {
       const user = this.authService.currentUser();
       if (user?.id) {
-        this.userSettings.set('sidebarOpen', 'false');
+        this.userSettings.set('sidebarOpen', false);
       }
     }
   }
@@ -80,7 +88,7 @@ export class SidebarService {
     if (!this.isMobile()) {
       const user = this.authService.currentUser();
       if (user?.id) {
-        this.userSettings.set('sidebarOpen', 'true');
+        this.userSettings.set('sidebarOpen', true);
       }
     }
   }

@@ -2,12 +2,130 @@
 <div class="space-y-6">
 
   <!-- Card principal que contiene la búsqueda, tabla y paginación -->
-  <div class="card bg-base-100 shadow-xl">
+  <div class="card bg-white shadow-xl">
     <div class="card-body space-y-6 p-4 sm:p-6">
 
+      <!-- Formulario de Nuevo/Editar Usuario (Oculto por defecto) -->
+      @if (showCreateForm) {
+        <div
+          class="bg-base-200/50 rounded-lg p-4 border-l-4 border-base-400 form-container"
+          [class.show]="isFormReady && !isClosingForm"
+          [class.hide]="isClosingForm">
+          <div class="mb-4">
+            <h3 class="text-lg font-semibold text-base-content">
+              {{ isEditMode ? 'Editar Usuario' : 'Nuevo Usuario' }}
+            </h3>
+          </div>
+
+          <form class="grid grid-cols-1 md:grid-cols-2 gap-4" (submit)="submitCreateUser($event)">
+              <!-- Nombre -->
+              <div class="form-control">
+                <label class="label" for="create-name">
+                  <span class="label-text font-semibold">Nombre *</span>
+                </label>
+                <input
+                  id="create-name"
+                  type="text"
+                  class="input input-bordered w-full"
+                  [(ngModel)]="createFormData.name"
+                  name="name"
+                  placeholder="Nombre completo"
+                  required
+                  autocomplete="off">
+              </div>
+
+              <!-- Email -->
+              <div class="form-control">
+                <label class="label" for="create-email">
+                  <span class="label-text font-semibold">Email *</span>
+                </label>
+                <input
+                  id="create-email"
+                  type="email"
+                  class="input input-bordered w-full"
+                  [(ngModel)]="createFormData.email"
+                  name="email"
+                  placeholder="usuario@dominio.com"
+                  required
+                  autocomplete="off">
+              </div>
+
+              <!-- Contraseña -->
+              <div class="form-control">
+                <label class="label" for="create-password">
+                  <span class="label-text font-semibold">
+                    Contraseña {{ isEditMode ? '' : '*' }}
+                  </span>
+                </label>
+                <input
+                  id="create-password"
+                  type="password"
+                  class="input input-bordered w-full"
+                  [(ngModel)]="createFormData.password"
+                  name="password"
+                  [placeholder]="isEditMode ? 'Dejar vacío para mantener actual' : 'Mínimo 8 caracteres'"
+                  [required]="!isEditMode"
+                  autocomplete="new-password">
+                @if (isEditMode) {
+                  <div class="label">
+                    <span class="label-text-alt text-xs text-base-content/60">
+                      Solo llenar si desea cambiar la contraseña
+                    </span>
+                  </div>
+                }
+              </div>
+
+              <!-- Confirmar Contraseña -->
+              <div class="form-control">
+                <label class="label" for="create-password-confirm">
+                  <span class="label-text font-semibold">
+                    Confirmar Contraseña {{ isEditMode ? '' : '*' }}
+                  </span>
+                </label>
+                <input
+                  id="create-password-confirm"
+                  type="password"
+                  class="input input-bordered w-full"
+                  [(ngModel)]="createFormData.password_confirmation"
+                  name="password_confirmation"
+                  [placeholder]="isEditMode ? 'Confirme la nueva contraseña' : 'Repita la contraseña'"
+                  [required]="!isEditMode"
+                  autocomplete="new-password">
+              </div>
+
+              <!-- Botones -->
+              <div class="col-span-1 md:col-span-2 flex justify-end gap-2 mt-4">
+                <button
+                  type="button"
+                  class="btn btn-ghost"
+                  (click)="cancelCreateUser()">
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  class="btn btn-neutral"
+                  [disabled]="creatingUser">
+                  @if (creatingUser) {
+                    <span class="loading loading-spinner loading-sm"></span>
+                    {{ isEditMode ? 'Actualizando...' : 'Creando...' }}
+                  } @else {
+                    <lucide-icon [img]="saveIcon" class="w-4 h-4"></lucide-icon>
+                    {{ isEditMode ? 'Actualizar Usuario' : 'Crear Usuario' }}
+                  }
+                </button>
+              </div>
+
+              <!-- Nota -->
+              <div class="col-span-1 md:col-span-2 text-xs text-base-content/60 text-center">
+                * Campos requeridos
+              </div>
+            </form>
+        </div>
+      }
+
       <!-- Fila de Búsqueda y Filtros -->
-      <!-- Permite buscar usuarios y limpiar la búsqueda -->
-      <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+      <!-- Permite buscar usuarios con ícono de limpiar integrado -->
+      <div class="flex justify-center md:justify-start">
         <div class="w-full md:max-w-xs">
           <label class="input input-bordered flex items-center gap-2" for="search-users">
             <input
@@ -18,15 +136,21 @@
               [value]="state().search"
               (input)="handleSearch($event)"
               placeholder="Buscar"
+              autocomplete="off"
             />
-            <lucide-icon [img]="searchIcon" class="w-4 h-4 opacity-70"></lucide-icon>
+            @if (state().search && state().search.length > 0) {
+              <button
+                type="button"
+                (click)="clearSearch()"
+                class="flex items-center justify-center w-4 h-4 opacity-70 hover:opacity-100 active:opacity-50 cursor-pointer transition-none hover:bg-base-300 hover:rounded-full"
+                [attr.aria-label]="'Limpiar búsqueda'"
+                title="Limpiar búsqueda">
+                <lucide-icon [img]="xIcon" class="w-4 h-4"></lucide-icon>
+              </button>
+            } @else {
+              <lucide-icon [img]="searchIcon" class="w-4 h-4 opacity-70"></lucide-icon>
+            }
           </label>
-        </div>
-        <div class="flex items-center gap-2 w-full md:w-auto">
-          <button class="btn btn-ghost w-full md:w-auto" (click)="clearSearch()">
-            <lucide-icon [img]="resetIcon" class="w-4 h-4"></lucide-icon>
-            Limpiar
-          </button>
         </div>
       </div>
 

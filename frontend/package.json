@@ -11,6 +11,7 @@
   "private": true,
   "dependencies": {
     "@angular-devkit/schematics-cli": "^20.0.2",
+    "@angular/animations": "^19.2.14",
     "@angular/common": "^19.2.0",
     "@angular/compiler": "^19.2.14",
     "@angular/core": "^19.2.0",
@@ -20,6 +21,7 @@
     "@angular/router": "^19.2.0",
     "@ng-icons/core": "^31.0.0",
     "@ng-icons/lucide": "^31.0.0",
+    "animate.css": "^4.1.1",
     "daisyui": "^4.12.2",
     "lucide-angular": "^0.515.0",
     "rxjs": "~7.8.0",

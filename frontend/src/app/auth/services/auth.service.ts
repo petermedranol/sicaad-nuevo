@@ -43,21 +43,21 @@ export class AuthService {
       tap(response => {
         // Guardar el usuario
         this.currentUser.set(response.user);
-        
+
         // Limpiar las preferencias anteriores
         this.userSettings.remove();
-        
+
         // Guardar las nuevas preferencias y asegurar que activeItem esté presente
         const preferences = {
           ...response.preferences,
           activeItem: response.preferences['activeItem'] || '1' // Default a Inicio si no hay activeItem
         };
         this.userSettings.saveAll(preferences);
-        
+
         // Inicializar los menús
         const menuItems = this.menuService.convertApiMenusToMenuItems(response.preferences['menuItems']);
         this.menuService.setMenuItems(menuItems);
-        
+
         // Migrar configuraciones antiguas por si acaso
         this.userSettings.migrateFromOldKeys({
           'sicaad_expanded_items': 'expandedItems',
@@ -67,7 +67,7 @@ export class AuthService {
           'sicaad_user_info': 'userInfo',
           'sicaad_search_query': 'searchQuery',
           'sicaad_menu_last_sync': 'lastSync',
-          'sidebarCollapsed': 'sidebarCollapsed',
+          // 'sidebarCollapsed': 'sidebarCollapsed', // Comentado para evitar conflictos con el SidebarService
           'theme': 'theme'
         });
       }),
@@ -87,7 +87,7 @@ export class AuthService {
 
       // Luego hacemos logout
       await lastValueFrom(this.http.post(`${this.apiUrl}/logout`, {}, { withCredentials: true }));
-      
+
       this.currentUser.set(null); // Limpia el usuario
       this.userSettings.remove(); // Limpia todas las configuraciones
       this.router.navigate(['/auth/login']);

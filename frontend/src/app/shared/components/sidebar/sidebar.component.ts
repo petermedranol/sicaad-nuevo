@@ -58,11 +58,11 @@ export class SidebarComponent implements OnInit, OnDestroy {
     if (this.hoverTimeout) {
       clearTimeout(this.hoverTimeout);
     }
-    
+
     // Limpiar todos los timeouts pendientes
     this.timeouts.forEach(timeoutId => clearTimeout(timeoutId));
     this.timeouts = [];
-    
+
     // Limpiar suscripciones
     this.destroy$.next();
     this.destroy$.complete();
@@ -103,24 +103,29 @@ private timeouts: number[] = [];
   }
 
   private updateSearchInput(): void {
-    const timeoutId = setTimeout(() => {
+    this.addSafeTimeout(() => {
       if (this.searchInput?.nativeElement) {
         this.searchInput.nativeElement.value = this.searchQuery;
       }
     }, 100);
-    this.timeouts.push(timeoutId);
+  }
+
+  private addSafeTimeout(callback: () => void, delay: number): number {
+    const id = window.setTimeout(callback, delay);
+    this.timeouts.push(id);
+    return id;
   }
 
   navigateTo(route: string): void {
     // Normalizar la ruta
     const normalizedRoute = route === '/' ? '' : route;
-    
+
     // Si es la ruta actual, solo actualizar el estado del menú
     if (this.router.url === normalizedRoute) {
       this.menuService.updateActiveItemByRoute(normalizedRoute);
       return;
     }
-    
+
     // Si no es la ruta actual, primero navegar y dejar que el
     // NavigationEnd actualice el estado del menú
     this.navigate.emit(route);
@@ -172,8 +177,7 @@ private timeouts: number[] = [];
   focusSearch(): void {
     if (this.isCollapsed) {
     this.sidebarService.toggleSidebarCollapse();
-    const timeoutId = setTimeout(() => this.searchInput.nativeElement.focus(), 300);
-    this.timeouts.push(timeoutId);
+    this.addSafeTimeout(() => this.searchInput.nativeElement.focus(), 300);
     } else {
       this.searchInput.nativeElement.focus();
     }

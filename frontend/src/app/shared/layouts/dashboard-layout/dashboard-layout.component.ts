@@ -64,11 +64,11 @@ export class DashboardLayoutComponent implements OnInit {
   async ngOnInit() {
     this.sidebarService.init();
     await this.menuService.ensureMenusLoaded();
-    
+
     // Asegurarse de que el estado inicial del menú se establezca correctamente
     const currentRoute = this.router.url === '/' ? '' : this.router.url;
     this.menuService.updateActiveItemByRoute(currentRoute);
-    
+
   }
 
   onNavigate(route: string) {
