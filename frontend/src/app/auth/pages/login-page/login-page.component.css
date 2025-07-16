@@ -229,7 +229,7 @@
 
 /* Botón de login */
 .login-submit-container {
-  margin-top: 0.75rem; /* Aún más reducido para espaciado compacto */
+  margin-top: 0; /* Sin margen extra - el mensaje reCAPTCHA ya tiene margin-bottom */
 }
 
 .login-submit-btn {
@@ -319,7 +319,7 @@
 /* Footer */
 .login-footer {
   text-align: center;
-  margin-top: 2.5rem;
+  margin-top: 1.5rem; /* Espaciado uniforme desde el botón */
   color: oklch(var(--bc) / 0.5);
 }
 
@@ -347,33 +347,33 @@
   .login-card-body {
     padding: 1.5rem;
   }
-  
+
   .login-logo-container {
     /* Ajustar márgenes negativos para móvil (padding: 1.5rem) */
     margin-left: -1.5rem;
     margin-right: -1.5rem;
   }
-  
+
   .login-logo {
     width: 100%; /* Fluido también en móvil */
     max-width: 150px; /* Menor máximo en móvil */
     height: auto; /* Altura automática para mantener proporción */
   }
-  
+
   .login-title {
     font-size: 1.875rem;
   }
-  
+
   .login-subtitle {
     font-size: 1rem;
   }
-  
+
   .form-input,
   .password-input {
     height: 3rem;
     font-size: 0.875rem;
   }
-  
+
   .login-submit-btn {
     height: 3rem;
     font-size: 1rem;
@@ -431,7 +431,8 @@ button {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 0.5rem 0 0.25rem 0; /* Más compacto */
+  margin: 0.5rem 0 0 0; /* Solo margin-top, eliminando bottom para evitar doble espacio */
+  padding: 0; /* Sin padding para eliminar espacio extra */
   min-height: 78px;
   width: 100%;
   overflow: hidden; /* Para manejar el scale en móvil */
@@ -440,9 +441,8 @@ button {
 /* Mensaje de reCAPTCHA - más compacto */
 .recaptcha-message {
   text-align: center;
-  margin-top: 0.15rem; /* Aún más reducido */
-  margin-bottom: 0.25rem; /* Aún más reducido */
-  font-size: 0.8rem; /* Más pequeño */
+  margin: 0 0 0.5rem 0; /* Solo margin-bottom hacia el botón */
+  font-size: 0.75rem;
 }
 
 /* Personalización del reCAPTCHA */
@@ -457,21 +457,28 @@ button {
   .recaptcha-container {
     transform: scale(0.9); /* Menos agresivo */
     transform-origin: center;
-    margin: 0.25rem 0 0.1rem 0; /* Más compacto */
+    margin: 0.25rem 0 0 0; /* Solo top margin, sin bottom para evitar doble espacio */
     padding: 0;
   }
-  
+
   .recaptcha-message {
-    margin-top: 0.15rem;
-    margin-bottom: 0.25rem;
-    font-size: 0.75rem;
+    margin: 0 0 0.25rem 0; /* Solo margin-bottom */
+    font-size: 0.7rem;
+  }
+
+  .login-footer {
+    margin-top: 1rem; /* Menor en móvil */
   }
 }
 
 @media (max-width: 480px) {
   .recaptcha-container {
     transform: scale(0.8); /* Aún más pequeño en pantallas muy pequeñas */
-    margin: 0.2rem 0 0.1rem 0;
+    margin: 0.2rem 0 0 0; /* Solo top margin */
+  }
+
+  .recaptcha-message {
+    margin-bottom: 0.2rem;
   }
 }
 

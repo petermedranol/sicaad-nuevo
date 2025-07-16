@@ -3,10 +3,9 @@ import { Subject, takeUntil } from 'rxjs';
 import { CommonModule, DOCUMENT } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
-import { ThemeService } from '../../../shared/services/theme.service';
 import { LoadingService } from '../../../shared/services/loading.service';
 import { Router } from '@angular/router';
-import { LucideAngularModule, Mail, Lock, LogIn, Eye, EyeOff, Sun, Moon, Clock } from 'lucide-angular';
+import { LucideAngularModule, Mail, Lock, LogIn, Eye, EyeOff, Clock } from 'lucide-angular';
 import { UserSettingsService } from '../../../shared/services/user-settings.service';
 import { environment } from '../../../../environments/environment';
 
@@ -40,7 +39,6 @@ export class LoginPageComponent implements OnInit, OnDestroy {
   private renderer = inject(Renderer2);
   private document = inject(DOCUMENT);
   private userSettings = inject(UserSettingsService);
-  themeService = inject(ThemeService);
 
   // Iconos disponibles en el template
   readonly mailIcon = Mail;
@@ -48,8 +46,6 @@ export class LoginPageComponent implements OnInit, OnDestroy {
   readonly loginIcon = LogIn;
   readonly eyeIcon = Eye;
   readonly eyeOffIcon = EyeOff;
-  readonly sunIcon = Sun;
-  readonly moonIcon = Moon;
   readonly clockIcon = Clock;
 
   ngOnInit() {
@@ -59,11 +55,11 @@ export class LoginPageComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     // Limpiar todos los timeouts
     this.timeouts.forEach(id => clearTimeout(id));
-    
+
     // Completar el subject de destroy
     this.destroy$.next();
     this.destroy$.complete();
-    
+
     // Limpiar el script de reCAPTCHA
     this.removeRecaptchaScript();
   }
@@ -157,7 +153,7 @@ export class LoginPageComponent implements OnInit, OnDestroy {
           // Obtener el activeItem y su ruta correspondiente de las preferencias
           const preferences = this.userSettings.getAll();
           const activeItemId = preferences?.activeItem;
-          
+
           // Buscar el menú correspondiente y su ruta
           const menuItems = preferences?.menuItems || [];
           const findRouteById = (items: any[], id: string): string | null => {
@@ -170,13 +166,13 @@ export class LoginPageComponent implements OnInit, OnDestroy {
             }
             return null;
           };
-          
+
           // Obtener la ruta basada en el activeItem o usar dashboard como fallback
           const route = activeItemId ? findRouteById(menuItems, activeItemId) : null;
-          
+
           // Navegar a la ruta encontrada o al dashboard por defecto
           this.router.navigate([route || '/dashboard']);
-          
+
           // Paso 4: Ocultar loading después de la navegación
           const timeoutId = setTimeout(() => {
             this.loadingService.hide();
@@ -193,13 +189,6 @@ export class LoginPageComponent implements OnInit, OnDestroy {
         this.resetRecaptcha();
       }
     });
-  }
-
-  /**
-   * Toggle simple entre modo claro/oscuro
-   */
-  toggleTheme() {
-    this.themeService.toggleTheme();
   }
 
   togglePasswordVisibility() {

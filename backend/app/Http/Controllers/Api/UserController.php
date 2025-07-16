@@ -30,7 +30,7 @@ class UserController extends Controller
 
             // Parámetros con valores por defecto
             $page = $validated['page'] ?? 1;
-            $limit = $validated['limit'] ?? 10;
+            $limit = $validated['limit'] ?? 5;
             $search = $validated['search'] ?? '';
             $sortField = $validated['sortField'] ?? 'name';
             $sortOrder = $validated['sortOrder'] ?? 'ASC';
@@ -290,7 +290,7 @@ class UserController extends Controller
     public function destroy(User $user): JsonResponse
     {
         try {
-            
+
             if (auth()->id() === $user->id) {
                 return response()->json([
                     'success' => false,

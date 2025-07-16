@@ -3,13 +3,13 @@ import { User } from '../../../../auth/interfaces/user.interface';
 
 export const USER_TABLE_CONFIG: TableConfig<User> = {
   columns: [
-    { 
+    {
       field: 'photo_path',
       header: 'Foto',
       sortable: false,
       visible: true
     },
-    { 
+    {
       field: 'id',
       header: '#',
       sortable: true,
@@ -43,5 +43,5 @@ export const USER_TABLE_CONFIG: TableConfig<User> = {
     field: 'id',
     order: 'DESC'
   },
-  itemsPerPageOptions: [10, 25, 50]
+  itemsPerPageOptions: [5, 10, 25, 50]
 };

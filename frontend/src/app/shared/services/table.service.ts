@@ -7,7 +7,7 @@ import { SortOrder, TableState, TableFilters } from '../interfaces/table.interfa
 })
 export class TableService {
   private searchSubject = new Subject<string>();
-  
+
   setupSearch(debounceMs: number = 500): Observable<string> {
     return this.searchSubject.pipe(
       debounceTime(debounceMs),
@@ -51,7 +51,7 @@ export class TableService {
   calculatePageRange(currentPage: number, totalPages: number, maxPages: number = 5): number[] {
     const pages: number[] = [];
     const halfWay = Math.floor(maxPages / 2);
-    
+
     let start = Math.max(currentPage - halfWay, 1);
     let end = Math.min(start + maxPages - 1, totalPages);
 
@@ -66,7 +66,7 @@ export class TableService {
     return pages;
   }
 
-  createInitialState(itemsPerPage: number = 10, defaultSortField: string = '', defaultSortOrder: SortOrder = 'ASC'): TableState {
+  createInitialState(itemsPerPage: number = 5, defaultSortField: string = '', defaultSortOrder: SortOrder = 'ASC'): TableState {
     return {
       currentPage: 1,
       itemsPerPage,

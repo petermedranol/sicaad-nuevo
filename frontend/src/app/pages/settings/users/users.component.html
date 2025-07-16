@@ -124,9 +124,10 @@
       }
 
       <!-- Fila de Búsqueda y Filtros -->
-      <!-- Permite buscar usuarios con ícono de limpiar integrado -->
-      <div class="flex justify-center md:justify-start">
-        <div class="w-full md:max-w-xs">
+      <div class="flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between">
+        <!-- Búsqueda -->
+        <!-- Permite buscar usuarios con ícono de limpiar integrado -->
+        <div class="w-full sm:max-w-xs">
           <label class="input input-bordered flex items-center gap-2" for="search-users">
             <input
               type="text"
@@ -152,20 +153,20 @@
             }
           </label>
         </div>
-      </div>
 
-      <!-- Selector de cantidad de registros por página -->
-      <div class="flex items-center gap-2 text-sm text-base-content/70">
-        <span>Mostrar</span>
-        <select
-          [value]="state().itemsPerPage"
-          (change)="handleItemsPerPageChange($event)"
-          class="select select-bordered select-sm w-20"
-          [attr.aria-label]="'Registros por página'">
-          <option *ngFor="let option of config.itemsPerPageOptions"
-                  [value]="option">{{ option }}</option>
-        </select>
-        <span>registros</span>
+        <!-- Selector de cantidad de registros por página -->
+        <div class="flex items-center gap-2 text-sm text-base-content/70 whitespace-nowrap">
+          <span>Mostrar</span>
+          <select
+            [value]="state().itemsPerPage"
+            (change)="handleItemsPerPageChange($event)"
+            class="select select-bordered select-sm w-20"
+            [attr.aria-label]="'Registros por página'">
+            <option *ngFor="let option of config.itemsPerPageOptions"
+                    [value]="option">{{ option }}</option>
+          </select>
+          <span>registros</span>
+        </div>
       </div>
 
       <!-- Tabla de Usuarios con contenedor de carga -->
@@ -291,19 +292,64 @@
             Mostrando {{ from }} a {{ to }} de {{ state().totalRecords }} registros
           </div>
           <div class="join">
+            <!-- Ir a primera página -->
+            <button
+              class="join-item btn btn-sm"
+              (click)="goToPage(1)"
+              [disabled]="state().currentPage === 1"
+              [attr.aria-label]="'Primera página'"
+              title="Primera página">
+              «
+            </button>
+
+            <!-- Página anterior -->
             <button
               class="join-item btn btn-sm"
               (click)="goToPage(state().currentPage - 1)"
               [disabled]="state().currentPage === 1"
               [attr.aria-label]="'Página anterior'">
-              «
+              ‹
             </button>
-            <button class="join-item btn btn-sm pointer-events-none">Página {{ state().currentPage }}</button>
+
+            <!-- Números de página con ellipsis -->
+
+            <!-- Ellipsis inicial si es necesario -->
+            @if (paginationRange.showStartEllipsis) {
+              <button class="join-item btn btn-sm btn-disabled">...</button>
+            }
+
+            <!-- Números de página -->
+            @for (page of getPageNumbers(); track page) {
+              <button
+                class="join-item btn btn-sm"
+                [class.btn-active]="page === state().currentPage"
+                (click)="goToPage(page)"
+                [attr.aria-label]="'Ir a página ' + page">
+                {{ page }}
+              </button>
+            }
+
+            <!-- Ellipsis final si es necesario -->
+            @if (paginationRange.showEndEllipsis) {
+              <button class="join-item btn btn-sm btn-disabled">...</button>
+            }
+
+            <!-- Página siguiente -->
             <button
               class="join-item btn btn-sm"
               (click)="goToPage(state().currentPage + 1)"
               [disabled]="state().currentPage === state().totalPages"
               [attr.aria-label]="'Página siguiente'">
+              ›
+            </button>
+
+            <!-- Ir a última página -->
+            <button
+              class="join-item btn btn-sm"
+              (click)="goToPage(state().totalPages)"
+              [disabled]="state().currentPage === state().totalPages"
+              [attr.aria-label]="'Última página'"
+              title="Última página">
               »
             </button>
           </div>

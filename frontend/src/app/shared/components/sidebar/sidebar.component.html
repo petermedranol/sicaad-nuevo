@@ -1,16 +1,16 @@
-<div class="flex flex-col h-full min-h-0 overflow-visible bg-navbar text-white dark:text-navbar-text">
+<div class="flex flex-col h-full min-h-0 overflow-visible bg-navbar text-white" [ngClass]="sidebarAnimationState()">
   <!-- Header con logo y título -->
   <div class="flex items-center justify-between h-16 px-4 border-b border-base-300/10">
     <div class="flex items-center gap-3 w-full">
       <app-cecytec-logo
         [showText]="!isCollapsed"
         size="large"
-        [variant]="themeService.isDarkMode() ? 'dark' : 'light'">
+        variant="light">
       </app-cecytec-logo>
     </div>
     @if (!isCollapsed) {
       <button class="btn btn-ghost btn-circle btn-sm lg:hidden" (click)="onCloseSidebar()">
-        <ng-icon name="lucideX" class="w-4 h-4 text-white dark:text-navbar-text"></ng-icon>
+        <ng-icon name="lucideX" class="w-4 h-4 text-white"></ng-icon>
       </button>
     }
   </div>
@@ -37,20 +37,20 @@
         <div class="relative">
           <ng-icon
             name="lucideSearch"
-            class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50 dark:text-navbar-text/50">
+            class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50">
           </ng-icon>
           <input
             #searchInput
             type="text"
             placeholder="Buscar menú..."
-            class="input input-sm w-full pl-9 pr-8 bg-[#444d58] dark:bg-navbar/50 border-base-300/10 text-white dark:text-navbar-text placeholder:text-white/50 dark:placeholder:text-navbar-text/50"
+            class="input input-sm w-full pl-9 pr-8 bg-[#444d58] border-base-300/10 text-white placeholder:text-white/50"
             (input)="onSearchInput($event)"
             (keyup.escape)="clearSearch()">
           @if (searchQuery) {
             <button
               class="absolute right-2 top-1/2 -translate-y-1/2 btn btn-ghost btn-xs btn-circle"
               (click)="clearSearch()">
-              <ng-icon name="lucideX" class="w-3 h-3 text-white dark:text-navbar-text"></ng-icon>
+              <ng-icon name="lucideX" class="w-3 h-3 text-white"></ng-icon>
             </button>
           }
         </div>
@@ -58,7 +58,7 @@
         <button
           class="w-full btn btn-ghost"
           (click)="focusSearch()">
-          <ng-icon name="lucideSearch" class="w-4 h-4 text-white dark:text-navbar-text"></ng-icon>
+          <ng-icon name="lucideSearch" class="w-4 h-4 text-white"></ng-icon>
         </button>
       }
     </div>
@@ -68,11 +68,11 @@
       <button
         (click)="onLogout()"
         [class]="isCollapsed ? 'w-full flex items-center justify-center p-4 hover:bg-white/10 transition-colors' : 'w-full flex items-center gap-3 p-4 hover:bg-white/10 transition-colors'">
-        <ng-icon name="lucideLogOut" class="w-5 h-5 text-white/70 dark:text-navbar-text/70 shrink-0"></ng-icon>
+        <ng-icon name="lucideLogOut" class="w-5 h-5 text-white/70 shrink-0"></ng-icon>
         @if (!isCollapsed) {
           <div class="flex flex-col">
-            <span class="font-medium text-white dark:text-navbar-text text-left">Cerrar sesión</span>
-            <span class="text-xs text-white/70 dark:text-navbar-text/70 text-left">Salir del sistema</span>
+            <span class="font-medium text-white text-left">Cerrar sesión</span>
+            <span class="text-xs text-white/70 text-left">Salir del sistema</span>
           </div>
         }
       </button>

@@ -2,7 +2,6 @@ import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { LoadingComponent } from './shared/components/loading/loading.component';
 import { NavigationLoadingService } from './shared/services/navigation-loading.service';
-import { ThemeService } from './shared/services/theme.service';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -17,9 +16,8 @@ export class AppComponent {
 
   // Services
   navigationLoadingService = inject(NavigationLoadingService);
-  themeService = inject(ThemeService);
 
   constructor() {
-    
+
   }
 }

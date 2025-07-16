@@ -1,11 +1,11 @@
-<ul class="menu p-0 bg-[#444d58] dark:bg-navbar">
+<ul class="menu p-0 bg-[#444d58]">
 @for (item of filteredMenuItems; track item.id) {
       <li class="relative">
         <a
           (click)="onItemClick(item, $event)"
           (mouseenter)="onMouseEnter(item.id, $event)"
           (mouseleave)="onMouseLeave()"
-          class="flex items-center gap-3 p-3 rounded-lg transition-colors text-white dark:text-navbar-text hover:text-white hover:bg-[#43A047] bg-[#444d58] dark:bg-navbar"
+          class="flex items-center gap-3 p-3 rounded-lg transition-colors text-white hover:text-white hover:bg-[#43A047] bg-[#444d58] menu-item"
           [ngClass]="{
             'border-[#43A047] border-2 text-white': isItemActive(item.id),
             'hover:bg-[#43A047]': !isItemActive(item.id),
@@ -21,7 +21,7 @@
               class="w-5 h-5 shrink-0"
               [ngClass]="{
                 'text-white': isItemActive(item.id),
-                'text-white/70 dark:text-navbar-text/70': !isItemActive(item.id)
+                'text-white/70': !isItemActive(item.id)
               }">
             </lucide-icon>
           }
@@ -39,7 +39,7 @@
                   [class.text-white]="true" class="text-xs block"
                   [ngClass]="{
                     'text-white': isItemActive(item.id),
-                    'text-white/70 dark:text-navbar-text/70': !isItemActive(item.id)
+                    'text-white/70': !isItemActive(item.id)
                   }"
                   [innerHTML]="highlightText(item.description)"
                   style="display: block;"
@@ -51,7 +51,7 @@
             @if (hasChildren(item)) {
               <lucide-icon
                 [img]="isItemExpanded(item.id) ? chevronDown : chevronRight"
-                class="w-4 h-4 transition-transform text-white/70 dark:text-navbar-text/70"
+                class="w-4 h-4 transition-transform text-white/70"
                 [class.rotate-180]="isItemExpanded(item.id)">
               </lucide-icon>
             }
@@ -78,13 +78,13 @@
         <!-- Menú flotante directo y simple -->
         @if (isCollapsed && hasChildren(item) && hoveredItemId === item.id) {
           <div
-            class="absolute left-full top-0 ml-2 rounded-lg shadow-xl z-50 min-w-[200px] bg-[#444d58] dark:bg-navbar hover:bg-[#444d58] dark:hover:bg-navbar [&_a:hover]:bg-[#43A047] [&_a.active]:border-[#43A047] [&_a.active]:border-2"
+            class="absolute left-full top-0 ml-2 rounded-lg shadow-xl z-50 min-w-[200px] bg-[#444d58] hover:bg-[#444d58] [&_a:hover]:bg-[#43A047] [&_a.active]:border-[#43A047] [&_a.active]:border-2"
             (mouseenter)="onMouseEnter(item.id, $event)"
             (mouseleave)="onMouseLeave()"
             (click)="$event.stopPropagation()">
-            <div class="py-2 bg-[#444d58] dark:bg-navbar">
+            <div class="py-2 bg-[#444d58]">
               <!-- Título fijo de Configuración -->
-              <div class="px-4 py-2 text-sm font-medium text-white dark:text-navbar-text">Configuración</div>
+              <div class="px-4 py-2 text-sm font-medium text-white">Configuración</div>
               <!-- Menú de usuarios con hover sólido -->
               <div class="mt-1">
                 <app-sidebar-menu

@@ -1,17 +1,17 @@
 <nav class="w-full h-16 bg-navbar border-b border-base-300/10">
-  <div class="text-white dark:text-navbar-text w-full h-full">
-    <!-- Título y acciones del topbar en texto blanco y dark mode navbar-text -->
+  <div class="text-white w-full h-full">
+    <!-- Título y acciones del topbar en texto blanco -->
     <div class="flex justify-between items-center w-full h-full px-4 lg:px-6">
       <!-- Izquierda: Botón de menú (móvil) y Título de página -->
       <div class="flex items-center gap-2">
         <button
           class="btn btn-ghost btn-sm btn-circle lg:hidden"
           (click)="onToggleSidebar()">
-          <lucide-icon [img]="menuIcon" class="w-5 h-5 text-white dark:text-navbar-text"></lucide-icon>
+          <lucide-icon [img]="menuIcon" class="w-5 h-5 text-white"></lucide-icon>
         </button>
         <div>
-          <h1 class="text-xl font-bold text-white dark:text-navbar-text">{{ topbarConfig().title }}</h1>
-          <p class="text-sm text-white/60 dark:text-navbar-text/60" *ngIf="topbarConfig().description">{{ topbarConfig().description }}</p>
+          <h1 class="text-xl font-bold text-white">{{ topbarConfig().title }}</h1>
+          <p class="text-sm text-white/60" *ngIf="topbarConfig().description">{{ topbarConfig().description }}</p>
         </div>
       </div>
 
@@ -23,24 +23,16 @@
               <button
                 [class]="'btn btn-sm gap-2 ' + (btn.variant ? 'btn-' + btn.variant : 'btn-secondary')"
                 (click)="btn.onClick()">
-                <lucide-icon *ngIf="btn.icon" [img]="btn.icon" class="w-4 h-4 text-white dark:text-navbar-text"></lucide-icon>
+                <lucide-icon *ngIf="btn.icon" [img]="btn.icon" class="w-4 h-4 text-white"></lucide-icon>
                 <span>{{ btn.label }}</span>
               </button>
             </ng-container>
           </div>
         </ng-container>
 
-        <div class="tooltip tooltip-bottom" [attr.data-tip]="themeTooltip()">
-          <button
-            class="btn btn-ghost btn-sm btn-circle"
-            (click)="onToggleTheme()">
-            <lucide-icon [img]="themeIcon()" class="w-4 h-4 text-white/80 dark:text-navbar-text/80"></lucide-icon>
-          </button>
-        </div>
-
         <div class="tooltip tooltip-bottom" data-tip="Notificaciones">
           <button class="btn btn-ghost btn-sm btn-circle indicator" (click)="onShowNotifications()">
-            <lucide-icon [img]="bellIcon" class="w-4 h-4 text-white dark:text-navbar-text"></lucide-icon>
+            <lucide-icon [img]="bellIcon" class="w-4 h-4 text-white"></lucide-icon>
             <ng-container *ngIf="hasNotifications">
               <span class="indicator-item badge badge-xs badge-primary">{{ notificationCount }}</span>
             </ng-container>
@@ -56,18 +48,18 @@
             </ng-container>
             <ng-template #initials>
               <div class="avatar placeholder">
-                <div class="bg-base-300 text-white dark:text-navbar-text rounded-full w-9">
+                <div class="bg-base-300 text-white rounded-full w-9">
                   <span class="font-semibold">{{ userInitials() }}</span>
                 </div>
               </div>
             </ng-template>
           </div>
           <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-navbar rounded-box w-52">
-            <li class="p-2 font-semibold text-white dark:text-navbar-text">{{ currentUser()?.name }}</li>
-            <li><a class="text-white dark:text-navbar-text" (click)="onShowProfile()">Perfil</a></li>
-            <li><a class="text-white dark:text-navbar-text">Configuración</a></li>
+            <li class="p-2 font-semibold text-white">{{ currentUser()?.name }}</li>
+            <li><a class="text-white" (click)="onShowProfile()">Perfil</a></li>
+            <li><a class="text-white">Configuración</a></li>
             <li class="mt-1"><div class="divider my-0"></div></li>
-            <li><a class="text-white dark:text-navbar-text" (click)="onLogout()">Cerrar Sesión</a></li>
+            <li><a class="text-white" (click)="onLogout()">Cerrar Sesión</a></li>
           </ul>
         </div>
       </div>

@@ -107,7 +107,8 @@ private readonly imageProcessor = inject(ImageProcessorService);
     this.state.update(state => ({
       ...state,
       sortField: this.config.defaultSort.field as string,
-      sortOrder: this.config.defaultSort.order
+      sortOrder: this.config.defaultSort.order,
+      itemsPerPage: 5 // Establecer 5 como valor por defecto
     }));
   }
 
@@ -625,6 +626,13 @@ private readonly imageProcessor = inject(ImageProcessorService);
    * Devuelve el rango de páginas para la paginación
    */
   override get pageNumbers(): number[] {
+    return this.paginationRange.pages;
+  }
+
+  /**
+   * Devuelve el rango completo de paginación con información de ellipsis
+   */
+  get paginationRange() {
     return this.paginationService.calculatePageRange({
       current_page: this.state().currentPage,
       total_pages: this.state().totalPages,
@@ -634,7 +642,14 @@ private readonly imageProcessor = inject(ImageProcessorService);
       has_previous_page: this.state().currentPage > 1,
       from: (this.state().currentPage - 1) * this.state().itemsPerPage + 1,
       to: Math.min(this.state().currentPage * this.state().itemsPerPage, this.state().totalRecords)
-    }).pages;
+    });
+  }
+
+  /**
+   * Método para el template - devuelve los números de página
+   */
+  getPageNumbers(): number[] {
+    return this.pageNumbers;
   }
 }
 

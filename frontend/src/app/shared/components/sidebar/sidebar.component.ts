@@ -1,4 +1,4 @@
-import { Component, inject, Input, Output, EventEmitter, ViewChild, ElementRef, OnInit, OnDestroy } from '@angular/core';
+import { Component, inject, Input, Output, EventEmitter, ViewChild, ElementRef, OnInit, OnDestroy, computed, effect } from '@angular/core';
 import { Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
 import { Router, NavigationEnd } from '@angular/router';
@@ -15,12 +15,9 @@ import {
   lucideTrendingUp,
   lucideCircleCheck,
   lucidePanelLeft,
-  lucidePanelRightClose,
-  lucideSun,
-  lucideMoon
+  lucidePanelRightClose
 } from '@ng-icons/lucide';
 import { SidebarService } from '../../services/sidebar.service';
-import { ThemeService } from '../../services/theme.service';
 import { MenuService } from '../../services/menu.service';
 
 @Component({
@@ -41,9 +38,7 @@ import { MenuService } from '../../services/menu.service';
       lucideTrendingUp,
       lucideCircleCheck,
       lucidePanelLeft,
-      lucidePanelRightClose,
-      lucideSun,
-      lucideMoon
+      lucidePanelRightClose
     })
   ],
   templateUrl: './sidebar.component.html',
@@ -68,11 +63,9 @@ export class SidebarComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-private hoverTimeout?: number;
-private timeouts: number[] = [];
+private hoverTimeout?: number;  private timeouts: number[] = [];
 
   @Input() sidebarService = inject(SidebarService);
-  @Input() themeService = inject(ThemeService);
 
   public menuService = inject(MenuService);
 
@@ -83,6 +76,20 @@ private timeouts: number[] = [];
   @ViewChild('searchInput') searchInput!: ElementRef<HTMLInputElement>;
 
   searchQuery: string = '';
+  private isAnimating = false;
+  private previousCollapsed: boolean | undefined;
+
+  constructor() {
+    // Usar effect para detectar cambios en el estado de collapse
+    effect(() => {
+      const currentCollapsed = this.sidebarService.isSidebarCollapsed();
+      // Solo ejecutar animación si no es la primera vez
+      if (this.previousCollapsed !== undefined && this.previousCollapsed !== currentCollapsed) {
+        this.handleCollapseAnimation(currentCollapsed);
+      }
+      this.previousCollapsed = currentCollapsed;
+    });
+  }
 
   ngOnInit() {
     this.searchQuery = this.menuService.currentSearchQuery;
@@ -141,6 +148,18 @@ private timeouts: number[] = [];
 
   get isCollapsed(): boolean {
     return this.sidebarService.isSidebarCollapsed();
+  }
+
+  // Simplemente retornar una clase vacía - la animación la maneja Tailwind en dashboard-layout
+  sidebarAnimationState = computed(() => {
+    return ''; // Sin clases adicionales, dejamos que Tailwind maneje todo
+  });  private handleCollapseAnimation(isCollapsed: boolean): void {
+    this.isAnimating = true;
+
+    // Después de la duración de la animación del sidebar
+    this.addSafeTimeout(() => {
+      this.isAnimating = false;
+    }, 400); // Duración de la animación del sidebar
   }
 
   onMenuItemClick(menuItem: MenuItem): void {

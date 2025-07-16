@@ -3,7 +3,6 @@ import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../auth/services/auth.service';
-import { ThemeService } from '../../services/theme.service';
 import { TopbarService } from '../../../shared/services/topbar.service';
 import { SidebarService } from '../../services/sidebar.service';
 import { MenuService } from '../../services/menu.service';
@@ -36,7 +35,6 @@ import { lucideChevronLeft, lucideChevronRight } from '@ng-icons/lucide';
 export class DashboardLayoutComponent implements OnInit {
   router = inject(Router);
   private authService = inject(AuthService);
-  themeService = inject(ThemeService);
   sidebarService = inject(SidebarService);
   menuService = inject(MenuService);
   private userSettings = inject(UserSettingsService);
@@ -55,10 +53,6 @@ export class DashboardLayoutComponent implements OnInit {
 
   toggleSidebarCollapse() {
     this.sidebarService.toggleSidebarCollapse();
-  }
-
-  toggleDarkMode() {
-    this.themeService.toggleTheme();
   }
 
   async ngOnInit() {

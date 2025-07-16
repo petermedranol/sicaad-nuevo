@@ -13,52 +13,27 @@ mark.search-highlight {
   margin: -0.125rem 0;
 }
 
+.menu-item {
+  transition: all 0.2s ease-in-out;
+}
+
+.menu-item:hover {
+  transform: translateX(2px);
+}
+
 @layer base {
   html, body {
     @apply h-full;
   }
 }
 
-/* Fondo y texto del modal SweetAlert2 en modo oscuro y dracula */
-[data-theme="dark"] .swal2-popup,
-[data-theme="dark"] .user-edit-popup,
-[data-theme="dracula"] .swal2-popup,
-[data-theme="dracula"] .user-edit-popup {
-  background-color: #23272f !important; /* Fondo igual al dashboard */
-  color: #f3f4f6 !important; /* Texto claro */
-  border-radius: 1rem !important;
-  box-shadow: 0 8px 32px 0 rgba(0,0,0,0.25) !important;
-}
-
-[data-theme="dark"] .swal2-title,
-[data-theme="dark"] .user-edit-popup .swal2-title,
-[data-theme="dracula"] .swal2-title,
-[data-theme="dracula"] .user-edit-popup .swal2-title {
-  color: #f3f4f6 !important;
-}
-
-[data-theme="dark"] .swal2-input,
-[data-theme="dark"] .user-edit-popup .swal2-input,
-[data-theme="dracula"] .swal2-input,
-[data-theme="dracula"] .user-edit-popup .swal2-input {
-  background-color: #1f2937 !important;
-  color: #f3f4f6 !important;
-  border: 1px solid #374151 !important;
-}
-
-[data-theme="dark"] .swal2-input::placeholder,
-[data-theme="dracula"] .swal2-input::placeholder {
-  color: #9ca3af !important;
-  opacity: 0.8 !important;
-}
-
 /* Estilos para las tablas */
 thead tr {
-  @apply bg-base-200 dark:bg-base-300 !important;
+  @apply bg-base-200 !important;
 }
 
 thead th {
-  @apply text-base-content dark:text-base-content font-medium !important;
+  @apply text-base-content font-medium !important;
 }
 
 /* Ajuste de padding para contenedor de botones */

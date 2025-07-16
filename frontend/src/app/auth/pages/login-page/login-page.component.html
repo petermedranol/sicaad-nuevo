@@ -2,28 +2,13 @@
   <!-- Efecto glassmorphism sutil -->
   <div class="login-card-glass"></div>
   <!-- Control de tema simple -->
-  <div class="theme-toggle-container">
-    <div class="tooltip tooltip-left" data-tip="Cambiar tema">
-      <button
-        class="btn btn-ghost btn-sm btn-circle theme-toggle-btn"
-        style="background-color: #64748b !important; border: 1px solid #64748b !important; color: #ffffff !important;"
-        (click)="toggleTheme()">
-        <lucide-icon
-          [img]="themeService.isDarkMode() ? sunIcon : moonIcon"
-          class="w-5 h-5"
-          style="color: #ffffff !important; stroke: #ffffff !important;">
-        </lucide-icon>
-      </button>
-    </div>
-  </div>
-
   <div class="login-card-body">
       <!-- Solo Logo -->
       <div class="login-header">
         <div class="login-logo-container">
-          <img 
-            src="/logo.png" 
-            alt="Logo CECYTEC" 
+          <img
+            src="/logo.png"
+            alt="Logo CECYTEC"
             class="login-logo"
             loading="eager"
           />
@@ -34,9 +19,9 @@
         <!-- Campo Email -->
         <div class="form-field">
           <label class="form-label">
-            <span class="form-label-text" 
-                  [style.color]="themeService.isDarkMode() ? '#f8f8f2 !important' : '#374151 !important'">
-              <lucide-icon [img]="mailIcon" class="form-label-icon" 
+            <span class="form-label-text"
+                  style="color: #374151 !important;">
+              <lucide-icon [img]="mailIcon" class="form-label-icon"
                           style="color: #F15A22 !important;"></lucide-icon>
               Correo electrónico
             </span>
@@ -57,9 +42,9 @@
         <!-- Campo Password -->
         <div class="form-field">
           <label class="form-label">
-            <span class="form-label-text" 
-                  [style.color]="themeService.isDarkMode() ? '#f8f8f2 !important' : '#374151 !important'">
-              <lucide-icon [img]="lockIcon" class="form-label-icon" 
+            <span class="form-label-text"
+                  style="color: #374151 !important;">
+              <lucide-icon [img]="lockIcon" class="form-label-icon"
                           style="color: #F15A22 !important;"></lucide-icon>
               Contraseña
             </span>
@@ -81,9 +66,7 @@
               (click)="togglePasswordVisibility()"
               class="btn btn-ghost btn-sm btn-circle password-toggle-btn"
               [disabled]="isLoading"
-              [style.background-color]="themeService.isDarkMode() ? '#10b981 !important' : '#10b981 !important'"
-              [style.border]="themeService.isDarkMode() ? '1px solid #10b981 !important' : '1px solid #10b981 !important'"
-              [style.color]="'#ffffff !important'"
+              style="background-color: #10b981 !important; border: 1px solid #10b981 !important; color: #ffffff !important;"
             >
               <lucide-icon
                 [img]="showPassword ? eyeOffIcon : eyeIcon"
@@ -98,7 +81,7 @@
         <div class="form-field">
           <div id="recaptcha-container" class="recaptcha-container"></div>
           <div *ngIf="recaptchaLoaded && !recaptchaResponse" class="recaptcha-message">
-            <span style="color: #f59e0b; font-size: 0.875rem;">✓ Por favor, completa la verificación reCAPTCHA para continuar</span>
+            <span style="color: #f59e0b; font-size: 0.75rem;">✓ Completa el reCAPTCHA para continuar</span>
           </div>
         </div>
 

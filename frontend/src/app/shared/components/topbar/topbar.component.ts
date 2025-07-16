@@ -1,8 +1,7 @@
 import { Component, inject, Output, EventEmitter, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule } from 'lucide-angular';
-import { Menu, Sun, Moon, Bell } from 'lucide-angular';
-import { ThemeService } from '../../services/theme.service'; // CORREGIDO
+import { Menu, Bell } from 'lucide-angular';
 import { TopbarService } from '../../../shared/services/topbar.service';
 import { AuthService } from '../../../auth/services/auth.service';
 // Asumimos que la interfaz de usuario está en auth/interfaces, si no, hay que crearla.
@@ -16,7 +15,6 @@ import { AuthService } from '../../../auth/services/auth.service';
 })
 export class TopbarComponent {
   // --- Servicios Inyectados ---
-  public themeService = inject(ThemeService);
   public topbarService = inject(TopbarService);
   public authService = inject(AuthService);
 
@@ -29,14 +27,6 @@ export class TopbarComponent {
   // --- Iconos ---
   readonly menuIcon = Menu;
   readonly bellIcon = Bell;
-
-  // --- Señales Computadas para el Tema ---
-  themeIcon = computed(() => (this.themeService.isDarkMode() ? Sun : Moon));
-  themeTooltip = computed(() =>
-    this.themeService.isDarkMode()
-      ? 'Cambiar a modo claro'
-      : 'Cambiar a modo oscuro'
-  );
 
   // --- Lógica del Usuario ---
   currentUser = this.authService.currentUser;
@@ -56,10 +46,6 @@ export class TopbarComponent {
   notificationCount = 0;
 
   // --- Métodos de Eventos ---
-  onToggleTheme(): void {
-    this.themeService.toggleTheme();
-  }
-
   onToggleSidebar(): void {
     this.toggleSidebar.emit();
   }
