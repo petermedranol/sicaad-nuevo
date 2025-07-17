@@ -163,20 +163,16 @@ export class UsersDataTableExampleComponent implements OnInit {
   }
 
   onDataLoaded(users: User[]) {
-    console.log('Usuarios cargados:', users);
   }
 
   onError(error: string) {
-    console.error('Error en DataTable:', error);
   }
 
   async capturePhoto(user: User) {
-    console.log('Capturar foto para:', user.name);
     // Aquí iría la lógica de captura de foto
   }
 
   async editUser(user: User) {
-    console.log('Editar usuario:', user.name);
     // Aquí iría la lógica de edición
   }
 
@@ -195,7 +191,6 @@ export class UsersDataTableExampleComponent implements OnInit {
   }
 
   async createUser() {
-    console.log('Crear nuevo usuario');
     // Aquí iría la lógica de creación
   }
 }

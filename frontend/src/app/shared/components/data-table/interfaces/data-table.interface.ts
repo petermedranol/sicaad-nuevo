@@ -1,5 +1,5 @@
 import { Type } from '@angular/core';
-import { LucideIcon } from 'lucide-angular';
+import { LucideIcons } from 'lucide-angular';
 import { TableConfig, SortOrder } from '../../../interfaces/table.interface';
 
 /**
@@ -8,8 +8,8 @@ import { TableConfig, SortOrder } from '../../../interfaces/table.interface';
 export interface DataTableAction<T> {
   /** Etiqueta de la acción */
   label: string;
-  /** Icono de la acción (Lucide) */
-  icon: LucideIcon;
+  /** Icono de la acción */
+  icon: LucideIcons;
   /** Función que se ejecuta al hacer clic */
   onClick: (item: T) => void | Promise<void>;
   /** Clase CSS para el botón */
@@ -77,7 +77,7 @@ export interface DataTableConfig<T> {
   emptyState?: {
     title: string;
     message: string;
-    icon?: LucideIcon;
+    icon?: LucideIcons;
   };
   /** Configuración de estado de carga */
   loadingState?: {
@@ -92,7 +92,7 @@ export interface DataTableHeaderButton {
   /** Etiqueta del botón */
   label: string;
   /** Icono del botón */
-  icon: LucideIcon;
+  icon: LucideIcons;
   /** Función que se ejecuta al hacer clic */
   onClick: () => void | Promise<void>;
   /** Variante del botón */

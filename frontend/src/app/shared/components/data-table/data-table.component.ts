@@ -637,11 +637,8 @@ export class DataTableComponent implements OnInit, OnDestroy {
   }
 
   onSort(field: string | keyof any) {
-    console.log('🔧 onSort llamado con campo:', field);
-
     const column = this.config.columns.find(col => col.field === field);
     if (!column?.sortable) {
-      console.log('🔧 Columna no sorteable:', field);
       return;
     }
 
@@ -652,13 +649,6 @@ export class DataTableComponent implements OnInit, OnDestroy {
     if (currentField === field) {
       newOrder = currentOrder === 'ASC' ? 'DESC' : 'ASC';
     }
-
-    console.log('🔧 Cambio de ordenamiento:', {
-      campo: field,
-      ordenAnterior: currentOrder,
-      ordenNuevo: newOrder,
-      campoAnterior: currentField
-    });
 
     this.state.update(s => ({
       ...s,

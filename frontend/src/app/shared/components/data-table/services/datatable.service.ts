@@ -24,8 +24,6 @@ export class DataTableService {
       sortOrder: config.defaultSort?.order || 'ASC'
     };
 
-    console.log('🔧 Estado inicial creado:', initialState);
-    console.log('🔧 Configuración de sort:', config.defaultSort);
 
     return initialState;
   }
@@ -96,7 +94,6 @@ export class DataTableService {
     if (state.sortField) {
       params = params.set('sortField', state.sortField);
       params = params.set('sortOrder', state.sortOrder);
-      console.log('🔧 Parámetros de ordenamiento:', { sortField: state.sortField, sortOrder: state.sortOrder });
     }
 
     // Agregar parámetros adicionales del config

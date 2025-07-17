@@ -351,7 +351,6 @@ export class UsersComponent implements OnInit {
         throw new Error(response?.message || 'Error desconocido');
       }
     } catch (error) {
-      console.error('Error al crear/actualizar usuario:', error);
       // Mostrar toast de error (no bloqueante)
       this.notification.showError('Error',
         this.isEditMode ? 'Error al actualizar usuario' : 'Error al crear usuario'
@@ -449,7 +448,6 @@ export class UsersComponent implements OnInit {
           throw new Error(response?.message || 'Error desconocido');
         }
       } catch (error) {
-        console.error('Error al eliminar usuario:', error);
         this.notification.showError('Error', 'Error al eliminar usuario');
       }
     }

@@ -108,7 +108,6 @@ export class ThemeService {
         theme: data.theme,
         timestamp: new Date().toISOString()
       };
-      console.log('🎨 Configuraciones de tema guardadas:', safeData);
     }
   }
 

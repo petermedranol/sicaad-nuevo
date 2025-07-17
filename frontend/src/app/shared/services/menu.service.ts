@@ -27,7 +27,7 @@ private _menuItems = signal<MenuItem[]>([]);
   public activeItemId = this._activeItemId.asReadonly();
   public hasMenus = computed(() => this._menuItems().length > 0);
   public currentSearchQuery: string = '';
-  private searchDebounceTimeout?: number;
+  private searchDebounceTimeout?: any;
 
   // Método público para establecer los menús (usado al inicializar desde el login)
   public setMenuItems(items: MenuItem[]): void {
@@ -78,19 +78,19 @@ public expandedItems(): Set<string> {
     try {
       // Primero sincronizar con el servidor para obtener las preferencias más recientes
       await this.userSettings.syncWithServer();
-      
+
       // Leer las preferencias después de sincronizar
       const preferences = this.userSettings.getAll();
-      
+
       // Restaurar todo el estado desde las preferencias sincronizadas
       if (preferences?.searchQuery !== undefined) {
         this.currentSearchQuery = preferences.searchQuery;
       }
-      
+
       if (preferences?.activeItem) {
         this._activeItemId.set(preferences.activeItem);
       }
-      
+
       if (preferences?.expandedItems) {
         this._expandedItems.set(new Set(preferences.expandedItems));
       }
@@ -104,17 +104,17 @@ public expandedItems(): Set<string> {
 
     // Intentar cargar desde preferencias primero
     const preferences = this.userSettings.getAll();
-    
+
     if (preferences?.menuItems?.length > 0) {
       const menuItems = this.convertApiMenusToMenuItems(preferences.menuItems);
       this._menuItems.set(menuItems);
-      
+
       return;
     }
 
     // Si no hay menús en preferencias, cargar del servidor
     await this.loadUserMenus();
-    
+
     // Después de cargar del servidor, restaurar estado si existe
     const currentPreferences = this.userSettings.getAll();
     if (currentPreferences.activeItem) {
@@ -173,7 +173,7 @@ children: apiMenu.children?.map((child: any) => ({
     if (found) {
       // Actualizar activeItem en el servicio
       this.setActiveItem(found.item.id);
-      
+
       // Expandir automáticamente los menús padres
       const expandedItems = new Set(this._expandedItems());
       found.parents.forEach(parent => {
@@ -182,13 +182,13 @@ children: apiMenu.children?.map((child: any) => ({
         }
       });
       this._expandedItems.set(expandedItems);
-      
+
       // Actualizar preferencias
       const preferences = this.userSettings.getAll();
       preferences.activeItem = found.item.id;
       preferences.expandedItems = Array.from(expandedItems);
       this.userSettings.saveAll(preferences);
-      
+
     }
   }
 
@@ -200,7 +200,7 @@ children: apiMenu.children?.map((child: any) => ({
       expandedItems.add(itemId);
     }
     this._expandedItems.set(expandedItems);
-  
+
     // Actualizar expandedItems en las preferencias
     const preferences = this.userSettings.getAll();
     preferences.expandedItems = Array.from(expandedItems);
@@ -222,10 +222,10 @@ children: apiMenu.children?.map((child: any) => ({
       try {
         const preferences = this.userSettings.getAll();
         preferences.searchQuery = query;
-        
+
         // Guardar localmente
         this.userSettings.saveAll(preferences);
-        
+
         // Sincronizar con el servidor
         await this.userSettings.saveToServer();
       } catch (error) {
@@ -245,9 +245,9 @@ children: apiMenu.children?.map((child: any) => ({
       clearTimeout(this.searchDebounceTimeout);
       this.searchDebounceTimeout = undefined;
     }
-    
+
     this.currentSearchQuery = '';
-    
+
     try {
       const preferences = this.userSettings.getAll();
       preferences.searchQuery = '';
@@ -260,7 +260,7 @@ children: apiMenu.children?.map((child: any) => ({
   findItemByRoute(route: string): { item: MenuItem, parents: MenuItem[] } | null {
     // Normalizar la ruta
     const normalizedRoute = route === '/' ? '' : route;
-    
+
     const findInItems = (items: MenuItem[], parents: MenuItem[] = []): { item: MenuItem, parents: MenuItem[] } | null => {
       for (const item of items) {
         // Comparar con la ruta normalizada

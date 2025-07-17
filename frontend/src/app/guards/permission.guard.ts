@@ -18,7 +18,6 @@ export const permissionGuard: CanActivateFn = async (route: ActivatedRouteSnapsh
 
     // Validar integridad de la ruta
     if (!validateRouteIntegrity(route, currentUrl)) {
-      console.error('Route integrity validation failed');
       router.navigate(['/dashboard']);
       return false;
     }
@@ -40,7 +39,6 @@ export const permissionGuard: CanActivateFn = async (route: ActivatedRouteSnapsh
 
     // Validar integridad del menú
     if (!validateMenuIntegrity(menu)) {
-      console.error('Menu integrity validation failed');
       router.navigate(['/dashboard']);
       return false;
     }
