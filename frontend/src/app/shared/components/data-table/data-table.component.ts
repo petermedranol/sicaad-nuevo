@@ -14,7 +14,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, Search, ArrowUp, ArrowDown, ChevronLeft, ChevronRight, Plus, Minus } from 'lucide-angular';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, takeUntil, debounceTime } from 'rxjs';
 
 import {
   DataTableConfig,
@@ -420,6 +420,7 @@ import { ErrorHandlerService } from '../../services/error-handler.service';
 })
 export class DataTableComponent implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject<void>();
+  private readonly searchSubject$ = new Subject<string>();
   private readonly dataTableService = inject(DataTableService);
   private readonly paginationService = inject(PaginationService);
   private readonly errorHandler = inject(ErrorHandlerService);
@@ -549,6 +550,21 @@ export class DataTableComponent implements OnInit, OnDestroy {
     // Inicializar estado
     this.state.set(this.dataTableService.createInitialState(this.config));
 
+    // Configurar debounce para búsqueda
+    this.searchSubject$
+      .pipe(
+        debounceTime(300), // Esperar 300ms después del último keystroke
+        takeUntil(this.destroy$)
+      )
+      .subscribe(searchTerm => {
+        this.state.update(s => ({
+          ...s,
+          search: searchTerm,
+          currentPage: 1
+        }));
+        this.loadData();
+      });
+
     // Detectar tamaño inicial
     this.updateScreenSize();
 
@@ -628,12 +644,7 @@ export class DataTableComponent implements OnInit, OnDestroy {
 
   onSearch(event: Event) {
     const input = event.target as HTMLInputElement;
-    this.state.update(s => ({
-      ...s,
-      search: input.value,
-      currentPage: 1
-    }));
-    this.loadData();
+    this.searchSubject$.next(input.value);
   }
 
   onSort(field: string | keyof any) {
