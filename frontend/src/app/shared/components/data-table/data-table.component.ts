@@ -13,7 +13,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, Search, ArrowUp, ArrowDown, ChevronLeft, ChevronRight, Plus, Minus } from 'lucide-angular';
+import { LucideAngularModule, Search, ArrowUp, ArrowDown, ChevronLeft, ChevronRight, Plus, Minus, X } from 'lucide-angular';
 import { Subject, takeUntil, debounceTime } from 'rxjs';
 
 import {
@@ -100,11 +100,20 @@ import { ErrorHandlerService } from '../../services/error-handler.service';
             </div>
             <input
               type="text"
-              class="input input-bordered w-full pl-10"
+              class="input input-bordered w-full pl-10 pr-10"
               [placeholder]="config.searchPlaceholder || 'Buscar...'"
               [value]="state().search"
               (input)="onSearch($event)"
             />
+            <button
+              *ngIf="state().search"
+              type="button"
+              class="absolute inset-y-0 right-0 pr-3 flex items-center hover:text-base-content/80 transition-colors"
+              (click)="clearSearch()"
+              title="Limpiar búsqueda"
+            >
+              <lucide-icon [img]="clearSearchIcon" class="h-4 w-4 text-base-content/50" />
+            </button>
           </div>
 
           <!-- Selector de elementos por página -->
@@ -427,6 +436,7 @@ export class DataTableComponent implements OnInit, OnDestroy {
 
   // Iconos
   readonly searchIcon = Search;
+  readonly clearSearchIcon = X;
   readonly sortAscIcon = ArrowUp;
   readonly sortDescIcon = ArrowDown;
   readonly chevronLeftIcon = ChevronLeft;
@@ -645,6 +655,10 @@ export class DataTableComponent implements OnInit, OnDestroy {
   onSearch(event: Event) {
     const input = event.target as HTMLInputElement;
     this.searchSubject$.next(input.value);
+  }
+
+  clearSearch() {
+    this.searchSubject$.next('');
   }
 
   onSort(field: string | keyof any) {
