@@ -109,7 +109,7 @@
                     <span class="loading loading-spinner loading-sm"></span>
                     {{ isEditMode ? 'Actualizando...' : 'Creando...' }}
                   } @else {
-                    <lucide-icon [img]="saveIcon" class="w-4 h-4"></lucide-icon>
+                    <lucide-angular [name]="icons.Save" class="w-4 h-4"></lucide-angular>
                     {{ isEditMode ? 'Actualizar Usuario' : 'Crear Usuario' }}
                   }
                 </button>
@@ -123,240 +123,23 @@
         </div>
       }
 
-      <!-- Fila de Búsqueda y Filtros -->
-      <div class="flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between">
-        <!-- Búsqueda -->
-        <!-- Permite buscar usuarios con ícono de limpiar integrado -->
-        <div class="w-full sm:max-w-xs">
-          <label class="input input-bordered flex items-center gap-2" for="search-users">
-            <input
-              type="text"
-              id="search-users"
-              class="grow"
-              [attr.aria-label]="'Buscar usuarios'"
-              [value]="state().search"
-              (input)="handleSearch($event)"
-              placeholder="Buscar"
-              autocomplete="off"
-            />
-            @if (state().search && state().search.length > 0) {
-              <button
-                type="button"
-                (click)="clearSearch()"
-                class="flex items-center justify-center w-4 h-4 opacity-70 hover:opacity-100 active:opacity-50 cursor-pointer transition-none hover:bg-base-300 hover:rounded-full"
-                [attr.aria-label]="'Limpiar búsqueda'"
-                title="Limpiar búsqueda">
-                <lucide-icon [img]="xIcon" class="w-4 h-4"></lucide-icon>
-              </button>
-            } @else {
-              <lucide-icon [img]="searchIcon" class="w-4 h-4 opacity-70"></lucide-icon>
-            }
-          </label>
-        </div>
-
-        <!-- Selector de cantidad de registros por página -->
-        <div class="flex items-center gap-2 text-sm text-base-content/70 whitespace-nowrap">
-          <span>Mostrar</span>
-          <select
-            [value]="state().itemsPerPage"
-            (change)="handleItemsPerPageChange($event)"
-            class="select select-bordered select-sm w-20"
-            [attr.aria-label]="'Registros por página'">
-            <option *ngFor="let option of config.itemsPerPageOptions"
-                    [value]="option">{{ option }}</option>
-          </select>
-          <span>registros</span>
-        </div>
-      </div>
-
-      <!-- Tabla de Usuarios con contenedor de carga -->
-      <!-- Muestra la lista de usuarios, estado de carga y estado vacío -->
-      <div class="overflow-x-auto relative rounded-lg border border-base-200">
-        <table class="table w-full" role="grid" [attr.aria-label]="'Lista de usuarios'">
-          <!-- head: Encabezados de la tabla -->
-          <thead>
-<tr class="bg-base-200">
-                <th class="w-12 text-center font-bold text-base-content">Foto</th>
-                <th class="w-12 text-center cursor-pointer font-bold text-base-content" (click)="sortBy('id')">
-                  <div class="flex items-center gap-2 justify-center">
-                    #
-                    <lucide-icon *ngIf="state().sortField === 'id'"
-                                [img]="state().sortOrder === 'ASC' ? sortAscIcon : sortDescIcon"
-                                class="w-3 h-3">
-                    </lucide-icon>
-                  </div>
-                </th>
-                <th class="cursor-pointer font-bold text-base-content" (click)="sortBy('name')">
-                  <div class="flex items-center gap-2">
-                    Nombre
-                    <lucide-icon *ngIf="state().sortField === 'name'"
-                                [img]="state().sortOrder === 'ASC' ? sortAscIcon : sortDescIcon"
-                                class="w-3 h-3">
-                    </lucide-icon>
-                  </div>
-                </th>
-                <th class="hidden md:table-cell cursor-pointer font-bold text-base-content" (click)="sortBy('email')">
-                  <div class="flex items-center gap-2">
-                    Email
-                    <lucide-icon *ngIf="state().sortField === 'email'"
-                                [img]="state().sortOrder === 'ASC' ? sortAscIcon : sortDescIcon"
-                                class="w-3 h-3">
-                    </lucide-icon>
-                  </div>
-                </th>
-                <th class="hidden md:table-cell cursor-pointer font-bold text-base-content" (click)="sortBy('created_at')">
-                  <div class="flex items-center gap-2">
-                    Fecha Registro
-                    <lucide-icon *ngIf="state().sortField === 'created_at'"
-                                [img]="state().sortOrder === 'ASC' ? sortAscIcon : sortDescIcon"
-                                class="w-3 h-3">
-                    </lucide-icon>
-                  </div>
-                </th>
-                <th class="w-28 text-center font-bold text-base-content">Opciones</th>
-              </tr>
-            </thead>
-          <!-- body: Filas de usuarios -->
-          <tbody>
-            @for (user of data(); track user.id) {
-              <tr class="hover">
-                <td class="text-center">
-                  <div class="avatar">
-<div class="w-10 h-10 rounded-full ring ring-cecytec-secondary ring-offset-base-100 ring-offset-2">
-                      <!-- Debug URL: {{user.photo_path}} -->
-<img [src]="(user.photo_path) ? environment.apiUrl + '/api/images/user/' + user.id + '/true?v=' + user.photo_hash : '/no-image.png'"
-                           [alt]="'Foto de ' + user.name" />
-                    </div>
-                  </div>
-                </td>
-                <td class="text-center font-mono text-xs">#{{ user.id }}</td>
-                <td>
-                  <div class="font-medium truncate" title="{{ user.name }}">{{ user.name }}</div>
-                </td>
-                <td class="hidden md:table-cell">
-<a href="mailto:{{ user.email }}" class="hover:underline text-cecytec-secondary">{{ user.email }}</a>
-                </td>
-                <td class="hidden md:table-cell">
-                  <div class="font-medium">{{ user.created_at | date:'longDate':'':'es-ES' }}</div>
-                  <div class="text-xs text-base-content/60">{{ user.created_at | date:'HH:mm a' }}</div>
-                </td>
-                <td class="text-center">
-                  <div class="flex justify-center gap-1">
-                    <button
-                      class="btn btn-ghost btn-xs btn-square"
-                      (click)="captureUserPhoto(user)"
-                      title="Cambiar foto"
-                      [attr.aria-label]="'Cambiar foto de ' + user.name">
-                      <lucide-icon [img]="cameraIcon" class="w-4 h-4"></lucide-icon>
-                    </button>
-            <button
-              class="btn btn-ghost btn-xs btn-square"
-              (click)="editUser(user)"
-              title="Editar"
-              [attr.aria-label]="'Editar usuario ' + user.name">
-                      <lucide-icon [img]="editIcon" class="w-4 h-4"></lucide-icon>
-                    </button>
-            <button
-              class="btn btn-ghost btn-xs btn-square text-error"
-              (click)="deleteUser(user)"
-              title="Eliminar"
-              [attr.aria-label]="'Eliminar usuario ' + user.name">
-                      <lucide-icon [img]="trashIcon" class="w-4 h-4"></lucide-icon>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
-        <!-- Loading State: Spinner mientras carga -->
-        @if (state().loading) {
-          <div class="absolute inset-0 flex items-center justify-center bg-base-100/80 z-10">
-            <div class="loading loading-spinner loading-lg"></div>
-          </div>
-        }
-        <!-- Empty State: Mensaje cuando no hay usuarios -->
-        @else if (!state().loading && data().length === 0) {
-          <div class="p-16 text-center">
-            <h3 class="text-lg font-semibold">No se encontraron usuarios</h3>
-            <p class="text-base-content/70">Intenta ajustar tu búsqueda o filtros.</p>
-          </div>
-        }
-      </div>
-
-      <!-- Paginación -->
-      <!-- Permite navegar entre páginas de resultados -->
-      @if (state().totalPages > 1) {
-        <div class="flex flex-col sm:flex-row justify-between items-center gap-4 pt-4">
-          <div class="text-sm text-base-content/70">
-            Mostrando {{ from }} a {{ to }} de {{ state().totalRecords }} registros
-          </div>
-          <div class="join">
-            <!-- Ir a primera página -->
-            <button
-              class="join-item btn btn-sm"
-              (click)="goToPage(1)"
-              [disabled]="state().currentPage === 1"
-              [attr.aria-label]="'Primera página'"
-              title="Primera página">
-              «
-            </button>
-
-            <!-- Página anterior -->
-            <button
-              class="join-item btn btn-sm"
-              (click)="goToPage(state().currentPage - 1)"
-              [disabled]="state().currentPage === 1"
-              [attr.aria-label]="'Página anterior'">
-              ‹
-            </button>
-
-            <!-- Números de página con ellipsis -->
-
-            <!-- Ellipsis inicial si es necesario -->
-            @if (paginationRange.showStartEllipsis) {
-              <button class="join-item btn btn-sm btn-disabled">...</button>
-            }
-
-            <!-- Números de página -->
-            @for (page of getPageNumbers(); track page) {
-              <button
-                class="join-item btn btn-sm"
-                [class.btn-active]="page === state().currentPage"
-                (click)="goToPage(page)"
-                [attr.aria-label]="'Ir a página ' + page">
-                {{ page }}
-              </button>
-            }
-
-            <!-- Ellipsis final si es necesario -->
-            @if (paginationRange.showEndEllipsis) {
-              <button class="join-item btn btn-sm btn-disabled">...</button>
-            }
-
-            <!-- Página siguiente -->
-            <button
-              class="join-item btn btn-sm"
-              (click)="goToPage(state().currentPage + 1)"
-              [disabled]="state().currentPage === state().totalPages"
-              [attr.aria-label]="'Página siguiente'">
-              ›
-            </button>
-
-            <!-- Ir a última página -->
-            <button
-              class="join-item btn btn-sm"
-              (click)="goToPage(state().totalPages)"
-              [disabled]="state().currentPage === state().totalPages"
-              [attr.aria-label]="'Última página'"
-              title="Última página">
-              »
-            </button>
-          </div>
-        </div>
+      <!-- Photo Upload Component (inline) -->
+      @if (showPhotoUpload) {
+        <app-photo-upload
+          #photoUpload
+          [isVisible]="showPhotoUpload"
+          [config]="photoUploadConfig!"
+          (photoUploaded)="onPhotoUploaded($event)"
+          (closed)="onPhotoUploadClosed()">
+        </app-photo-upload>
       }
+
+      <!-- DataTable con estilos -->
+      <app-data-table
+        #dataTable
+        [config]="tableConfig" />
 
     </div> <!-- Cierre de card-body -->
   </div> <!-- Cierre de card -->
-</div>
 
+</div>
