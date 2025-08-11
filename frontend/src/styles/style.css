@@ -1,13 +1,39 @@
 :root {
+  /* Colors */
   --color-bg: #ffffff;
   --color-text: #111827;
+  --color-text-muted: #6b7280;  /* Gray-500 - Color estándar para texto */
   --color-primary: #2563eb;
   --color-secondary: #f9fafb;
   --color-accent: #3b82f6;
   --color-navbar: #444d58;
   --color-navbar-text: #f9fafb;
   --color-active: #43A047;
+
+  /* Typography - Centralized Font Sizes */
+  --font-family-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+
+  /* Jerarquía tipográfica recomendada */
+  --font-size-xs: 0.75rem;     /* 12px - Texto muy pequeño */
+  --font-size-sm: 0.875rem;    /* 14px - Subtítulos/etiquetas */
+  --font-size-base: 1rem;      /* 16px - Texto principal/body */
+  --font-size-lg: 1.125rem;    /* 18px - Títulos de sección */
+  --font-size-xl: 1.25rem;     /* 20px - Títulos de sección */
+  --font-size-2xl: 1.5rem;     /* 24px - Encabezados grandes */
+  --font-size-3xl: 1.75rem;    /* 28px - Encabezados grandes */
+
+  /* Line Heights */
+  --line-height-tight: 1;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
+
+  /* Font Weights */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
 }
+
 .dark {
   --color-bg: #1f2937;
   --color-text: #f9fafb;
@@ -16,5 +42,5 @@
   --color-accent: #60a5fa;
   --color-navbar: #1f2937;
   --color-navbar-text: #f9fafb;
-  --color-active: #43A047; /* Color verde para elementos activos */
+  --color-active: #43A047;
 }

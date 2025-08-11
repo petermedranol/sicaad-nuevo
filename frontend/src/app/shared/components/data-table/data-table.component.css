@@ -1,0 +1,184 @@
+/* DataTable Container */
+.data-table-container {
+  position: relative;
+  overflow: visible;
+  isolation: isolate;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  overflow-y: visible;
+  position: relative;
+  z-index: 1;
+}
+
+/* Dropdown z-index fixes */
+.dropdown {
+  position: static !important;
+}
+
+.dropdown-content {
+  position: fixed !important;
+  z-index: 999999 !important;
+  background-color: white !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3) !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 8px !important;
+  transform: none !important;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+}
+
+.dropdown-end .dropdown-content {
+  position: fixed !important;
+  z-index: 999999 !important;
+}
+
+.dropdown[open] .dropdown-content,
+.dropdown:focus .dropdown-content,
+.dropdown:focus-within .dropdown-content {
+  position: fixed !important;
+  z-index: 999999 !important;
+  display: block !important;
+}
+
+.table-wrapper .dropdown-content {
+  position: fixed !important;
+  z-index: 999999 !important;
+}
+
+/* Action buttons styling */
+.table .join .btn {
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-tight);
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding-top: 0.625rem !important;
+  padding-bottom: 0.625rem !important;
+}
+
+/* Force line-height reset for all button content */
+.table .join .btn *,
+.table .join .btn span,
+.table .join .btn.text-sm,
+.table .join .btn .text-sm,
+.table .join .btn.btn-sm.text-sm,
+.table .join .btn.font-normal,
+.table .join .btn .font-normal {
+  line-height: var(--line-height-tight) !important;
+  font-size: var(--font-size-sm) !important;
+  font-family: var(--font-family-sans) !important;
+  margin: 0 !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  vertical-align: baseline !important;
+}
+
+/* Override Tailwind spacing utilities */
+.table .join .btn > :not([hidden]) ~ :not([hidden]),
+.table .join .btn .space-y-6 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-y-reverse: 0 !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+/* Card body gap override */
+.card-body {
+  gap: 0 !important;
+}
+
+/* Container spacing reset */
+.data-table-container {
+  margin: 0 !important;
+  gap: 0 !important;
+}
+
+.table .join .btn:hover {
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+/* Tooltip styling */
+.tooltip:before {
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-base); /* 16px para texto principal */
+  font-weight: var(--font-weight-normal);
+  z-index: 999999 !important;
+}
+
+.tooltip:after {
+  z-index: 999999 !important;
+}
+
+/* Actions column centering */
+.table td .join {
+  justify-content: center;
+  gap: 0; /* No gap so buttons are joined */
+}
+
+/* Table borders and hover effects */
+.table {
+  border: 1px solid #f1f5f9; /* Very subtle border around table */
+}
+
+.table th {
+  border-bottom: 1px solid #e2e8f0; /* Subtle border below header */
+  background-color: #fafafa; /* Very subtle header background */
+}
+
+.table td {
+  border-bottom: 1px solid #f1f5f9; /* Very subtle borders between rows */
+}
+
+.table tr:hover td {
+  background-color: #f8fafc; /* Very discrete hover */
+  transition: background-color 0.15s ease;
+}
+
+/* Remove border from last row */
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Loading overlay */
+.data-table-container {
+  min-height: 200px; /* Minimum height for overlay visibility */
+}
+
+/* Table optimization */
+.table-wrapper {
+  width: 100%;
+  min-width: 0; /* Allow compression */
+}
+
+.table {
+  width: 100%;
+  table-layout: auto; /* Automatic adjustment */
+  min-width: 600px; /* Minimum width to prevent over-compression */
+}
+
+/* Responsive scrollbar */
+@media (min-width: 768px) {
+  .table-wrapper::-webkit-scrollbar {
+    height: 6px;
+  }
+  .table-wrapper::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+  }
+  .table-wrapper::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+  }
+  .table-wrapper::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+  }
+}

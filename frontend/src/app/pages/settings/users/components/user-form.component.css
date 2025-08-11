@@ -1,0 +1,89 @@
+/* === Contenedor del formulario === */
+.form-container {
+  /* Eliminamos las animaciones ya que el card las maneja */
+  opacity: 1;
+  transform: none;
+  max-height: none;
+  overflow: visible;
+}
+
+/* === Tipografía consistente === */
+.form-container input,
+.form-container textarea,
+.form-container select,
+.form-container button,
+.form-container .btn {
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-base); /* 16px para campos e inputs */
+  color: var(--color-text-muted);
+}
+
+.form-container label,
+.form-container .label-text {
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-sm); /* 14px para etiquetas */
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-muted);
+}
+
+.form-container .label-text-alt {
+  font-size: var(--font-size-xs); /* 12px para texto de ayuda */
+  color: var(--color-text-muted);
+}
+
+/* === Optimizaciones de botones === */
+.btn-loading {
+  position: relative;
+}
+
+.btn-loading:disabled {
+  cursor: not-allowed;
+}
+
+/* === Mejoras de formulario === */
+.form-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .form-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .form-grid .full-width {
+    grid-column: 1 / -1;
+  }
+}
+
+/* === Estados de los inputs === */
+.input:focus {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: #3b82f6;
+}
+
+/* === Espaciado mejorado === */
+.form-control {
+  margin-bottom: 0.5rem;
+}
+
+/* === Separador de botones === */
+.border-t {
+  border-top: 1px solid #e5e7eb;
+}
+
+/* === Animación suave del card === */
+.card {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

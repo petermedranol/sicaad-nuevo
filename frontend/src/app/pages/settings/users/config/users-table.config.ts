@@ -1,47 +1,106 @@
-import { TableConfig } from '../../../../shared/interfaces/table.interface';
-import { User } from '../../../../auth/interfaces/user.interface';
+import { DataTableConfig } from '@shared/components/data-table';
+import { Edit, Trash2, Camera } from 'lucide-angular';
+import { environment } from '@environments/environment';
+import { User } from '../types/users.types';
 
-export const USER_TABLE_CONFIG: TableConfig<User> = {
-  columns: [
-    {
-      field: 'photo_path',
-      header: 'Foto',
-      sortable: false,
-      visible: true
-    },
-    {
+/**
+ * Configuración de la tabla de usuarios
+ */
+export function createUsersTableConfig(
+  onEdit: (user: User) => void,
+  onDelete: (user: User) => void,
+  onCapturePhoto: (user: User) => void
+): DataTableConfig<User> {
+  return {
+    // URL del endpoint
+    url: '/api/users',
+
+    // Configuración de columnas
+    columns: [
+      {
+        field: 'photo_path',
+        header: 'Foto',
+        template: 'image',
+        sortable: false,
+        width: '60px',
+        priority: 'high',
+        format: (value, row?: User) => {
+          if (value && row?.id) {
+            return `${environment.apiUrl}/api/images/user/${row.id}/true?v=${row.photo_hash || Date.now()}`;
+          }
+          return '/no-image.png';
+        }
+      },
+      {
+        field: 'id',
+        header: '#',
+        sortable: true,
+        width: '60px',
+        priority: 'high'
+      },
+      {
+        field: 'name',
+        header: 'Nombre',
+        sortable: true,
+        searchable: true,
+        priority: 'high'
+      },
+      {
+        field: 'email',
+        header: 'Email',
+        sortable: true,
+        searchable: true,
+        priority: 'medium'
+      },
+      {
+        field: 'created_at',
+        header: 'Fecha Creación',
+        template: 'date',
+        sortable: true,
+        width: '100px',
+        priority: 'low'
+      }
+    ],
+
+    // Configuración de búsqueda
+    searchable: true,
+    searchPlaceholder: 'Buscar usuarios...',
+
+    // Configuración de paginación
+    pagination: true,
+    itemsPerPageOptions: [5, 10, 15, 25, 50],
+    defaultItemsPerPage: 5,
+
+    // Configuración de ordenamiento por defecto
+    defaultSort: {
       field: 'id',
-      header: '#',
-      sortable: true,
-      visible: true
+      order: 'DESC'
     },
-    {
-      field: 'name' as keyof User,
-      header: 'Nombre',
-      sortable: true,
-      visible: true
-    },
-    {
-      field: 'email' as keyof User,
-      header: 'Email',
-      sortable: true,
-      visible: false
-    },
-    {
-      field: 'created_at' as keyof User,
-      header: 'Fecha Registro',
-      sortable: true,
-      visible: false,
-      format: (value: string) => new Date(value).toLocaleDateString('es-ES', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      })
-    }
-  ],
-  defaultSort: {
-    field: 'id',
-    order: 'DESC'
-  },
-  itemsPerPageOptions: [5, 10, 25, 50]
-};
+
+    // Configuración de diseño
+    showHeader: true,
+    striped: true,
+    hoverable: true,
+    responsive: true,
+
+    // Acciones disponibles
+    actions: [
+      {
+        label: 'Tomar Foto',
+        icon: Camera,
+        onClick: onCapturePhoto
+      },
+      {
+        label: 'Editar',
+        icon: Edit,
+        onClick: onEdit,
+        primary: true
+      },
+      {
+        label: 'Eliminar',
+        icon: Trash2,
+        onClick: onDelete
+      }
+    ]
+  };
+}

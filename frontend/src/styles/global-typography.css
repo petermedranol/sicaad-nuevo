@@ -1,0 +1,216 @@
+/* === SISTEMA TIPOGRÁFICO GLOBAL CENTRALIZADO === */
+
+/* === CONTEXTOS ESPECIALES === */
+/* Sidebar y Topbar - texto blanco sobre fondo gris oscuro */
+.bg-navbar,
+.bg-navbar * {
+  color: white !important;
+  font-family: var(--font-family-sans) !important;
+}
+
+/* Asegurar que iconos y botones en navbar se vean bien */
+.bg-navbar button,
+.bg-navbar a,
+.bg-navbar .btn {
+  color: white !important;
+}
+
+/* Estados hover en navbar */
+.bg-navbar button:hover,
+.bg-navbar a:hover,
+.bg-navbar .btn:hover {
+  color: white !important;
+  opacity: 0.8;
+}
+
+/* === APLICACIÓN GLOBAL === */
+/* Aplicar automáticamente a TODOS los demás elementos */
+* {
+  font-family: var(--font-family-sans) !important;
+  color: var(--color-text-muted) !important;
+}
+
+/* Texto base - 16px para legibilidad */
+html, body, p, span, div, input, textarea, select, button, table, th, td {
+  font-family: var(--font-family-sans) !important;
+  font-size: var(--font-size-base) !important; /* 16px */
+  line-height: var(--line-height-normal) !important;
+}
+
+/* Labels y etiquetas - 14px */
+.label-text, .label, label, .form-label {
+  font-size: var(--font-size-sm) !important; /* 14px */
+  font-weight: var(--font-weight-medium) !important;
+}
+
+/* Texto de ayuda - 12px */
+.label-text-alt, .text-helper, small, .help-text {
+  font-size: var(--font-size-xs) !important; /* 12px */
+}
+
+/* Jerarquía de títulos automática */
+h1 {
+  font-size: var(--font-size-3xl) !important; /* 30px */
+  font-weight: var(--font-weight-bold) !important;
+}
+
+h2 {
+  font-size: var(--font-size-2xl) !important; /* 24px */
+  font-weight: var(--font-weight-semibold) !important;
+}
+
+h3 {
+  font-size: var(--font-size-xl) !important; /* 20px */
+  font-weight: var(--font-weight-semibold) !important;
+}
+
+h4 {
+  font-size: var(--font-size-lg) !important; /* 18px */
+  font-weight: var(--font-weight-medium) !important;
+}
+
+h5 {
+  font-size: var(--font-size-base) !important; /* 16px */
+  font-weight: var(--font-weight-medium) !important;
+}
+
+h6 {
+  font-size: var(--font-size-sm) !important; /* 14px */
+  font-weight: var(--font-weight-medium) !important;
+}
+
+/* Botones mantienen peso normal para legibilidad */
+.btn, button {
+  font-weight: var(--font-weight-normal) !important;
+  line-height: var(--line-height-tight) !important;
+}
+
+/* === CLASES DE OVERRIDE (solo si necesitas cambiar el tamaño por defecto) === */
+.text-large-override { font-size: var(--font-size-lg) !important; }
+.text-small-override { font-size: var(--font-size-sm) !important; }
+.text-tiny-override { font-size: var(--font-size-xs) !important; }
+
+/* === NAVEGACIÓN Y BARRAS === */
+/* Sidebar específico */
+.bg-navbar .btn,
+.bg-navbar button,
+.sidebar .btn,
+.sidebar button {
+  color: white !important;
+}
+
+/* Iconos en navbar/sidebar - Solo color y stroke, NO fill */
+.bg-navbar ng-icon,
+.bg-navbar lucide-icon,
+.bg-navbar .lucide,
+.bg-navbar svg,
+.sidebar ng-icon,
+.sidebar lucide-icon,
+.sidebar .lucide,
+.sidebar svg,
+.topbar ng-icon,
+.topbar lucide-icon,
+.topbar .lucide,
+.topbar svg,
+.bg-navbar lucide-icon.w-5,
+.bg-navbar lucide-icon.w-4,
+.sidebar lucide-icon.w-5,
+.sidebar lucide-icon.w-4,
+.bg-navbar .text-white,
+.sidebar .text-white,
+.bg-navbar .text-white\/70,
+.sidebar .text-white\/70 {
+  color: white !important;
+  stroke: white !important;
+  fill: none !important; /* Sin relleno para iconos de línea */
+}
+
+/* Forzar iconos específicos del sidebar - Sin fill */
+.menu lucide-icon,
+.menu-item lucide-icon,
+ul.menu lucide-icon,
+.bg-navbar lucide-icon.text-white,
+.bg-navbar lucide-icon.text-white\/70,
+.sidebar lucide-icon.text-white,
+.sidebar lucide-icon.text-white\/70,
+[class*="bg-navbar"] lucide-icon,
+[class*="menu"] lucide-icon {
+  color: white !important;
+  stroke: white !important;
+  fill: none !important; /* Sin relleno - solo contorno */
+}
+
+/* Iconos ng específicos - Máxima especificidad */
+.bg-navbar ng-icon.text-white,
+.sidebar ng-icon.text-white,
+.bg-navbar ng-icon,
+.sidebar ng-icon,
+ng-icon.text-white,
+ng-icon.w-4.h-4.text-white,
+ng-icon.w-3.h-3.text-white,
+ng-icon.w-5.h-5.text-white {
+  color: white !important;
+}
+
+/* Iconos ng con opacity */
+.bg-navbar ng-icon.text-white\/70,
+.sidebar ng-icon.text-white\/70,
+ng-icon.text-white\/70 {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+/* Toggle button específicamente */
+.bg-navbar .btn-circle,
+.bg-navbar .btn-ghost,
+.sidebar .btn-circle,
+.sidebar .btn-ghost,
+.topbar .btn-circle,
+.topbar .btn-ghost {
+  color: white !important;
+}
+
+/* Toggle button con ng-icon dentro */
+.bg-navbar .btn-circle ng-icon,
+.bg-navbar .btn-ghost ng-icon,
+.sidebar .btn-circle ng-icon,
+.sidebar .btn-ghost ng-icon,
+.btn.btn-ghost.btn-circle ng-icon,
+button.btn-ghost.btn-circle ng-icon {
+  color: white !important;
+}
+
+/* Texto de navegación */
+.bg-navbar h1,
+.bg-navbar h2,
+.bg-navbar h3,
+.bg-navbar .text-xl,
+.sidebar h1,
+.sidebar h2,
+.sidebar h3,
+.topbar h1,
+.topbar h2,
+.topbar h3 {
+  color: white !important;
+}
+
+/* Enlaces y elementos interactivos en navbar */
+.bg-navbar a,
+.bg-navbar .btn-ghost,
+.sidebar a,
+.sidebar .btn-ghost,
+.topbar a,
+.topbar .btn-ghost {
+  color: white !important;
+}
+
+/* Placeholders y texto de ayuda en navbar */
+.bg-navbar input::placeholder,
+.sidebar input::placeholder,
+.topbar input::placeholder {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* === CARDS === */
+.card-header h3 {
+  margin: 0 !important;
+}

@@ -1,0 +1,122 @@
+<!-- Formulario de Usuario -->
+@if (isVisible()) {
+  <div class="form-container">
+
+    <!-- Form -->
+    <form (ngSubmit)="submit($event)" class="form-grid">
+
+      <!-- Nombre -->
+      <div class="form-control">
+        <label for="user-form-name" class="label">
+          <span class="label-text font-semibold">Nombre *</span>
+        </label>
+                <input
+          id="user-form-name"
+          type="text"
+          class="input input-bordered w-full focus:outline-none focus:ring-2 focus:ring-neutral"
+          [value]="formData.name"
+          (input)="onFieldChange('name', $event)"
+          name="name"
+          placeholder="Nombre completo del usuario"
+          required
+          autocomplete="off">
+      </div>
+
+      <!-- Email -->
+      <div class="form-control">
+        <label for="user-form-email" class="label">
+          <span class="label-text font-semibold">Email *</span>
+        </label>
+        <input
+          id="user-form-email"
+          type="email"
+          class="input input-bordered w-full"
+          [value]="formData.email"
+          (input)="onFieldChange('email', $event)"
+          name="email"
+          placeholder="usuario@dominio.com"
+          required
+          autocomplete="off">
+      </div>
+
+      <!-- Contraseña -->
+      <div class="form-control">
+        <label for="user-form-password" class="label">
+          <span class="label-text font-semibold">
+            Contraseña {{ isEditMode() ? '' : '*' }}
+          </span>
+        </label>
+        <input
+          id="user-form-password"
+          type="password"
+          class="input input-bordered w-full"
+          [value]="formData.password"
+          (input)="onFieldChange('password', $event)"
+          name="password"
+          [placeholder]="isEditMode() ? 'Dejar vacío para mantener actual' : 'Mínimo ' + MIN_PASSWORD_LENGTH + ' caracteres'"
+          [required]="!isEditMode()"
+          autocomplete="new-password">
+        @if (isEditMode()) {
+          <div class="label">
+            <span class="label-text-alt">
+              Solo llenar si desea cambiar la contraseña
+            </span>
+          </div>
+        }
+      </div>
+
+      <!-- Confirmar Contraseña -->
+      <div class="form-control">
+        <label for="user-form-password-confirmation" class="label">
+          <span class="label-text font-semibold">
+            Confirmar Contraseña {{ isEditMode() ? '' : '*' }}
+          </span>
+        </label>
+        <input
+          id="user-form-password-confirmation"
+          type="password"
+          class="input input-bordered w-full"
+          [value]="formData.password_confirmation"
+          (input)="onFieldChange('password_confirmation', $event)"
+          name="password_confirmation"
+          [placeholder]="isEditMode() ? 'Confirme la nueva contraseña' : 'Repita la contraseña'"
+          [required]="!isEditMode() || formData.password"
+          autocomplete="new-password">
+      </div>
+
+      <!-- Botones -->
+      <div class="full-width flex justify-between items-center mt-6 pt-4 border-t border-gray-100">
+        <!-- Mensajes del lado izquierdo -->
+        <div class="flex flex-col gap-1">
+          @if (!isFormValid() && hasChanges() && !submitting()) {
+            <span class="text-orange-500">* Complete todos los campos requeridos</span>
+          }
+          <span>* Campos requeridos</span>
+        </div>
+
+        <!-- Botones -->
+        <div class="flex gap-3">
+          <button
+            type="button"
+            class="btn btn-ghost"
+            (click)="cancel()">
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            class="btn btn-neutral"
+            [class.btn-loading]="submitting()"
+            [disabled]="!canSubmit()">
+            @if (submitting()) {
+              <span class="loading loading-spinner loading-sm"></span>
+            } @else {
+              <lucide-angular [name]="icons.Save" class="w-4 h-4"></lucide-angular>
+            }
+            {{ submitButtonText }}
+          </button>
+        </div>
+      </div>
+
+    </form>
+  </div>
+}

@@ -1,145 +1,48 @@
 <!-- Container principal con padding -->
 <div class="space-y-6">
 
-  <!-- Card principal que contiene la búsqueda, tabla y paginación -->
-  <div class="card bg-white shadow-xl">
-    <div class="card-body space-y-6 p-4 sm:p-6">
+  <!-- Card del Formulario (cuando es visible) -->
+  @if (showCreateForm()) {
+    <div class="card bg-white shadow-lg border border-gray-100">
+      <div class="card-header px-6 py-4 border-b border-gray-100 rounded-t-2xl">
+        <h3>
+          {{ isEditMode() ? 'Editar Usuario' : 'Nuevo Usuario' }}
+        </h3>
+      </div>
+      <div class="card-body p-6">
+        <app-user-form
+          [isVisible]="true"
+          [isEditMode]="isEditMode()"
+          [editingUser]="editingUser()"
+          (onCancel)="onFormCancel()"
+          (onSuccess)="onFormSuccess()">
+        </app-user-form>
+      </div>
+    </div>
+  }
 
-      <!-- Formulario de Nuevo/Editar Usuario (Oculto por defecto) -->
-      @if (showCreateForm) {
-        <div
-          class="bg-base-200/50 rounded-lg p-4 border-l-4 border-base-400 form-container"
-          [class.show]="isFormReady && !isClosingForm"
-          [class.hide]="isClosingForm">
-          <div class="mb-4">
-            <h3 class="text-lg font-semibold text-base-content">
-              {{ isEditMode ? 'Editar Usuario' : 'Nuevo Usuario' }}
-            </h3>
-          </div>
-
-          <form class="grid grid-cols-1 md:grid-cols-2 gap-4" (submit)="submitCreateUser($event)">
-              <!-- Nombre -->
-              <div class="form-control">
-                <label class="label" for="create-name">
-                  <span class="label-text font-semibold">Nombre *</span>
-                </label>
-                <input
-                  id="create-name"
-                  type="text"
-                  class="input input-bordered w-full"
-                  [(ngModel)]="createFormData.name"
-                  name="name"
-                  placeholder="Nombre completo"
-                  required
-                  autocomplete="off">
-              </div>
-
-              <!-- Email -->
-              <div class="form-control">
-                <label class="label" for="create-email">
-                  <span class="label-text font-semibold">Email *</span>
-                </label>
-                <input
-                  id="create-email"
-                  type="email"
-                  class="input input-bordered w-full"
-                  [(ngModel)]="createFormData.email"
-                  name="email"
-                  placeholder="usuario@dominio.com"
-                  required
-                  autocomplete="off">
-              </div>
-
-              <!-- Contraseña -->
-              <div class="form-control">
-                <label class="label" for="create-password">
-                  <span class="label-text font-semibold">
-                    Contraseña {{ isEditMode ? '' : '*' }}
-                  </span>
-                </label>
-                <input
-                  id="create-password"
-                  type="password"
-                  class="input input-bordered w-full"
-                  [(ngModel)]="createFormData.password"
-                  name="password"
-                  [placeholder]="isEditMode ? 'Dejar vacío para mantener actual' : 'Mínimo 8 caracteres'"
-                  [required]="!isEditMode"
-                  autocomplete="new-password">
-                @if (isEditMode) {
-                  <div class="label">
-                    <span class="label-text-alt text-xs text-base-content/60">
-                      Solo llenar si desea cambiar la contraseña
-                    </span>
-                  </div>
-                }
-              </div>
-
-              <!-- Confirmar Contraseña -->
-              <div class="form-control">
-                <label class="label" for="create-password-confirm">
-                  <span class="label-text font-semibold">
-                    Confirmar Contraseña {{ isEditMode ? '' : '*' }}
-                  </span>
-                </label>
-                <input
-                  id="create-password-confirm"
-                  type="password"
-                  class="input input-bordered w-full"
-                  [(ngModel)]="createFormData.password_confirmation"
-                  name="password_confirmation"
-                  [placeholder]="isEditMode ? 'Confirme la nueva contraseña' : 'Repita la contraseña'"
-                  [required]="!isEditMode"
-                  autocomplete="new-password">
-              </div>
-
-              <!-- Botones -->
-              <div class="col-span-1 md:col-span-2 flex justify-end gap-2 mt-4">
-                <button
-                  type="button"
-                  class="btn btn-ghost"
-                  (click)="cancelCreateUser()">
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  class="btn btn-neutral"
-                  [disabled]="creatingUser">
-                  @if (creatingUser) {
-                    <span class="loading loading-spinner loading-sm"></span>
-                    {{ isEditMode ? 'Actualizando...' : 'Creando...' }}
-                  } @else {
-                    <lucide-angular [name]="icons.Save" class="w-4 h-4"></lucide-angular>
-                    {{ isEditMode ? 'Actualizar Usuario' : 'Crear Usuario' }}
-                  }
-                </button>
-              </div>
-
-              <!-- Nota -->
-              <div class="col-span-1 md:col-span-2 text-xs text-base-content/60 text-center">
-                * Campos requeridos
-              </div>
-            </form>
-        </div>
-      }
-
-      <!-- Photo Upload Component (inline) -->
-      @if (showPhotoUpload) {
+  <!-- Photo Upload Component (inline) -->
+  @if (showPhotoUpload()) {
+    <div class="card bg-white shadow-lg border border-gray-100">
+      <div class="card-body p-6">
         <app-photo-upload
           #photoUpload
-          [isVisible]="showPhotoUpload"
-          [config]="photoUploadConfig!"
+          [isVisible]="showPhotoUpload()"
+          [config]="photoUploadConfig()!"
           (photoUploaded)="onPhotoUploaded($event)"
           (closed)="onPhotoUploadClosed()">
         </app-photo-upload>
-      }
+      </div>
+    </div>
+  }
 
-      <!-- DataTable con estilos -->
+  <!-- Card de la Tabla de Usuarios -->
+  <div class="card bg-white shadow-lg border border-gray-100">
+    <div class="card-body p-6">
       <app-data-table
         #dataTable
         [config]="tableConfig" />
-
-    </div> <!-- Cierre de card-body -->
-  </div> <!-- Cierre de card -->
+    </div>
+  </div>
 
 </div>

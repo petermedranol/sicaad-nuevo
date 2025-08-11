@@ -1,0 +1,65 @@
+/* === Animaciones del formulario === */
+.form-container {
+  transition: all 0.3s ease-in-out;
+  opacity: 0;
+  transform: translateY(-10px);
+  overflow: hidden;
+  max-height: 0;
+}
+
+.form-container.show {
+  opacity: 1;
+  transform: translateY(0);
+  max-height: 1000px;
+}
+
+.form-container.hide {
+  opacity: 0;
+  transform: translateY(-10px);
+  max-height: 0;
+}
+
+/* === Optimizaciones de botones === */
+.btn-loading {
+  position: relative;
+}
+
+.btn-loading:disabled {
+  cursor: not-allowed;
+}
+
+/* === Mejoras de formulario === */
+.form-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .form-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .form-grid .full-width {
+    grid-column: 1 / -1;
+  }
+}
+
+/* === Estados de los inputs === */
+.input:focus {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.input.error {
+  border-color: #ef4444;
+}
+
+.input.error:focus {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+/* === Responsive improvements === */
+@media (max-width: 640px) {
+  .form-container {
+    padding: 1rem;
+  }
+}
